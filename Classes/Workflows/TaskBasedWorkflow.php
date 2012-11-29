@@ -30,7 +30,9 @@ class TaskBasedWorkflow extends AbstractWorkflow {
 		$taskRunInformation = $this->createTaskRunInformation();
 		foreach ($this->tasks as $taskName => $task) {
 			$this->out(' [Task] '.$taskName.' starting:');
+			$this->addLogIndentLevel();
 			$task->run($taskRunInformation);
+			$this->removeLogIndentLevel();
 		}
 	}
 }

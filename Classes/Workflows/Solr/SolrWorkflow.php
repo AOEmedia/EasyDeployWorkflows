@@ -32,10 +32,12 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 	}
 
 	protected function reloadSolr(\EasyDeploy_AbstractServer $server) {
-		if ($this->workflowConfiguration->getRestartCommand() != '') {
+		$restartCommand = $this->workflowConfiguration->getRestartCommand();
+		if (empty($restartCommand) == '') {
 			$this->out('No restart Command is Set for the deployment!',self::MESSAGE_TYPE_WARNING);
+			return;
 		}
-		$server->run($this->workflowConfiguration->getRestartCommand());
+		$server->run($restartCommand);
 	}
 
 	protected function getInstallStrategy() {
