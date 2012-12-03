@@ -16,19 +16,22 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 	 * @return mixed|void
 	 */
 	public function deploy() {
-		$localServer = new \EasyDeploy_LocalServer();
-
 		$task = new \EasyDeployWorkflows\Tasks\Common\CheckCorrectDeployNode();
 		$task->run($this->createTaskRunInformation());
 
+		$masterServers = $this->workflowConfiguration->getMasterServers();
 		$deployService =  new \EasyDeploy_DeployService($this->getInstallStrategy());
 		$this->initDeployService($deployService);
-
 		$deploymentPackage = $this->replaceMarkers($this->workflowConfiguration->getDeploymentSource());
-		$this->out('Start deploying SolrConf Package: "'.$deploymentPackage.'"', self::MESSAGE_TYPE_INFO);
-		$deployService->deploy( $localServer, $this->workflowConfiguration->getReleaseVersion(), $deploymentPackage);
 
-		$this->reloadSolr($localServer);
+		foreach ($masterServers as $server) {
+			$solrServer = $this->getServer($server);
+			$this->out('Start deploying SolrConf Package: "'.$deploymentPackage.'"', self::MESSAGE_TYPE_INFO);
+			$deployService->deploy( $solrServer, $this->workflowConfiguration->getReleaseVersion(), $deploymentPackage);
+			$this->reloadSolr($solrServer);
+		}
+
+
 	}
 
 	protected function reloadSolr(\EasyDeploy_AbstractServer $server) {

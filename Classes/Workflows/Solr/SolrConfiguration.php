@@ -55,6 +55,16 @@ class SolrConfiguration extends Workflows\AbstractWorkflowConfiguration {
 	}
 
 	/**
+	 * @param $hostName
+	 * @return SolrConfiguration
+	 */
+	public function getMasterServers() {
+		$this->getServers('solrmaster');
+
+		return $this;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getRestartCommand() {
