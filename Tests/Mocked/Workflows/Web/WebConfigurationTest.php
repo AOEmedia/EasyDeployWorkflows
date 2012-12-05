@@ -73,8 +73,8 @@ class WebConfigurationTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	public function canSetIndexerStorageFolder() {
-		$this->configuration->setIndexerDataFolder('/var/lib/indexer');
-		$this->assertEquals($this->configuration->getIndexerDataFolder(),'/var/lib/indexer','Could not get indexer data folder');
+		$this->configuration->addIndexerDataFolder('/var/lib/indexer');
+		$this->assertEquals($this->configuration->getIndexerDataFolders(),array('/var/lib/indexer'),'Could not get indexer data folder');
 	}
 
 	/**

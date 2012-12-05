@@ -26,7 +26,7 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 
 		foreach ($masterServers as $server) {
 			$solrServer = $this->getServer($server);
-			$this->out('Start deploying SolrConf Package: "'.$deploymentPackage.'"', self::MESSAGE_TYPE_INFO);
+			$this->logger->log('Start deploying SolrConf Package: "'.$deploymentPackage.'"', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_INFO);
 			$deployService->deploy( $solrServer, $this->workflowConfiguration->getReleaseVersion(), $deploymentPackage);
 			$this->reloadSolr($solrServer);
 		}
@@ -37,7 +37,7 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 	protected function reloadSolr(\EasyDeploy_AbstractServer $server) {
 		$restartCommand = $this->workflowConfiguration->getRestartCommand();
 		if (empty($restartCommand) == '') {
-			$this->out('No restart Command is Set for the deployment!',self::MESSAGE_TYPE_WARNING);
+			$this->logger->log('No restart Command is Set for the deployment!',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 			return;
 		}
 		$server->run($restartCommand);

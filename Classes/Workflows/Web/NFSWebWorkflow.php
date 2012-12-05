@@ -17,9 +17,10 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 		$this->addTask('check correct deploy node',
 						new \EasyDeployWorkflows\Tasks\Common\CheckCorrectDeployNode());
 
-		if ($this->workflowConfiguration->getIndexerDataFolder() != '') {
-			$this->addTask('Create indexer folders',
-			$this->getIndexerFolderTask());
+		foreach ($this->workflowConfiguration->getIndexerDataFolders() as $folder) {
+			$folder = $this->replaceMarkers($folder);
+			$this->addTask('Create indexer folders "'.$folder.'"',
+			$this->getIndexerFolderTask($folder));
 		}
 
 
@@ -76,16 +77,16 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 	{
 		$step = new \EasyDeployWorkflows\Tasks\Common\Download();
 		$step->addServerByName($this->workflowConfiguration->getNFSServer());
-		$step->setSource($this->workflowConfiguration->getDeploymentSource());
-		$step->setTarget($this->instanceConfiguration->getDeliveryFolder());
+		$step->setDownloadSource($this->workflowConfiguration->getDeploymentSource());
+		$step->setTargetFolder($this->instanceConfiguration->getDeliveryFolder());
 		return $step;
 	}
 
-	protected function getIndexerFolderTask()
+	protected function getIndexerFolderTask($folder)
 	{
 		$step = new \EasyDeployWorkflows\Tasks\Common\CreateMissingFolder();
 		$step->addServersByName($this->workflowConfiguration->getIndexerServers());
-		$step->setFolder($this->replaceMarkers($this->workflowConfiguration->getIndexerDataFolder()));
+		$step->setFolder($folder);
 		return $step;
 	}
 

@@ -170,16 +170,16 @@ class NFSWebConfiguration extends Workflows\AbstractWorkflowConfiguration {
 	/**
 	 * @param string $indexerDataFolder
 	 */
-	public function setIndexerDataFolder($indexerDataFolder) {
-		$this->setFolder($indexerDataFolder,'indexer',0);
+	public function addIndexerDataFolder($indexerDataFolder) {
+		$this->addFolder($indexerDataFolder,'indexer',0);
 		return $this;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getIndexerDataFolder() {
-		return $this->getFolder('indexer',0);
+	public function getIndexerDataFolders() {
+		return $this->getFolders('indexer');
 	}
 
 	/**

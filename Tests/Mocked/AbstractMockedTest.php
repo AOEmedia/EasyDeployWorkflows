@@ -1,8 +1,23 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: timo
- * Date: 30.11.12
- * Time: 10:50
- * To change this template use File | Settings | File Templates.
- */
+
+use EasyDeployWorkflows\Workflows;
+
+abstract class AbstractMockedTest extends PHPUnit_Framework_TestCase {
+
+	protected function requireEasyDeployClassesOrSkip() {
+		if (is_file(EASYDEPLOY_WORKFLOW_ROOT.'../EasyDeploy/Classes/RemoteServer.php')) {
+			require_once EASYDEPLOY_WORKFLOW_ROOT.'../EasyDeploy/Classes/RemoteServer.php';
+			require_once EASYDEPLOY_WORKFLOW_ROOT.'../EasyDeploy/Classes/LocalServer.php';
+			require_once EASYDEPLOY_WORKFLOW_ROOT.'../EasyDeploy/Classes/Helper/Downloader.php';
+		}
+
+		if (!class_exists('EasyDeploy_RemoteServer')) {
+			$this->markTestSkipped(
+				'EasyDeploy classes not available.'
+			);
+		}
+	}
+
+}
+
+?>

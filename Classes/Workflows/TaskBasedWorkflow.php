@@ -28,11 +28,40 @@ class TaskBasedWorkflow extends AbstractWorkflow {
 
 	public function deploy() {
 		$taskRunInformation = $this->createTaskRunInformation();
+		$this->logger->log('[Workflow] '.get_class($this));
+		$this->logger->addLogIndentLevel();
 		foreach ($this->tasks as $taskName => $task) {
-			$this->out(' [Task] '.$taskName.' starting:');
-			$this->addLogIndentLevel();
-			$task->run($taskRunInformation);
-			$this->removeLogIndentLevel();
+			$this->logger->log('[Task] '.$taskName);
+			$this->logger->addLogIndentLevel();
+			try {
+				$task->run($taskRunInformation);
+				$this->logger->log('[Task Successful]',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
+			}
+			catch (\Exception $e) {
+				$this->logger->log('[TASK EXCEPTION] '.$e->getMessage(),\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_ERROR);
+				$this->logger->logLogFileMessage();
+				throw new \EasyDeployWorkflows\Exception\HaltAndRollback($taskName.' failed with message: "'.$e->getMessage().'"');
+			}
+			$this->logger->removeLogIndentLevel();
 		}
+		$this->logger->removeLogIndentLevel();
+	}
+
+	/**
+	 * @param $classname
+	 * @return mixed
+	 */
+	public function getTaskByName($name) {
+		if (!isset( $this->tasks[$name])) {
+			throw new \Exception('Task with name '.$name.' no added');
+		}
+		return $this->tasks[$name];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getTasks() {
+		return $this->tasks;
 	}
 }

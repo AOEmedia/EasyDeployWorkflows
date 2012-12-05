@@ -41,6 +41,7 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 	protected $downloader;
 
 	public function __construct() {
+		parent::__construct();
 		$this->injectDownloader(new \EasyDeploy_Helper_Downloader());
 	}
 
@@ -72,7 +73,7 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 		if (file_exists($bin) && is_executable($bin)) {
 			$this->phpbinary = $bin;
 		} else {
-			print $this->out('PHP binary '.$bin.' does not exist or is not executable.', self::MESSAGE_TYPE_WARNING);
+			print $this->logger->log('PHP binary '.$bin.' does not exist or is not executable.', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 		}
 	}
 
@@ -118,19 +119,24 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 		if ($this->silentMode === TRUE) {
 			$additionalParameters .=' --silent';
 		}
-
-		// install package
-		$server->run($this->phpbinary . ' ' . $installBinariesFolder.'/install.php \
+		$command = $this->phpbinary . ' ' . $installBinariesFolder.'/install.php \
 			--systemPath="' . $this->targetSystemPath  . '" \
 			--backupstorageroot="' . $this->getBackupStorageRoot($taskRunInformation, $server) . '" \
-			--environmentName="' . $taskRunInformation->getInstanceConfiguration()->getEnvironmentName() . '"'.$additionalParameters, TRUE);
+			--environmentName="' . $taskRunInformation->getInstanceConfiguration()->getEnvironmentName() . '"'.$additionalParameters;
+		$this->logger->log('Run Installbinary: '.$command);
+		// install package
+		if ($this->silentMode === TRUE) {
+			$this->logger->log($server->run($command, TRUE, TRUE), \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_COMMANDOUTPUT);
+		}
+		else {
+			$server->run($command, TRUE);
+		}
 	}
 
 	/**
 	 * gets the relevant backupstorage root
 	 */
 	protected function getBackupStorageRoot(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
-		$this->out('Checking The Existence of BackupStorage', self::MESSAGE_TYPE_WARNING);
 
 		$backupStorageRoot 			= $taskRunInformation->getWorkflowConfiguration()->getBackupStorageRootFolder();
 		$backupMasterEnvironment	= $taskRunInformation->getWorkflowConfiguration()->getBackupMasterEnvironment();
@@ -139,7 +145,7 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 			return $backupStorageRoot;
 		}
 
-		$this->out('Ohoh! Master Backup not available... Getting at least a minified backup', self::MESSAGE_TYPE_WARNING);
+		$this->logger->log('Ohoh! Master Backup not available... Getting at least a minified backup', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 
 		$minifiedBackupRootFolder = $taskRunInformation->getWorkflowConfiguration()->getBackupStorageMinifiedRootFolder();
 		$minifiedBackupRootFolder = $this->replaceConfigurationMarkers($minifiedBackupRootFolder,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
@@ -168,7 +174,7 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 		$server->run('date +\'%Y-%m-%d %H:%M:%S\' > "'.$minifiedBackupRootFolder.'/'.$backupMasterEnvironment.'/backup_successful.txt"');
 
 		// Now switch to use minified Backup in deployment
-		$this->out('Finished getting minified backup');
+		$this->logger->log('Finished getting minified backup');
 		return $minifiedBackupRootFolder;
 	}
 	/**
@@ -199,7 +205,7 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 			&& $server->isDir($root.'/'.$environment)
 			&& $server->isDir($root.'/'.$environment.'/files') ) {
 
-			$this->out('Fine! Backup seems available');
+			$this->logger->log('Fine! Backup seems available in '.$root);
 			return true;
 		}
 		return false;

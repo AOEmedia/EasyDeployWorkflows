@@ -54,6 +54,18 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	}
 
 	/**
+	 * @param string $scope
+	 * @param int $index
+	 */
+	protected function getFolders($scope) {
+		if(!isset($this->folders[$scope])) {
+			return array();
+		}
+
+		return $this->folders[$scope];
+	}
+
+	/**
 	 * @param string  $folderName
 	 * @param string $scope
 	 * @param int $index
@@ -71,6 +83,25 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 		}
 
 		$this->folders[$scope][$index] = $folderName;
+
+		return $this;
+	}
+
+	/**
+	 * @param string  $folderName
+	 * @param string $scope
+	 * @param int $index
+	 * @throws InvalidArgumentException
+	 */
+	protected function addFolder($folderName, $scope) {
+		if(!is_string($scope)) {
+			throw new \InvalidArgumentException('Invalid scope '.serialize($scope));
+		}
+		if(!is_string($folderName)) {
+			throw new \InvalidArgumentException('Invalid folder '.serialize($folderName));
+		}
+
+		$this->folders[$scope][] = $folderName;
 
 		return $this;
 	}

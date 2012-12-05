@@ -4,7 +4,7 @@ namespace EasyDeployWorkflows\Workflows\Servlet;
 
 use EasyDeployWorkflows\Workflows as Workflows;
 
-class ServletWorkflow extends Workflows\AbstractWorkflow {
+class ServletWorkflow extends Workflows\TaskBasedWorkflow {
 
 	/**
 	 * @var \EasyDeployWorkflows\Workflows\Servlet\ServletConfiguration
@@ -16,32 +16,43 @@ class ServletWorkflow extends Workflows\AbstractWorkflow {
 	 */
 	const CURL_DEPLOY_COMMAND = 'curl --upload-file %s -u %s "http://localhost:%s/manager/deploy?path=%s&update=true"';
 
+
 	/**
-	 * @param string $releaseVersion
-	 * @return mixed|void
+	 * Can be used to do individual workflow initialisation and/or checks
 	 */
-	public function deploy() {
-		$localServer 				= $this->getServer('localhost');
+	protected function workflowInitialisation() {
+		$deploymentSource = $this->replaceMarkers( $this->workflowConfiguration->getDeploymentSource() );
+		$localDownloadTargetFolder = rtrim($this->replaceMarkers( $this->instanceConfiguration->getDeliveryFolder() ),'/').'/';
 
-		$deliveryFolder				= $this->replaceMarkers($this->instanceConfiguration->getDeliveryFolder());
-		$downloadSource = $this->replaceMarkers($this->workflowConfiguration->getDeploymentSource());
-		$this->downloader->download($localServer,$downloadSource,$deliveryFolder);
+		$this->addTask('check that we are on correct deploy node',new \EasyDeployWorkflows\Tasks\Common\CheckCorrectDeployNode());
 
-		$downloadedWarFile 			= $deliveryFolder.pathinfo($downloadSource,PATHINFO_BASENAME);
-		$tmpWarLocation 			= '/tmp/'.pathinfo($downloadSource,PATHINFO_BASENAME);
 
-		$tomcatAuthorization		= $this->workflowConfiguration->getTomcatUsername().':'.
-									  $this->workflowConfiguration->getTomcatPassword();
-		$tomcatPort					= $this->workflowConfiguration->getTomcatPort();
-		$targetPath					= $this->workflowConfiguration->getTargetPath();
+		$downloadTask = new \EasyDeployWorkflows\Tasks\Common\Download();
+		$downloadTask->addServerByName('localhost');
+		$downloadTask->setDownloadSource( $deploymentSource );
+		$downloadTask->setTargetFolder( $localDownloadTargetFolder );
+		$this->addTask('Download tracker war to local delivery folder', $downloadTask);
 
-		$curlCommand 				= sprintf(self::CURL_DEPLOY_COMMAND, $tmpWarLocation,$tomcatAuthorization,$tomcatPort,$targetPath);
 
-		foreach ($this->workflowConfiguration->getServletServers() as $servletServer) {
-			$server = $this->getServer($servletServer);
-			$server->run('rm -f '.$tmpWarLocation);
-			$server->copyLocalFile($downloadedWarFile, $tmpWarLocation);
-			$server->run($curlCommand);
-		}
+
+		$copyTask = new \EasyDeployWorkflows\Tasks\Common\Download();
+		$copyTask->addServersByName($this->workflowConfiguration->getServletServers());
+		$copyTask->setDownloadSource( $localDownloadTargetFolder.$this->getFilenameFromPath($deploymentSource) );
+		$copyTask->setTargetFolder( '/tmp/' );
+		$copyTask->setDeleteBeforeDownload(true);
+		$this->addTask('Load tracker war to tmp folder on servlet servers',	$copyTask);
+
+		$tmpWarLocation 			= '/tmp/'.$this->getFilenameFromPath($deploymentSource);
+		$deployWarTask = new \EasyDeployWorkflows\Tasks\Servlet\DeployWarInTomcat();
+		$deployWarTask->addServersByName($this->workflowConfiguration->getServletServers());
+		$deployWarTask->setWarFileSourcePath( $tmpWarLocation );
+		$deployWarTask->setTomcatPassword( $this->workflowConfiguration->getTomcatPassword() );
+		$deployWarTask->setTomcatUser( $this->workflowConfiguration->getTomcatUsername() );
+		$deployWarTask->setTomcatPath( $this->workflowConfiguration->getTargetPath() );
+		$deployWarTask->setTomcatPort( $this->workflowConfiguration->getTomcatPort() );
+		$deployWarTask->setTomcatVersion( $this->workflowConfiguration->getTomcatVersion() );
+
+		$this->addTask('deploy the war file to the tomcat servers',$deployWarTask);
+
 	}
 }

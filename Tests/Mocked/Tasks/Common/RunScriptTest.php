@@ -4,22 +4,13 @@ use EasyDeployWorkflows\Tasks as Tasks;
 
 require_once EASYDEPLOY_WORKFLOW_ROOT . 'Classes/Autoloader.php';
 
-class RunScriptTest extends PHPUnit_Framework_TestCase {
+class RunScriptTest extends AbstractMockedTest {
 
 	/**
 	 * test needs easydeploy to run
 	 */
 	public function setUp() {
-		if (is_file(EASYDEPLOY_WORKFLOW_ROOT.'../EasyDeploy/Classes/RemoteServer.php')) {
-			require_once EASYDEPLOY_WORKFLOW_ROOT.'../EasyDeploy/Classes/RemoteServer.php';
-		}
-
-		if (!class_exists('EasyDeploy_RemoteServer')) {
-			$this->markTestSkipped(
-				'EasyDeploy_RemoteServer class is not available.'
-			);
-		}
-
+		$this->requireEasyDeployClassesOrSkip();
 	}
 
 

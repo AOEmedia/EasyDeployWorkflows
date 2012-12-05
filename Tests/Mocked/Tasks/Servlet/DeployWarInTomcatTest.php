@@ -19,8 +19,7 @@ class DeployWarInTomcatTest extends AbstractMockedTest {
 		$task->setTomcatPassword('feuerstein');
 		$task->setTomcatPort(8090);
 		$task->setTomcatPath('/Tracker');
-		$task->setDownloadWarFile('/download/tracker.war');
-		$task->setTmpWarFile('/tmp/tracker.war');
+		$task->setWarFileSourcePath('/tmp/tracker.war');
 
 
 			/** @var $tomcatMock  EasyDeploy_RemoteServer */
@@ -29,7 +28,6 @@ class DeployWarInTomcatTest extends AbstractMockedTest {
 			function($command) {
 				$isValidCommand = in_array(
 					$command, array(
-						'rm -f /tmp/tracker.war',
 						'curl --upload-file /tmp/tracker.war -u fred:feuerstein "http://localhost:8090/manager/deploy?path=/Tracker&update=true"'
 					)
 				);
@@ -39,19 +37,7 @@ class DeployWarInTomcatTest extends AbstractMockedTest {
 				}
 			}
 		));
-		$tomcatMock->expects($this->once())->method('copyLocalFile')->will(
-			$this->returnCallback(
-				function($source, $target) {
-						//delivery folder foo
-					$isExpectedSource = $source == '/download/tracker.war';
-						//tmp source
-					$isExpectedTarget = $target == '/tmp/tracker.war';
 
-					$this->assertTrue($isExpectedSource,'Unexpected copy source for deployed servlet: '.$source);
-					$this->assertTrue($isExpectedTarget,'Unexpected copy target for deployed servlet: '.$target);
-				}
-			)
-		);
 
 		$task->addServer($tomcatMock);
 		$task->run($taskRunInformation);

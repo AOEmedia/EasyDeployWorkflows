@@ -23,6 +23,13 @@ abstract class AbstractServerTask extends AbstractTask {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getServers() {
+		return $this->servers;
+	}
+
+	/**
 	 * Adds a server on which this task should be executed
 	 */
 	public function addServerByName($server) {
@@ -46,10 +53,10 @@ abstract class AbstractServerTask extends AbstractTask {
 	public function run(TaskRunInformation $taskRunInformation) {
 		$this->validate();
 		if (empty($this->servers)) {
-			$this->out('No servers to execute the task available',self::MESSAGE_TYPE_WARNING);
+			$this->logger->log('No servers to execute the task available',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 		}
 
-		foreach ($this->servers as $server) {
+		foreach ($this->getServers() as $server) {
 			$this->runOnServer($taskRunInformation, $server);
 		}
 	}

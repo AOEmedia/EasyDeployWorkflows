@@ -28,7 +28,7 @@ class CreateMissingFolder extends \EasyDeployWorkflows\Tasks\AbstractServerTask 
 	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 		if (!$server->isDir($this->folder)) {
 			$message = 'Expected Folder is not present! Try to create "'.$this->folder.'"';
-			$this->out($message, self::MESSAGE_TYPE_INFO);
+			$this->logger->log($message);
 
 			$server->run('mkdir -p '.$this->folder);
 			$server->run('chmod g+rws '.$this->folder);
@@ -36,7 +36,7 @@ class CreateMissingFolder extends \EasyDeployWorkflows\Tasks\AbstractServerTask 
 
 		if (!$server->isDir($this->folder)) {
 			$message = 'Folder  "'.$this->folder.'" is not present! Could not create!';
-			$this->out($message, self::MESSAGE_TYPE_ERROR);
+			$this->logger->log($message, \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_ERROR);
 			throw new \Exception('Folder on Node "'.$server->getHostname().'" is not present!');
 		}
 

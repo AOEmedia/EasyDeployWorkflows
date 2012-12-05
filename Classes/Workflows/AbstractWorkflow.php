@@ -27,6 +27,7 @@ abstract class AbstractWorkflow extends \EasyDeployWorkflows\AbstractPart {
 	 * @param AbstractWorkflowConfiguration $workflowConfiguration
 	 */
 	public function __construct(InstanceConfiguration $instanceConfiguration, AbstractWorkflowConfiguration $workflowConfiguration) {
+		parent::__construct();
 		$instanceConfiguration->validate();
 		$workflowConfiguration->validate();
 

@@ -39,13 +39,23 @@ class DeployWarInTomcat extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	/**
 	 * @var string
 	 */
-	protected $downloadWarFile = '';
+	protected $warFileSourcePath;
 
 	/**
-	 * @var string
+	 * @param string $warFileSourcePath
 	 */
-	protected $tmpWarFile = '';
+	public function setWarFileSourcePath($warFileSourcePath)
+	{
+		$this->warFileSourcePath = $warFileSourcePath;
+	}
 
+	/**
+	 * @return string
+	 */
+	public function getWarFileSourcePath()
+	{
+		return $this->warFileSourcePath;
+	}
 	/**
 	 * @var string
 	 */
@@ -112,33 +122,6 @@ class DeployWarInTomcat extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 		return $this->tomcatUser;
 	}
 
-	/**
-	 * @param string $downloadWarFile
-	 */
-	public function setDownloadWarFile($downloadWarFile) {
-		$this->downloadWarFile = $downloadWarFile;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getDownloadWarFile() {
-		return $this->downloadWarFile;
-	}
-
-	/**
-	 * @param string $tmpWarFile
-	 */
-	public function setTmpWarFile($tmpWarFile) {
-		$this->tmpWarFile = $tmpWarFile;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getTmpWarFile() {
-		return $this->tmpWarFile;
-	}
 
 	/**
 	 * @param string $tomcatHostname
@@ -175,15 +158,13 @@ class DeployWarInTomcat extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server) {
 		$curlCommand 				= sprintf(
 			$this->deploymentCommands[$this->getTomcatVersion()],
-			$this->getTmpWarFile(),
+			$this->getWarFileSourcePath(),
 			$this->getTomcatUser().':'.$this->getTomcatPassword(),
 			$this->getTomcatHostname(),
 			$this->getTomcatPort(),
 			$this->getTomcatPath()
 		);
 
-		$server->run('rm -f '.$this->getTmpWarFile());
-		$server->copyLocalFile($this->getDownloadWarFile(),$this->getTmpWarFile());
 		$server->run($curlCommand);
 	}
 
@@ -205,13 +186,10 @@ class DeployWarInTomcat extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 			);
 		}
 
-		if(trim($this->getDownloadWarFile()) == '') {
+		if(trim($this->getWarFileSourcePath()) == '') {
 			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('Please configure a source war file location');
 		}
 
-		if(trim($this->getTmpWarFile()) == '') {
-			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('Please configure a tmp war file location');
-		}
 
 		if(trim($this->getTomcatUser()) == '' || trim($this->getTomcatPassword()) == '') {
 			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('Please configure tomcat username and password for deployment to tomcat');

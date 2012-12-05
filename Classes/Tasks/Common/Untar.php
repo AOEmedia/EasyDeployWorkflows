@@ -44,6 +44,7 @@ class Untar extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 * @param $path
 	 */
 	public function autoInitByPackagePath($path) {
+
 		$infos = pathinfo($path);
 		$this->setFolder($infos['dirname']);
 		//fix .tar.gz
@@ -66,7 +67,7 @@ class Untar extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 		if ($server->isDir($folder.$expectedExtractedFolder)) {
 			if ($this->mode == self::MODE_SKIP_IF_EXTRACTEDFOLDER_EXISTS) {
-				$this->out('Extracted Version already existend.. skipping');
+				$this->logger->log('Extracted folder already exists! I am skipping the extraction.',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 				return;
 			}
 			else {
