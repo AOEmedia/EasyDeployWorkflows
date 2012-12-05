@@ -112,6 +112,7 @@ class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 			$this->logger->log('Source and Target are the same. I am skipping the download!');
 			return;
 		}
+		$this->logger->log('Download starting from '.$sourceFile.' to '.$targetFolder.' on server '.$server->getHostname());
 		$this->downloader->download($server,$sourceFile,$targetFolder);
 		$this->logger->log('Download ready');
 	}
