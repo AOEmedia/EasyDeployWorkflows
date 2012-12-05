@@ -31,6 +31,12 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 	protected $targetSystemPath;
 
 	/**
+	 * @var bool
+	 */
+	protected $needBackupToInstall = TRUE;
+
+
+	/**
 	 * @var string
 	 */
 	protected $packageFolder;
@@ -119,9 +125,13 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 		if ($this->silentMode === TRUE) {
 			$additionalParameters .=' --silent';
 		}
+		if ($this->needBackupToInstall === TRUE) {
+			$additionalParameters .=' --backupstorageroot="' . $this->getBackupStorageRoot($taskRunInformation, $server) . '"';
+		}
+
+
 		$command = $this->phpbinary . ' ' . $installBinariesFolder.'/install.php \
 			--systemPath="' . $this->targetSystemPath  . '" \
-			--backupstorageroot="' . $this->getBackupStorageRoot($taskRunInformation, $server) . '" \
 			--environmentName="' . $taskRunInformation->getInstanceConfiguration()->getEnvironmentName() . '"'.$additionalParameters;
 		$this->logger->log('Run Installbinary: '.$command);
 		// install package
@@ -209,5 +219,21 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * @param boolean $needBackupToInstall
+	 */
+	public function setNeedBackupToInstall($needBackupToInstall)
+	{
+		$this->needBackupToInstall = $needBackupToInstall;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getNeedBackupToInstall()
+	{
+		return $this->needBackupToInstall;
 	}
 }

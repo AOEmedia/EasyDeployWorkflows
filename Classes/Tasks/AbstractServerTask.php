@@ -56,8 +56,11 @@ abstract class AbstractServerTask extends AbstractTask {
 			$this->logger->log('No servers to execute the task available',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 		}
 
-		foreach ($this->getServers() as $server) {
+		foreach ($this->getServers() as  $server) {
+			$this->logger->log('Run on Server '.$server->getInternalTitle());
+			$this->logger->addLogIndentLevel();
 			$this->runOnServer($taskRunInformation, $server);
+			$this->logger->removeLogIndentLevel();
 		}
 	}
 

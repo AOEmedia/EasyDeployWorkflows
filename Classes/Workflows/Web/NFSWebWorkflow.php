@@ -10,8 +10,8 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 	 * Can be used to do individual workflow initialisation and/or checks
 	 */
 	protected function workflowInitialisation() {
-		$packageFileName = substr($this->workflowConfiguration->getDeploymentSource(),strrpos($this->workflowConfiguration->getDeploymentSource(),'/'));
-		$packageExtractedFolderName = substr($packageFileName,0,strpos($packageFileName,'.'));
+		$packageFileName = $this->getFilenameFromPath($this->workflowConfiguration->getDeploymentSource());
+		$packageExtractedFolderName = $this->getFileBaseName($packageFileName);
 
 
 		$this->addTask('check correct deploy node',

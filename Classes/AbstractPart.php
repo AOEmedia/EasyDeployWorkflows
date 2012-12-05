@@ -29,7 +29,7 @@ abstract class AbstractPart {
 	 * @param string $serverName
 	 * @return \EasyDeploy_LocalServer|\EasyDeploy_RemoteServer
 	 */
-	protected function getServer($serverName) {
+	protected function getServer($serverName, $serverKey = NULL) {
 		if ($serverName == 'localhost') {
 			$server =  new \EasyDeploy_LocalServer($serverName);
 		}
@@ -37,6 +37,10 @@ abstract class AbstractPart {
 			$server = new \EasyDeploy_RemoteServer($serverName);
 		}
 		$server->setLogCommandsToScreen(false);
+		$server->setInternalTitle($serverName);
+		if (!empty($serverKey)) {
+			$server->setInternalTitle($serverKey);
+		}
 		return $server;
 	}
 
@@ -56,6 +60,10 @@ abstract class AbstractPart {
 	protected function getFilenameFromPath($path) {
 		$dir = dirname($path).DIRECTORY_SEPARATOR;
 		return str_replace($dir,'',$path);
+	}
+
+	protected function getFileBaseName($filename) {
+		return substr($filename,0,strpos($filename,'.'));
 	}
 
 }

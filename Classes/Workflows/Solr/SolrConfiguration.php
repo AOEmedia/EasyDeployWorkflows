@@ -59,9 +59,7 @@ class SolrConfiguration extends Workflows\AbstractWorkflowConfiguration {
 	 * @return SolrConfiguration
 	 */
 	public function getMasterServers() {
-		$this->getServers('solrmaster');
-
-		return $this;
+		return $this->getServers('solrmaster');
 	}
 
 	/**

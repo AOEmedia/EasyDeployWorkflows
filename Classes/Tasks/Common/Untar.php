@@ -74,6 +74,9 @@ class Untar extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 				$server->run('rm -rf '.$folder.$expectedExtractedFolder);
 			}
 		}
+		if (!$server->isFile($folder.$packageFileName)) {
+			throw new \Exception('The given file "'.$folder.$packageFileName.'" is not existend.');
+		}
 		//extract
 		$server->run('cd ' . $folder . '; tar -xzf ' . $packageFileName);
 	}
