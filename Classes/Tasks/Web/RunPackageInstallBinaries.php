@@ -118,7 +118,7 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 		// fix permissions
 		$server->run('chmod -R ug+x '.$installBinariesFolder);
 
-		if ($this->createBackupBeforeInstalling === TRUE) {
+		if ($this->createBackupBeforeInstalling === TRUE && $this->needBackupToInstall === TRUE) {
 			$additionalParameters .=' --createNewMasterBackup=1';
 		}
 
