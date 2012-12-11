@@ -15,6 +15,12 @@ class InstanceConfiguration extends AbstractConfiguration {
 	/**
 	 * @var string
 	 */
+	protected $deployLogFolder = '';
+
+
+	/**
+	 * @var string
+	 */
 	protected $environmentName = '';
 
 	/**
@@ -134,5 +140,29 @@ class InstanceConfiguration extends AbstractConfiguration {
 		}
 
 		return true;
+	}
+
+	/**
+	 * @param string $deployLogFolder
+	 */
+	public function setDeployLogFolder($deployLogFolder)
+	{
+		$this->deployLogFolder = $deployLogFolder;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDeployLogFolder()
+	{
+		return $this->deployLogFolder;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function hasValidDeployLogFolder()
+	{
+		return isset($this->deployLogFolder) && is_dir($this->deployLogFolder);
 	}
 }

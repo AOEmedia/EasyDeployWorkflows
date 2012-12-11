@@ -116,7 +116,8 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 		}
 
 		// fix permissions
-		$server->run('chmod -R ug+x '.$installBinariesFolder);
+		$this->logger->log('chmod -R ug+x '.$installBinariesFolder,\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_INFO);
+		$server->run('chmod -R ug+x '.$installBinariesFolder, FALSE, FALSE, $this->logger->getLogFile());
 
 		if ($this->createBackupBeforeInstalling === TRUE && $this->needBackupToInstall === TRUE) {
 			$additionalParameters .=' --createNewMasterBackup=1';
@@ -136,7 +137,7 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 		$this->logger->log('Run Installbinary: '.$command);
 		// install package
 		if ($this->silentMode === TRUE) {
-			$this->logger->log($server->run($command, TRUE, TRUE), \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_COMMANDOUTPUT);
+			$server->run($command, FALSE, FALSE, $this->logger->getLogFile());
 		}
 		else {
 			$server->run($command, TRUE);

@@ -56,15 +56,6 @@ class Logger {
 	 *  use \EasyDeployWorkflows\Logger\Logger::getInstance() instead
 	 */
 	private function __construct()	{
-		if (!empty($_SERVER['SCRIPT_NAME'])) {
-			if (substr($_SERVER['SCRIPT_NAME'], 0, 1) === '/') {
-				$deployScript = $_SERVER['SCRIPT_NAME'];
-			}
-			else {
-				$deployScript = $_SERVER['PWD'].'/'.$_SERVER['SCRIPT_NAME'];
-			}
-			$this->setLogFile(dirname($deployScript).'/deploy-log.txt');
-		}
 		$this->injectScreenBackend(new ScreenBackend());
 	}
 
@@ -130,7 +121,7 @@ class Logger {
 		}
 	}
 
-	public function logLogFileMessage() {
+	public function printLogFileInfoMessage() {
 		if (!empty($this->logFile)) {
 			$this->logIndentLevel = 0;
 			$this->logToScreen('Check the Logfile for errors: "'.$this->logFile.'"'.PHP_EOL,self::MESSAGE_TYPE_ERROR);

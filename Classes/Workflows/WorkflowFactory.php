@@ -40,13 +40,39 @@ class WorkflowFactory {
 		if (!class_exists($workflowConfiguration->getWorkflowClassName())) {
 			throw new UnknownWorkflowException('Workflow "'.$workflowConfiguration->getWorkflowClassName().'" not existend or not loaded',2212);
 		}
-
+		$this->initLoggerLogFile($instanceConfiguration);
 		$workflowClass = $workflowConfiguration->getWorkflowClassName();
 
 		$workflow = $this->getWorkflow($workflowClass, $instanceConfiguration, $workflowConfiguration);
 		$workflow->injectDownloader(new \EasyDeploy_Helper_Downloader());
 
 		return $workflow;
+	}
+
+	protected function initLoggerLogFile(InstanceConfiguration $instanceConfiguration) {
+		$currentLogFile = \EasyDeployWorkflows\Logger\Logger::getInstance()->getLogFile();
+		if (!empty($currentLogFile)) {
+			return;
+		}
+
+		if ($instanceConfiguration->hasValidDeployLogFolder()) {
+			$logDir = $instanceConfiguration->getDeployLogFolder();
+		}
+		else {
+			if (!empty($_SERVER['SCRIPT_NAME'])) {
+				if (substr($_SERVER['SCRIPT_NAME'], 0, 1) === '/') {
+					$deployScript = $_SERVER['SCRIPT_NAME'];
+				}
+				else {
+					$deployScript = $_SERVER['PWD'].'/'.$_SERVER['SCRIPT_NAME'];
+				}
+				$logDir = dirname($deployScript);
+			}
+			else {
+				$logDir = dirname(__FILE__).'/../../../';
+			}
+		}
+		\EasyDeployWorkflows\Logger\Logger::getInstance()->setLogFile( rtrim($logDir,'/') . '/deploy-'.$instanceConfiguration->getReleaseVersion().'-'.date('d.m.Y').'.log');
 	}
 
 	/**
@@ -83,6 +109,7 @@ class WorkflowFactory {
 			throw new \EasyDeployWorkflows\Workflows\Exception\WorkflowConfigurationNotExistendException('No Workflow Configuration found or it is invalid! Expected a Variable with the name $'.$workFlowConfigurationVariableName);
 		}
 		$$workFlowConfigurationVariableName->setReleaseVersion($releaseVersion);
+		$instanceConfiguration->setReleaseVersion($releaseVersion);
 		return $this->create($instanceConfiguration, $$workFlowConfigurationVariableName);
 	}
 

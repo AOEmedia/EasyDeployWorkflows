@@ -45,8 +45,7 @@ class RunScript extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 		if ($server->isFile($this->script)) {
 			$this->logger->log('Run Script: "'.$this->script.'"');
-			$commandOutput = $server->run($this->script, TRUE, TRUE);
-			$this->logger->log($commandOutput,\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_COMMANDOUTPUT);
+			$server->run($this->script, FALSE, FALSE, $this->logger->getLogFile());
 		}
 
 	}
