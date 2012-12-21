@@ -18,6 +18,36 @@ class SolrConfiguration extends Workflows\AbstractWorkflowConfiguration {
 	protected $restartCommand = '';
 
 	/**
+	 * @var string
+	 * The folder where the solr package may be uploaded before it is installed - can for example be a tmp folder
+	 */
+	protected $tempDeliverFolder = '';
+
+	/**
+	 * @param string $tempDeliverFolder
+	 */
+	public function setTempDeliverFolder($tempDeliverFolder)
+	{
+		$this->tempDeliverFolder = $tempDeliverFolder;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTempDeliverFolder()
+	{
+		return $this->tempDeliverFolder;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function hasTempDeliverFolder()
+	{
+		return !empty($this->tempDeliverFolder);
+	}
+
+	/**
 	 * @param string $instancePath
 	 * @return SolrConfiguration
 	 */

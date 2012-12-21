@@ -19,6 +19,24 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 		$this->logger->log('[Workflow] SolrWorkflow');
 		$this->logger->addLogIndentLevel();
 
+		try {
+			$this->runDeployTasks();
+		}
+		catch (\Exception $e) {
+			$this->logger->log('[TASK EXCEPTION] '.$e->getMessage(),\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_ERROR);
+			$this->logger->logLogFileMessage();
+			throw new \EasyDeployWorkflows\Exception\HaltAndRollback($taskName.' failed with message: "'.$e->getMessage().'"');
+		}
+
+
+
+		$this->logger->log('[Workflow Successful]',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
+		$this->logger->removeLogIndentLevel();
+
+	}
+
+	public function runDeployTasks()
+	{
 		$deliveryFolder = $this->replaceMarkers($this->instanceConfiguration->getDeliveryFolder());
 
 		$this->logger->log('[Task] CheckCorrectDeployNode');
@@ -29,9 +47,14 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 		$task = new \EasyDeployWorkflows\Tasks\Common\Download();
 		$task->addServersByName($this->workflowConfiguration->getMasterServers());
 		$task->setDownloadSource($this->replaceMarkers($this->workflowConfiguration->getDeploymentSource()));
-		$task->setTargetFolder($deliveryFolder);
+		if ($this->workflowConfiguration->hasTempDeliverFolder()) {
+			$task->setTargetFolder($this->workflowConfiguration->getTempDeliverFolder());
+		}
+		else {
+			$task->setTargetFolder($deliveryFolder);
+		}
 		$task->run($this->createTaskRunInformation());
-		$this->logger->log('[Task Successful]',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
+		$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
 
 		$packageFileName = $this->getFilenameFromPath($this->replaceMarkers($this->workflowConfiguration->getDeploymentSource()));
 		$this->logger->log('[Task] Unzip Solr Package');
@@ -40,7 +63,7 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 		$task->autoInitByPackagePath($deliveryFolder . '/' . $packageFileName);
 		$task->setMode(\EasyDeployWorkflows\Tasks\Common\Untar::MODE_SKIP_IF_EXTRACTEDFOLDER_EXISTS);
 		$task->run($this->createTaskRunInformation());
-		$this->logger->log('[Task Successful]',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
+		$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
 
 		$this->logger->log('[Task] Deploy Solr Package');
 		$task = new \EasyDeployWorkflows\Tasks\Web\RunPackageInstallBinaries();
@@ -50,25 +73,19 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 		$task->setPackageFolder($deliveryFolder . '/' . $this->getFileBaseName($packageFileName));
 		$task->setNeedBackupToInstall(FALSE);
 		$task->run($this->createTaskRunInformation());
-		$this->logger->log('[Task Successful]',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
+		$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
 
 
 		$restartCommand = $this->workflowConfiguration->getRestartCommand();
 		if (empty($restartCommand) == '') {
-			$this->logger->log('No restart Command is Set for the deployment!',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
-		}
-		else {
+			$this->logger->log('No restart Command is Set for the deployment!', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
+		} else {
 			$this->logger->log('[Task] Reload Solrs');
 			$task = new \EasyDeployWorkflows\Tasks\Common\RunScript();
 			$task->setScript($restartCommand);
 			$task->run($this->createTaskRunInformation());
-			$this->logger->log('[Task Successful]',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
+			$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
 		}
-
-
-		$this->logger->log('[Workflow Successful]',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
-		$this->logger->removeLogIndentLevel();
-
 	}
 
 }
