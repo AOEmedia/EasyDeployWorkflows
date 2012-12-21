@@ -28,6 +28,22 @@ class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 */
 	protected $downloader;
 
+	/**
+	 * @var string if file is not existend
+	 */
+	protected $notIfPathExists = '';
+
+	/**
+	 * @param string $notIfFileExists
+	 */
+	public function setNotIfPathExists($notIfPathExists)
+	{
+		$this->notIfPathExists = $notIfPathExists;
+		return $this;
+	}
+
+
+
 	public function __construct() {
 		parent::__construct();
 		$this->injectDownloader(new \EasyDeploy_Helper_Downloader());
@@ -97,7 +113,10 @@ class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 		$sourceFile = $this->replaceConfigurationMarkers($this->source,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
 		$targetFolder = rtrim($this->replaceConfigurationMarkers($this->target,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration()),DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 
-
+		if (!empty($this->notIfPathExists) && ( $server->isFile($this->notIfPathExists) || $server->isDir($this->notIfPathExists) )) {
+			$this->logger->log('Skipping because Skip Path is present: "'.$this->notIfPathExists.'"',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
+			return;
+		}
 
 		if ($server->isFile($targetFolder.$this->getFilenameFromPath($sourceFile))) {
 			if ($this->deleteBeforeDownload) {

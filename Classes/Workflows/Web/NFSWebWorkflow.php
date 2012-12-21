@@ -25,7 +25,7 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 
 
 		$this->addTask('Download Package',
-						$this->getDownloadPackageTask());
+						$this->getDownloadPackageTask($packageExtractedFolderName));
 
 
 		$this->addTask('Untar Package',
@@ -73,12 +73,13 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 		return $step;
 	}
 
-	protected function getDownloadPackageTask()
+	protected function getDownloadPackageTask($packageExtractedFolderName)
 	{
 		$step = new \EasyDeployWorkflows\Tasks\Common\Download();
 		$step->addServerByName($this->workflowConfiguration->getNFSServer());
 		$step->setDownloadSource($this->workflowConfiguration->getDeploymentSource());
 		$step->setTargetFolder($this->getFinalDeliveryFolder());
+		$step->setNotIfPathExists($this->getFinalDeliveryFolder() . $packageExtractedFolderName);
 		return $step;
 	}
 
