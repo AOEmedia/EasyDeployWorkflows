@@ -7,10 +7,7 @@ use EasyDeployWorkflows\Workflows\Exception as Exception;
 
 class InstanceConfiguration extends AbstractConfiguration {
 
-	/**
-	 * @var string
-	 */
-	protected $deliveryFolder = '';
+
 
 	/**
 	 * @var string
@@ -58,29 +55,6 @@ class InstanceConfiguration extends AbstractConfiguration {
 	 */
 	public function hasAllowedDeployServers() {
 		return count($this->getAllowedDeployServers()) > 0;
-	}
-
-	/**
-	 * @param string $deliveryFolder
-	 * @return \EasyDeployWorkflows\Workflows\InstanceConfiguration
-	 */
-	public function setDeliveryFolder($deliveryFolder) {
-		$this->deliveryFolder = rtrim($deliveryFolder,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-		return $this;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasDeliveryFolder() {
-		return $this->getDeliveryFolder() != '';
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getDeliveryFolder() {
-		return $this->deliveryFolder;
 	}
 
 	/**

@@ -11,6 +11,11 @@ require_once dirname(__FILE__) . '/../ValidateableInterface.php';
 abstract class AbstractConfiguration implements \EasyDeployWorkflows\ValidateableInterface {
 
 	/**
+	 * @var string
+	 */
+	protected $deliveryFolder = '';
+
+	/**
 	 * @var
 	 */
 	private $folders = array();
@@ -158,6 +163,29 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * @param string $deliveryFolder
+	 * @return \EasyDeployWorkflows\Workflows\InstanceConfiguration
+	 */
+	public function setDeliveryFolder($deliveryFolder) {
+		$this->deliveryFolder = rtrim($deliveryFolder,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasDeliveryFolder() {
+		return $this->getDeliveryFolder() != '';
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDeliveryFolder() {
+		return $this->deliveryFolder;
 	}
 
 	/**

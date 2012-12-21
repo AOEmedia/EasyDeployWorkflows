@@ -68,6 +68,14 @@ abstract class AbstractWorkflow extends \EasyDeployWorkflows\AbstractPart {
 		return $taskRunInformation;
 	}
 
+
+	protected function getFinalDeliveryFolder() {
+		if ($this->workflowConfiguration->hasDeliveryFolder()) {
+			$this->replaceMarkers($this->workflowConfiguration->getDeliveryFolder());
+		}
+		return $this->replaceMarkers($this->instanceConfiguration->getDeliveryFolder());
+	}
+
 	/**
 	 * @return mixed
 	 */

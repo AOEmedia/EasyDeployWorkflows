@@ -58,7 +58,7 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 		$step = new \EasyDeployWorkflows\Tasks\Web\RunPackageInstallBinaries();
 		$step->addServerByName($this->workflowConfiguration->getNFSServer());
 		$step->setCreateBackupBeforeInstalling(false);
-		$step->setPackageFolder($this->instanceConfiguration->getDeliveryFolder() . $packageExtractedFolderName);
+		$step->setPackageFolder($this->getFinalDeliveryFolder() . $packageExtractedFolderName);
 		$step->setTargetSystemPath($this->replaceMarkers($this->workflowConfiguration->getWebRootFolder()));
 		$step->setSilentMode($this->workflowConfiguration->getInstallSilent());
 		return $step;
@@ -68,7 +68,7 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 	{
 		$step = new \EasyDeployWorkflows\Tasks\Common\Untar();
 		$step->addServerByName($this->workflowConfiguration->getNFSServer());
-		$step->autoInitByPackagePath($this->instanceConfiguration->getDeliveryFolder() . '/' . $packageFileName);
+		$step->autoInitByPackagePath($this->getFinalDeliveryFolder() . '/' . $packageFileName);
 		$step->setMode(\EasyDeployWorkflows\Tasks\Common\Untar::MODE_SKIP_IF_EXTRACTEDFOLDER_EXISTS);
 		return $step;
 	}
@@ -78,7 +78,7 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 		$step = new \EasyDeployWorkflows\Tasks\Common\Download();
 		$step->addServerByName($this->workflowConfiguration->getNFSServer());
 		$step->setDownloadSource($this->workflowConfiguration->getDeploymentSource());
-		$step->setTargetFolder($this->instanceConfiguration->getDeliveryFolder());
+		$step->setTargetFolder($this->getFinalDeliveryFolder());
 		return $step;
 	}
 
