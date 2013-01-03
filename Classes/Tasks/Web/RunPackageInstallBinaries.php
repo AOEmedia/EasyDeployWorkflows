@@ -131,9 +131,8 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 		}
 
 
-		$command = $this->phpbinary . ' ' . $installBinariesFolder.'/install.php \
-			--systemPath="' . $this->targetSystemPath  . '" \
-			--environmentName="' . $taskRunInformation->getInstanceConfiguration()->getEnvironmentName() . '"'.$additionalParameters;
+		$command = $this->phpbinary . ' ' . $installBinariesFolder.'/install.php --systemPath="' . $this->targetSystemPath  . '" --environmentName="' . $taskRunInformation->getInstanceConfiguration()->getEnvironmentName() . '"'.$additionalParameters;
+
 		$this->logger->log('Run Installbinary: '.$command);
 		// install package
 		if ($this->silentMode === TRUE) {
