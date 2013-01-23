@@ -22,12 +22,6 @@ abstract class AbstractWorkflow extends \EasyDeployWorkflows\AbstractPart {
 	 */
 	protected $downloader;
 
-	/**
-	 * @var string a speaking title
-	 */
-	protected $title;
-
-
 
 	/**
 	 * @param InstanceConfiguration $instanceConfiguration
@@ -84,19 +78,14 @@ abstract class AbstractWorkflow extends \EasyDeployWorkflows\AbstractPart {
 	}
 
 	/**
-	 * @param string $title
+	 * @return \EasyDeployWorkflows\Workflows\AbstractConfiguration
 	 */
-	public function setTitle($title) {
-		$this->title = $title;
-		return $this;
+	public function getWorkflowConfiguration() {
+		return $this->workflowConfiguration;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTitle() {
-		return $this->title;
-	}
+
+
 	/**
 	 * @return mixed
 	 */

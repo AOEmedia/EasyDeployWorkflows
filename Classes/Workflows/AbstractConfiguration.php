@@ -31,6 +31,11 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	protected $releaseVersion;
 
 	/**
+	 * @var string a speaking title
+	 */
+	protected $title;
+
+	/**
 	 * @param string $releaseVersion
 	 */
 	public function setReleaseVersion($releaseVersion)
@@ -186,6 +191,21 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	 */
 	public function getDeliveryFolder() {
 		return $this->deliveryFolder;
+	}
+
+	/**
+	 * @param string $title
+	 */
+	public function setTitle($title) {
+		$this->title = $title;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->title;
 	}
 
 	/**
