@@ -23,6 +23,13 @@ abstract class AbstractWorkflow extends \EasyDeployWorkflows\AbstractPart {
 	protected $downloader;
 
 	/**
+	 * @var string a speaking title
+	 */
+	protected $title;
+
+
+
+	/**
 	 * @param InstanceConfiguration $instanceConfiguration
 	 * @param AbstractWorkflowConfiguration $workflowConfiguration
 	 */
@@ -76,6 +83,20 @@ abstract class AbstractWorkflow extends \EasyDeployWorkflows\AbstractPart {
 		return $this->replaceMarkers($this->instanceConfiguration->getDeliveryFolder());
 	}
 
+	/**
+	 * @param string $title
+	 */
+	public function setTitle($title) {
+		$this->title = $title;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->title;
+	}
 	/**
 	 * @return mixed
 	 */

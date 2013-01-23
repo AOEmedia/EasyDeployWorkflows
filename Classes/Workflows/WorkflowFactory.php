@@ -97,11 +97,13 @@ class WorkflowFactory {
 		if (!isset($$instanceConfigurationVariableName)) {
 			throw new \Exception('No Instance Configuration found! Expect a variable $'.$instanceConfigurationVariableName);
 		}
+		if (!$$instanceConfigurationVariableName instanceof InstanceConfiguration) {
+			throw new \Exception('No Instance Configuration found! Expect  $'.$instanceConfigurationVariableName.'  is instance of "InstanceConfiguration"');
+		}
 		$instanceConfiguration = $$instanceConfigurationVariableName;
-		if (!$instanceConfiguration instanceof InstanceConfiguration
-			|| $instanceConfiguration->getEnvironmentName() != $environmentName
+		if (  $instanceConfiguration->getEnvironmentName() != $environmentName
 			|| $instanceConfiguration->getProjectName() != $projectName) {
-			throw new \Exception('No Instance Environment Data could be found or it is invalid! Expected a variable with the name $'.$instanceConfigurationVariableName);
+			throw new \Exception('Instance Environment Data invalid! Check that project and environment is set and valid! Current:'.$instanceConfiguration->getProjectName().' / '.$instanceConfiguration->getEnvironmentName());
 		}
 
 		if (!isset($$workFlowConfigurationVariableName) || !$$workFlowConfigurationVariableName instanceof AbstractWorkflowConfiguration

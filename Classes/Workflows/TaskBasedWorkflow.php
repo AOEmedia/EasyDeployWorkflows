@@ -28,7 +28,7 @@ class TaskBasedWorkflow extends AbstractWorkflow {
 
 	public function deploy() {
 		$taskRunInformation = $this->createTaskRunInformation();
-		$this->logger->log('[Workflow] '.get_class($this));
+		$this->logger->log('[Workflow] '.$this->getTitle().' ('.get_class($this).')');
 		$this->logger->addLogIndentLevel();
 		foreach ($this->tasks as $taskName => $task) {
 			$this->logger->log('[Task] '.$taskName);
