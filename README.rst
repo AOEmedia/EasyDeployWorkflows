@@ -3,6 +3,7 @@ What is EasyDeployWorkflows?
 
 EasyDeployWorkflows offers a concept to develop Deployment Workflows on Top of EasyDeploy
 
+Build status: |buildStatusIcon|
 
 Concept
 -------------
