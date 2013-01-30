@@ -75,3 +75,8 @@ You can set a custom log file by:
 
 ::
     \EasyDeployWorkflows\Logger\Logger::getInstance()->setLogFile();
+
+
+.. |buildStatusIcon| image:: https://travis-ci.org/AOEmedia/EasyDeployWorkflows.png?branch=master
+   :alt: Build Status
+   :target: http://travis-ci.org/AOEmedia/EasyDeployWorkflows
