@@ -174,11 +174,9 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 
 		$baseName = pathinfo(parse_url($minifiedBackupSource, PHP_URL_PATH),PATHINFO_BASENAME);
 
-		if(!$this->hasBackupStorage($server,$minifiedBackupRootFolder,$backupMasterEnvironment)) {
-			$this->downloader->download($server,$minifiedBackupSource, $minifiedBackupRootFolder);
-			$server->run('cd '.$minifiedBackupRootFolder.'; tar -xzf '.$baseName);
-			$server->run('cd '.$minifiedBackupRootFolder.'; mv productionMinified production');
-		}
+		$this->downloader->download($server,$minifiedBackupSource, $minifiedBackupRootFolder);
+		$server->run('cd '.$minifiedBackupRootFolder.'; tar -xzf '.$baseName);
+		$server->run('cd '.$minifiedBackupRootFolder.'; mv productionMinified production');
 
 		if (!$this->hasBackupStorage($server,$minifiedBackupRootFolder, $backupMasterEnvironment)) {
 			throw new \Exception('Even no minified Backup is available. Check the download Source');
