@@ -157,12 +157,13 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 
 		$this->logger->log('Ohoh! Master Backup not available... Getting at least a minified backup', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 
+		$minifiedBackupRootFolder = $taskRunInformation->getWorkflowConfiguration()->getBackupStorageMinifiedRootFolder();
+		$minifiedBackupRootFolder = $this->replaceConfigurationMarkers($minifiedBackupRootFolder,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
+
 		if (empty($minifiedBackupRootFolder)) {
 			throw new \Exception('No minified Backup Root Folder Given. Cannot proceed without backup!');
 		}
 
-		$minifiedBackupRootFolder = $taskRunInformation->getWorkflowConfiguration()->getBackupStorageMinifiedRootFolder();
-		$minifiedBackupRootFolder = $this->replaceConfigurationMarkers($minifiedBackupRootFolder,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
 		$server->run('mkdir -p ' . $minifiedBackupRootFolder);
 
 		if (!$taskRunInformation->getWorkflowConfiguration()->hasMinifiedBackupSource()) {
