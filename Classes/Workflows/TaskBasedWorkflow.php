@@ -39,6 +39,7 @@ class TaskBasedWorkflow extends AbstractWorkflow {
 			}
 			catch (\Exception $e) {
 				$this->logger->log('[TASK EXCEPTION] '.$e->getMessage(),\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_ERROR);
+				$this->logger->logToFile('Exception Details: '.$e->getFile().PHP_EOL.$e->getLine().PHP_EOL.$e->getTraceAsString(),\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_ERROR);
 				$this->logger->printLogFileInfoMessage();
 				throw new \EasyDeployWorkflows\Exception\HaltAndRollback($taskName.' failed with message: "'.$e->getMessage().'"');
 			}

@@ -36,7 +36,7 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 	public function runDeployTasks()
 	{
 		$deliveryFolder = $this->replaceMarkers($this->instanceConfiguration->getDeliveryFolder());
-		$packageSource = $this->replaceMarkers($this->workflowConfiguration->getDeploymentSource());
+		$packageSource = $this->replaceMarkers($this->workflowConfiguration->getDownloadSource());
 
 		$this->logger->log('[Task] CheckCorrectDeployNode');
 		$task = new \EasyDeployWorkflows\Tasks\Common\CheckCorrectDeployNode();
@@ -66,7 +66,7 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 		$task->run($this->createTaskRunInformation());
 		$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
 
-		$packageFileName = $this->getFilenameFromPath($this->replaceMarkers($this->workflowConfiguration->getDeploymentSource()));
+		$packageFileName = $this->getFilenameFromPath($this->replaceMarkers($this->workflowConfiguration->getDownloadSource()));
 		$this->logger->log('[Task] Unzip Solr Package');
 		$task = new \EasyDeployWorkflows\Tasks\Common\Untar();
 		$task->addServersByName($this->workflowConfiguration->getMasterServers());

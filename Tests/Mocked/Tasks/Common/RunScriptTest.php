@@ -2,15 +2,20 @@
 
 use EasyDeployWorkflows\Tasks as Tasks;
 
-require_once EASYDEPLOY_WORKFLOW_ROOT . 'Classes/Autoloader.php';
-
 class RunScriptTest extends AbstractMockedTest {
+
+	/**
+	 * @var \EasyDeployWorkflows\Logger\Logger
+	 */
+	protected $loggerMock;
 
 	/**
 	 * test needs easydeploy to run
 	 */
 	public function setUp() {
 		$this->requireEasyDeployClassesOrSkip();
+		$this->loggerMock = $this->getMock('\EasyDeployWorkflows\Logger\Logger',array(),array(),'',false);
+
 	}
 
 
@@ -22,6 +27,7 @@ class RunScriptTest extends AbstractMockedTest {
 	 */
 	public function canThrowExepctionIfScriptIsNotThere() {
 		$task = new \EasyDeployWorkflows\Tasks\Common\RunScript();
+		$task->injectLogger($this->loggerMock);
 		$serverMock	 = $this->getMock('EasyDeploy_RemoteServer',array('run','isFile'),array(),'',false);
 		$serverMock->expects($this->once())->method('isFile')->will($this->returnValue(false));
 		$task->addServer($serverMock);
@@ -37,6 +43,7 @@ class RunScriptTest extends AbstractMockedTest {
 	 */
 	public function canRunScript() {
 		$task = new \EasyDeployWorkflows\Tasks\Common\RunScript();
+		$task->injectLogger($this->loggerMock);
 		$serverMock	 = $this->getMock('EasyDeploy_RemoteServer',array('run','isFile'),array(),'',false);
 		$task->addServer($serverMock);
 		$task->setScript('/script.sh -i');

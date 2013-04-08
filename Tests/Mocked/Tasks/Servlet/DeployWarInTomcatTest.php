@@ -9,12 +9,16 @@ class DeployWarInTomcatTest extends AbstractMockedTest {
 	 * @test
 	 */
 	public function canDeployWarFile() {
+		$this->requireEasyDeployClassesOrSkip();
+
 			//this dependency is only needed because other tasks require the web workflow
 			/** @var $taskRunInformation  EasyDeployWorkflows\Tasks\TaskRunInformation */
 		$taskRunInformation = new Tasks\TaskRunInformation();
+		$loggerMock = $this->getMock('\EasyDeployWorkflows\Logger\Logger',array(),array(),'',false);
 
 
 		$task = new Tasks\Servlet\DeployWarInTomcat();
+		$task->injectLogger($loggerMock);
 		$task->setTomcatUser('fred');
 		$task->setTomcatPassword('feuerstein');
 		$task->setTomcatPort(8090);

@@ -9,7 +9,7 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 	/**
 	 * @var string
 	 */
-	protected $deploymentSource = '';
+	protected $downloadSource;
 
 	/**
 	 * @var boolean
@@ -17,19 +17,26 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 	protected $installSilent = false;
 
 	/**
-	 * @param $packageSource
+	 * @param \EasyDeployWorkflows\Source\DownloadSourceInterface $packageSource
 	 */
-	public function setDeploymentSource($packageSource) {
-		$this->deploymentSource = $packageSource;
+	public function setDownloadSource(\EasyDeployWorkflows\Source\DownloadSourceInterface $packageSource) {
+		$this->downloadSource = $packageSource;
 
 		return $this;
 	}
 
 	/**
-	 * @return string
+	 * @return boolean
 	 */
-	public function getDeploymentSource() {
-		return $this->deploymentSource;
+	public function hasDownloadSource() {
+		return isset($this->downloadSource);
+	}
+
+	/**
+	 * @return \EasyDeployWorkflows\Source\DownloadSourceInterface
+	 */
+	public function getDownloadSource() {
+		return $this->downloadSource;
 	}
 
 	/**

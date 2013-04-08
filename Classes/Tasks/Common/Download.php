@@ -9,7 +9,7 @@ use EasyDeployWorkflows\Tasks;
 class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 	/**
-	 * @var string
+	 * @var \EasyDeployWorkflows\Source\DownloadSourceInterface
 	 */
 	protected $source;
 
@@ -27,6 +27,7 @@ class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 * @var \EasyDeploy_Helper_Downloader
 	 */
 	protected $downloader;
+
 
 	/**
 	 * @var string if file is not existend
@@ -56,6 +57,7 @@ class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 		$this->downloader = $downloader;
 	}
 
+
 	/**
 	 * @param boolean $deleteBeforeDownload
 	 */
@@ -73,7 +75,7 @@ class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	}
 
 	/**
-	 * @return string
+	 * @return \EasyDeployWorkflows\Source\DownloadSourceInterface
 	 */
 	public function getDownloadSource()
 	{
@@ -81,9 +83,9 @@ class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	}
 
 	/**
-	 * @param string $source
+	 * @param \EasyDeployWorkflows\Source\DownloadSourceInterface $source
 	 */
-	public function setDownloadSource($source)
+	public function setDownloadSource(\EasyDeployWorkflows\Source\DownloadSourceInterface $source)
 	{
 		$this->source = $source;
 	}
@@ -110,7 +112,6 @@ class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 */
 	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 
-		$sourceFile = $this->replaceConfigurationMarkers($this->source,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
 		$targetFolder = rtrim($this->replaceConfigurationMarkers($this->target,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration()),DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 
 		if (!empty($this->notIfPathExists) && ( $server->isFile($this->notIfPathExists) || $server->isDir($this->notIfPathExists) )) {
@@ -118,21 +119,19 @@ class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 			return;
 		}
 
-		if ($server->isFile($targetFolder.$this->getFilenameFromPath($sourceFile))) {
+		if ($server->isFile($targetFolder.$this->source->getFileName())) {
 			if ($this->deleteBeforeDownload) {
-				$server->run('rm '.$targetFolder.$this->getFilenameFromPath($sourceFile));
+				$this->executeAndLog($server,'rm '.$targetFolder.$this->source->getFileName());
 			}
 			else {
-				$this->logger->log('Target File "'.$targetFolder.$this->getFilenameFromPath($sourceFile).'" already exists! I am skipping the download!',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
+				$this->logger->log('Target File "'.$targetFolder.$this->source->getFileName().'" already exists! I am skipping the download!',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 				return;
 			}
 		}
-		if ($sourceFile == $targetFolder) {
-			$this->logger->log('Source and Target are the same. I am skipping the download!');
-			return;
-		}
-		$this->logger->log('Download starting from '.$sourceFile.' to '.$targetFolder.' on server '.$server->getHostname());
-		$this->downloader->download($server,$sourceFile,$targetFolder);
+
+		$this->logger->log('Download starting from '.$this->source->getShortExplain().' to '.$targetFolder.' on server '.$server->getHostname());
+		$source = $this->replaceConfigurationMarkers($this->source->getSourceSpecification(),$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
+		$this->downloader->download($server, $source,$targetFolder);
 		$this->logger->log('Download ready');
 	}
 

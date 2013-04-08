@@ -3,6 +3,8 @@
 use EasyDeployWorkflows\Workflows\Servlet as Servlet;
 use EasyDeployWorkflows\Workflows as Workflows;
 
+require_once EASYDEPLOY_WORKFLOW_ROOT . 'Classes/Autoloader.php';
+require_once EASYDEPLOY_WORKFLOW_ROOT . 'Tests/Mocked/AbstractMockedTest.php';
 
 class ServletWorkflowTest extends AbstractMockedTest {
 
@@ -24,7 +26,7 @@ class ServletWorkflowTest extends AbstractMockedTest {
 				->setTomcatUsername('foo')
 				->setTomcatPassword('bar')
 				->setTomcatVersion('6')
-				->setDeploymentSource('/home/homer.simpson/###releaseversion###/somedownloadpackage.tar.gz')
+				->setDownloadSource(new EasyDeployWorkflows\Source\DownloadSource('/home/homer.simpson/###releaseversion###/somedownloadpackage.tar.gz'))
 				->setInstallSilent(false)
 				->setReleaseVersion('4711');
 
@@ -44,14 +46,14 @@ class ServletWorkflowTest extends AbstractMockedTest {
 		$dowloadFromCiServerTask = $workflow->getTaskByName('Download tracker war to local delivery folder');
 		$this->assertEquals(1,count($dowloadFromCiServerTask->getServers()));
 		$this->assertInstanceOf('EasyDeployWorkflows\Tasks\Common\Download',$dowloadFromCiServerTask);
-		$this->assertEquals('/home/homer.simpson/4711/somedownloadpackage.tar.gz', $dowloadFromCiServerTask->getDownloadSource());
+		$this->assertEquals('/home/homer.simpson/###releaseversion###/somedownloadpackage.tar.gz', $dowloadFromCiServerTask->getDownloadSource()->getSourceSpecification());
 		$this->assertEquals('/home/download/nasa/4711/', $dowloadFromCiServerTask->getTargetFolder());
 
 		//second uploads to servlet servers
 		$uploadToServletServersTask = $workflow->getTaskByName('Load tracker war to tmp folder on servlet servers');
 		$this->assertEquals(2,count($uploadToServletServersTask->getServers()));
 		$this->assertInstanceOf('EasyDeployWorkflows\Tasks\Common\Download',$uploadToServletServersTask);
-		$this->assertEquals('/home/download/nasa/4711/somedownloadpackage.tar.gz', $uploadToServletServersTask->getDownloadSource());
+		$this->assertEquals('/home/download/nasa/4711/somedownloadpackage.tar.gz', $uploadToServletServersTask->getDownloadSource()->getSourceSpecification());
 		$this->assertEquals('/tmp/', $uploadToServletServersTask->getTargetFolder());
 
 		// last step deploys war local on 2 servers

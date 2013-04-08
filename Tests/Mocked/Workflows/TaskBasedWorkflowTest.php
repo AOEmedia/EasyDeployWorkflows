@@ -11,13 +11,21 @@ class TaskBasedWorkflowTest extends PHPUnit_Framework_TestCase {
 	 */
 	protected $stepBasedWorkflow;
 
+
+	/**
+	 * @var \EasyDeployWorkflows\Logger\Logger
+	 */
+	protected $loggerMock;
+
 	/**
 	 * @return void
 	 */
 	public function setUp() {
 		$this->instanceConfigurationMock = $this->getMock('EasyDeployWorkflows\Workflows\InstanceConfiguration');
 		$this->workflowConfigurationMock = $this->getMock('EasyDeployWorkflows\Workflows\AbstractWorkflowConfiguration');
-		$this->stepBasedWorkflow = $this->getMock('EasyDeployWorkflows\Workflows\TaskBasedWorkflow',array('out'),array($this->instanceConfigurationMock, $this->workflowConfigurationMock));
+		$this->stepBasedWorkflow = new \EasyDeployWorkflows\Workflows\TaskBasedWorkflow($this->instanceConfigurationMock, $this->workflowConfigurationMock);
+		$this->loggerMock = $this->getMock('\EasyDeployWorkflows\Logger\Logger',array(),array(),'',false);
+		$this->stepBasedWorkflow->injectLogger($this->loggerMock);
 	}
 
 	/**

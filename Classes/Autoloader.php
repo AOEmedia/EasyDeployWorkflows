@@ -14,9 +14,15 @@ class Autoloader {
 	 */
 	static public function autoload($name) {
 		#echo $name.' - '.PHP_EOL;
+
+
 		if (strpos($name,'EasyDeployWorkflows') === 0) {
 			$classPath = substr($name,strlen(__NAMESPACE__));
 			$classPath = str_replace('\\',DIRECTORY_SEPARATOR,$classPath).'.php';
+			if (strpos($name,'EasyDeployWorkflows\Tests') === 0) {
+				require_once dirname(__FILE__).'/..'.$classPath;
+				return;
+			}
 			require_once dirname(__FILE__).$classPath;
 		}
 	}

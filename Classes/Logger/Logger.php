@@ -52,6 +52,11 @@ class Logger {
 	const MESSAGE_TYPE_COMMANDOUTPUT = "COMMANDOUTPUT";
 
 	/**
+	 * @var string
+	 */
+	const MESSAGE_TYPE_COMMAND = "COMMAND";
+
+	/**
 	 * creating new object is denied (singleton pattern)
 	 *  use \EasyDeployWorkflows\Logger\Logger::getInstance() instead
 	 */
@@ -111,7 +116,7 @@ class Logger {
 				$this->logToScreen($message,$type);
 				$this->logToFile($message,$type);
 				break;
-			case self::MESSAGE_TYPE_COMMANDOUTPUT:
+			case self::MESSAGE_TYPE_COMMANDOUTPUT: case self::MESSAGE_TYPE_COMMAND:
 				$this->logToFile($message,$type);
 				break;
 			default:

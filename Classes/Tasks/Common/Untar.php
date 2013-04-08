@@ -17,6 +17,9 @@ class Untar extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 	protected $mode;
 
+	protected $changeToDirectory;
+
+
 	const MODE_SKIP_IF_EXTRACTEDFOLDER_EXISTS=1;
 	const MODE_DELETE_IF_EXTRACTEDFOLDER_EXISTS=2;
 
@@ -54,6 +57,16 @@ class Untar extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 		$this->setPackageFileName($infos['filename'].'.'.$infos['extension']);
 	}
 
+	/**
+	 * Set a directory that should be changed to before extracting the archive.
+	 * If not set the directory of the archive is used
+	 *
+	 * @param $changeToDirectory
+	 */
+	public function setChangeToDirectory($changeToDirectory) {
+		$this->changeToDirectory = rtrim($changeToDirectory,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+	}
+
 
 	/**
 	 * @param TaskRunInformation $taskRunInformation
@@ -61,24 +74,34 @@ class Untar extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 */
 	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 
-		$folder = rtrim($this->replaceConfigurationMarkers($this->folder,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration()),DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-		$packageFileName = $this->replaceConfigurationMarkers($this->packageFileName,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
-		$expectedExtractedFolder = $this->replaceConfigurationMarkers($this->expectedExtractedFolder,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
+		$packageFileName = $this->replaceConfigurationMarkersWithTaskRunInformation($this->packageFileName,$taskRunInformation);
+		$expectedExtractedFolder = $this->replaceConfigurationMarkersWithTaskRunInformation($this->expectedExtractedFolder,$taskRunInformation);
 
-		if ($server->isDir($folder.$expectedExtractedFolder)) {
+		if (isset($this->changeToDirectory)) {
+			$targetDirectory = $this->replaceConfigurationMarkersWithTaskRunInformation($this->changeToDirectory,$taskRunInformation);
+		}
+		else {
+			$targetDirectory = rtrim($this->replaceConfigurationMarkersWithTaskRunInformation($this->folder,$taskRunInformation),DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		}
+
+		if ($server->isDir($targetDirectory.$expectedExtractedFolder)) {
 			if ($this->mode == self::MODE_SKIP_IF_EXTRACTEDFOLDER_EXISTS) {
-				$this->logger->log('Extracted folder already exists! I am skipping the extraction.',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
+				$this->logger->log('Extracted folder "'.$targetDirectory.$expectedExtractedFolder.'" already exists! I am skipping the extraction.',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 				return;
 			}
 			else {
-				$server->run('rm -rf '.$folder.$expectedExtractedFolder);
+				$this->executeAndLog($server,'rm -rf '.$targetDirectory.$expectedExtractedFolder);
 			}
 		}
-		if (!$server->isFile($folder.$packageFileName)) {
-			throw new \Exception('The given file "'.$folder.$packageFileName.'" is not existend.');
+		if (!$server->isFile($targetDirectory.$packageFileName)) {
+			throw new \Exception('The given file "'.$targetDirectory.$packageFileName.'" is not existend.');
 		}
 		//extract
-		$server->run('cd ' . $folder . '; tar -xzf ' . $packageFileName);
+		$args = 'x';
+		if (strpos($packageFileName,'.zip') !== false || strpos($packageFileName,'.gz') !== false) {
+			$args = 'xz';
+		}
+		$this->executeAndLog($server,'cd ' . $targetDirectory . '; tar -'.$args.'f ' . $packageFileName);
 	}
 
 	/**

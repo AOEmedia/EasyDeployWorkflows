@@ -10,7 +10,7 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 	 * Can be used to do individual workflow initialisation and/or checks
 	 */
 	protected function workflowInitialisation() {
-		$packageFileName = $this->getFilenameFromPath($this->workflowConfiguration->getDeploymentSource());
+		$packageFileName = $this->getFilenameFromPath($this->workflowConfiguration->getDownloadSource());
 		$packageExtractedFolderName = $this->getFileBaseName($packageFileName);
 
 
@@ -77,7 +77,7 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 	{
 		$step = new \EasyDeployWorkflows\Tasks\Common\Download();
 		$step->addServerByName($this->workflowConfiguration->getNFSServer());
-		$step->setDownloadSource($this->workflowConfiguration->getDeploymentSource());
+		$step->setDownloadSource($this->workflowConfiguration->getDownloadSource());
 		$step->setTargetFolder($this->getFinalDeliveryFolder());
 		$step->setNotIfPathExists($this->getFinalDeliveryFolder() . $packageExtractedFolderName);
 		return $step;

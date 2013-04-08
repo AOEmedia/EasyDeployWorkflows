@@ -24,6 +24,15 @@ abstract class AbstractTask extends \EasyDeployWorkflows\AbstractPart implements
 	}
 
 	/**
+	 * @param $string
+	 * @param TaskRunInformation $taskRunInformation
+	 * @return string
+	 */
+	protected function replaceConfigurationMarkersWithTaskRunInformation($string,\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation) {
+		return $this->replaceConfigurationMarkers($string,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
+	}
+
+	/**
 	 * @return boolean
 	 * throws Exception\InvalidConfigurationException
 	 */

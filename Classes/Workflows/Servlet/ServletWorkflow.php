@@ -21,28 +21,26 @@ class ServletWorkflow extends Workflows\TaskBasedWorkflow {
 	 * Can be used to do individual workflow initialisation and/or checks
 	 */
 	protected function workflowInitialisation() {
-		$deploymentSource = $this->replaceMarkers( $this->workflowConfiguration->getDeploymentSource() );
-		$localDownloadTargetFolder = rtrim($this->replaceMarkers( $this->instanceConfiguration->getDeliveryFolder() ),'/').'/';
 
 		$this->addTask('check that we are on correct deploy node',new \EasyDeployWorkflows\Tasks\Common\CheckCorrectDeployNode());
 
 
 		$downloadTask = new \EasyDeployWorkflows\Tasks\Common\Download();
 		$downloadTask->addServerByName('localhost');
-		$downloadTask->setDownloadSource( $deploymentSource );
-		$downloadTask->setTargetFolder( $localDownloadTargetFolder );
+		$downloadTask->setDownloadSource( $this->workflowConfiguration->getDownloadSource() );
+		$downloadTask->setTargetFolder( $this->getFinalDeliveryFolder() );
 		$this->addTask('Download tracker war to local delivery folder', $downloadTask);
 
 
-
+		$localDownloadSource = new \EasyDeployWorkflows\Source\DownloadSource($this->getFinalDeliveryFolder().$this->workflowConfiguration->getDownloadSource()->getFilename());
 		$copyTask = new \EasyDeployWorkflows\Tasks\Common\Download();
 		$copyTask->addServersByName($this->workflowConfiguration->getServletServers());
-		$copyTask->setDownloadSource( $localDownloadTargetFolder.$this->getFilenameFromPath($deploymentSource) );
+		$copyTask->setDownloadSource( $localDownloadSource );
 		$copyTask->setTargetFolder( '/tmp/' );
 		$copyTask->setDeleteBeforeDownload(true);
 		$this->addTask('Load tracker war to tmp folder on servlet servers',	$copyTask);
 
-		$tmpWarLocation 			= '/tmp/'.$this->getFilenameFromPath($deploymentSource);
+		$tmpWarLocation 			= '/tmp/'.$localDownloadSource->getFileName();
 		$deployWarTask = new \EasyDeployWorkflows\Tasks\Servlet\DeployWarInTomcat();
 		$deployWarTask->addServersByName($this->workflowConfiguration->getServletServers());
 		$deployWarTask->setWarFileSourcePath( $tmpWarLocation );

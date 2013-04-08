@@ -183,10 +183,12 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	 * @return bool
 	 */
 	public function hasDeliveryFolder() {
-		return $this->getDeliveryFolder() != '';
+		return $this->deliveryFolder != '';
 	}
 
 	/**
+	 * The delivery folder
+	 * Always ending with "/"
 	 * @return string
 	 */
 	public function getDeliveryFolder() {

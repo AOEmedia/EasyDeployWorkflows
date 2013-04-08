@@ -4,12 +4,16 @@ use EasyDeployWorkflows\Tasks as Tasks;
 
 require_once EASYDEPLOY_WORKFLOW_ROOT . 'Classes/Autoloader.php';
 
-class RunPackageInstallerBinariesTest extends PHPUnit_Framework_TestCase {
+class RunPackageInstallerBinariesTest extends AbstractMockedTest {
 
 	/**
 	 * @test
 	 */
 	public function canUseExistingBackupWhenAllreadyInFileSystem() {
+		$this->requireEasyDeployClassesOrSkip();
+		$loggerMock = $this->getMock('\EasyDeployWorkflows\Logger\Logger',array(),array(),'',false);
+
+
 		$workflowConfiguration = new \EasyDeployWorkflows\Workflows\Web\NFSWebConfiguration();
 		$workflowConfiguration->setBackupStorageRootFolder('/home/homer.simpson');
 		$workflowConfiguration->setBackupMasterEnvironment('deploy');
@@ -22,8 +26,9 @@ class RunPackageInstallerBinariesTest extends PHPUnit_Framework_TestCase {
 
 			//avoid constructor calling because the downloader is injected there
 			/** @var $task  \EasyDeployWorkflows\Tasks\Web\RunPackageInstallBinaries */
-		$task = $this->getMock('EasyDeployWorkflows\Tasks\Web\RunPackageInstallBinaries', array(), array(),'',false);
-	//	$task = new EasyDeployWorkflows\Tasks\Web\RunPackageInstallBinaries();
+	//	$task = $this->getMock('EasyDeployWorkflows\Tasks\Web\RunPackageInstallBinaries', array(), array(),'',false);
+		$task = new EasyDeployWorkflows\Tasks\Web\RunPackageInstallBinaries();
+		$task->injectLogger($loggerMock);
 		$task->setCreateBackupBeforeInstalling(false);
 		$task->setPackageFolder('/home/package');
 		$task->setPHPBinary('php5');
@@ -50,16 +55,20 @@ class RunPackageInstallerBinariesTest extends PHPUnit_Framework_TestCase {
 		);
 
 
-			//@todo check the exexuted server commands
+
+		$this->commands = array();
 		$serverMock->expects($this->any())->method('run')->will($this->returnCallback(
-			function ($command){
-				echo $command;
+			function ($command) {
+				$this->commands[] = $command;
 			}
 		));
 
 
 		$task->addServer($serverMock);
 		$task->run($taskConfiguration);
+
+		$this->assertContains('chmod -R ug+x /home/package/installbinaries',$this->commands);
+		$this->assertContains('php /home/package/installbinaries/install.php --systemPath="/opt/web" --environmentName="" --backupstorageroot="/home/homer.simpson"',$this->commands);
 
 	}
 }

@@ -6,7 +6,7 @@ use EasyDeployWorkflows\Tasks;
 
 
 
-class CreateMissingFolder extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
+class DeleteFolder extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 	/**
 	 * @var string
@@ -27,19 +27,9 @@ class CreateMissingFolder extends \EasyDeployWorkflows\Tasks\AbstractServerTask 
 	 */
 	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 		if (!$server->isDir($this->folder)) {
-			$message = 'Expected Folder is not present! Try to create "'.$this->folder.'"';
-			$this->logger->log($message);
-
-			$this->executeAndLog($server,'mkdir -p '.$this->folder);
-			$this->executeAndLog($server,'chmod g+rws '.$this->folder);
+			throw new \Exception('Folder "'.$this->folder.'" on Node "'.$server->getHostname().'" is not present!');
 		}
-
-		if (!$server->isDir($this->folder)) {
-			$message = 'Folder  "'.$this->folder.'" is not present! Could not create!';
-			$this->logger->log($message, \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_ERROR);
-			throw new \Exception('Folder on Node "'.$server->getHostname().'" is not present!');
-		}
-
+		$this->executeAndLog($server,'rm -rf '.$this->folder);
 	}
 
 	/**
