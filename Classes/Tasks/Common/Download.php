@@ -120,8 +120,9 @@ class Download extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 		if ($server->isFile($targetFolder.$this->getFilenameFromPath($sourceFile))) {
 			if ($this->deleteBeforeDownload) {
+				$this->logger->log('Target File "'.$targetFolder.$this->getFilenameFromPath($sourceFile).'" deleted before');
 				$server->run('rm '.$targetFolder.$this->getFilenameFromPath($sourceFile));
-			}
+			}		
 			else {
 				$this->logger->log('Target File "'.$targetFolder.$this->getFilenameFromPath($sourceFile).'" already exists! I am skipping the download!',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 				return;

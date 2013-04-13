@@ -22,7 +22,7 @@ class RandomDirector extends AbstractDirector {
 	 * @return string
 	 */
 	protected function getBackendCode($backendsData) {
-		return '  .backend = { ' . $backendsData[0]->generateCode().' } .weight = '.$backendsData[1].' ';
+		return '  .backend = { ' . $backendsData[0]->generateCode().' } .weight = '.$backendsData[1].'; ';
 	}
 
 }

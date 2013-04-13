@@ -26,6 +26,7 @@ class VarnishConfigurationWorkflow extends Workflows\TaskBasedWorkflow {
 		$downloadTask->addServerByName('localhost');
 		$downloadTask->setDownloadSource( $deploymentSource );
 		$downloadTask->setTargetFolder( $localDownloadTargetFolder );
+		$downloadTask->setDeleteBeforeDownload(true);
 		$this->addTask('Download Base Varnish Configuration', $downloadTask);
 
 
@@ -55,14 +56,14 @@ class VarnishConfigurationWorkflow extends Workflows\TaskBasedWorkflow {
 		if ($this->workflowConfiguration->getDeployCommand() != '') {
 			$deployTask = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
 			$deployTask->addServersByName($this->workflowConfiguration->getVarnishServers());
-			$deployTask->setCommand(sprintf($this->workflowConfiguration->getDeployCommand(),$tmpWarLocation));
+			$deployTask->setCommand($this->replaceMarkers(sprintf($this->workflowConfiguration->getDeployCommand(),$tmpWarLocation)));
 			$this->addTask('Deploy Varnish Conf to Varnish Servers with DeployCommand',	$deployTask);
 		}
 		else {
 			$deployTask = new \EasyDeployWorkflows\Tasks\Common\CopyFile();
 			$deployTask->addServersByName($this->workflowConfiguration->getVarnishServers());
 			$deployTask->setSourceFile($tmpWarLocation);
-			$deployTask->setTargetFile($this->workflowConfiguration->getTargetVarnishConfigurationFile());
+			$deployTask->setTargetFile($this->replaceMarkers($this->workflowConfiguration->getTargetVarnishConfigurationFile()));
 			$this->addTask('Deploy Varnish Conf to Varnish Servers by copying',	$deployTask);
 		}
 
@@ -74,7 +75,7 @@ class VarnishConfigurationWorkflow extends Workflows\TaskBasedWorkflow {
 
 		$restartTask = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
 		$restartTask->addServersByName($this->workflowConfiguration->getVarnishServers());
-		$restartTask->setCommand($this->workflowConfiguration->getRestartCommand());
+		$restartTask->setCommand($this->replaceMarkers($this->workflowConfiguration->getRestartCommand()));
 		$this->addTask('Restart Varnish',	$restartTask);
 
 	}
