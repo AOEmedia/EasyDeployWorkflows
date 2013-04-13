@@ -84,7 +84,13 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 		$task->setNeedBackupToInstall(FALSE);
 		$task->run($this->createTaskRunInformation());
 		$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
-
+		
+		$this->logger->log('[Task] Delete Installbinaries again');
+		$deleteFileTask = new \EasyDeployWorkflows\Tasks\Common\DeleteFolder();
+		$deleteFileTask->addServersByName($this->workflowConfiguration->getMasterServers());
+		$deleteFileTask->setFolder($targetFolderForSolrPackageOnSolrServer . '/' . $this->getFileBaseName($packageFileName));
+		$deleteFileTask->run($this->createTaskRunInformation());
+		$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
 
 		$restartCommand = $this->workflowConfiguration->getRestartCommand();
 		if (empty($restartCommand) == '') {
