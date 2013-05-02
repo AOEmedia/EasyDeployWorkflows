@@ -91,7 +91,14 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 		$deleteFileTask->setFolder($targetFolderForSolrPackageOnSolrServer . '/' . $this->getFileBaseName($packageFileName));
 		$deleteFileTask->run($this->createTaskRunInformation());
 		$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
-
+		
+		$this->logger->log('[Task] Delete Solr package');
+		$deleteFileTask = new \EasyDeployWorkflows\Tasks\Common\DeleteFile();
+		$deleteFileTask->addServersByName($this->workflowConfiguration->getMasterServers());
+		$deleteFileTask->setFile($targetFolderForSolrPackageOnSolrServer . '/' . $packageFileName);
+		$deleteFileTask->run($this->createTaskRunInformation());
+		$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
+		
 		$restartCommand = $this->workflowConfiguration->getRestartCommand();
 		if (empty($restartCommand) == '') {
 			$this->logger->log('No restart Command is Set for the deployment!', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
