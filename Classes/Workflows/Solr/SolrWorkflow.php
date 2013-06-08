@@ -36,37 +36,37 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 	public function runDeployTasks()
 	{
 		$deliveryFolder = $this->replaceMarkers($this->instanceConfiguration->getDeliveryFolder());
-		$packageSource = $this->replaceMarkers($this->workflowConfiguration->getDownloadSource());
+		$packageSource = $this->replaceMarkers($this->workflowConfiguration->getSource());
 
 		$this->logger->log('[Task] CheckCorrectDeployNode');
 		$task = new \EasyDeployWorkflows\Tasks\Common\CheckCorrectDeployNode();
 		$task->run($this->createTaskRunInformation());
 
 		$this->logger->log('[Task] Download Package local');
-		$task = new \EasyDeployWorkflows\Tasks\Common\Download();
+		$task = new \EasyDeployWorkflows\Tasks\Common\SourceEvaluator();
 		$task->addServer($this->getServer('localhost'));
-		$task->setDownloadSource($packageSource);
-		$task->setTargetFolder($deliveryFolder);
+		$task->setSource($packageSource);
+		$task->setParentFolder($deliveryFolder);
 		$task->run($this->createTaskRunInformation());
 		$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
 
 		$packageFileName = $this->getFilenameFromPath($packageSource);
 
 		$this->logger->log('[Task] (Up)load Package to solr(s)');
-		$task = new \EasyDeployWorkflows\Tasks\Common\Download();
+		$task = new \EasyDeployWorkflows\Tasks\Common\CopyLocalFile();
 		$task->addServersByName($this->workflowConfiguration->getMasterServers());
-		$task->setDownloadSource($deliveryFolder.$packageFileName);
+		$task->setFrom($deliveryFolder.$packageFileName);
 		if ($this->workflowConfiguration->hasTempDeliverFolder()) {
 			$targetFolderForSolrPackageOnSolrServer = $this->workflowConfiguration->getTempDeliverFolder();
 		}
 		else {
 			$targetFolderForSolrPackageOnSolrServer = $deliveryFolder;
 		}
-		$task->setTargetFolder($targetFolderForSolrPackageOnSolrServer);
+		$task->setTo($targetFolderForSolrPackageOnSolrServer);
 		$task->run($this->createTaskRunInformation());
 		$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
 
-		$packageFileName = $this->getFilenameFromPath($this->replaceMarkers($this->workflowConfiguration->getDownloadSource()));
+		$packageFileName = $this->getFilenameFromPath($this->replaceMarkers($this->workflowConfiguration->getSource()->getFilename()));
 		$this->logger->log('[Task] Unzip Solr Package');
 		$task = new \EasyDeployWorkflows\Tasks\Common\Untar();
 		$task->addServersByName($this->workflowConfiguration->getMasterServers());

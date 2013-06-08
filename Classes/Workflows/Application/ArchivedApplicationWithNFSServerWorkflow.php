@@ -27,7 +27,7 @@ class ArchivedApplicationWithNFSServerWorkflow extends ArchivedApplicationWorkfl
 		$task->addServerByName($this->workflowConfiguration->getNFSServer());
 		$this->addTask('Untar Package', $task);
 
-		$extractedFolder = $this->replaceMarkers($this->getFinalDeliveryFolder()) . $this->getFileBaseName($this->workflowConfiguration->getDownloadSource()->getFileName());
+		$extractedFolder = $this->replaceMarkers($this->getFinalDeliveryFolder()) . $this->getFileBaseName($this->workflowConfiguration->getSource()->getFileName());
 
 		$task = $this->getInstallPackageTask($extractedFolder);
 		$task->addServerByName($this->workflowConfiguration->getNFSServer());

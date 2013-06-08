@@ -7,9 +7,9 @@ use EasyDeployWorkflows\Workflows;
 abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 
 	/**
-	 * @var string
+	 * @var \EasyDeployWorkflows\Source\SourceInterface
 	 */
-	protected $downloadSource;
+	protected $source;
 
 	/**
 	 * @var boolean
@@ -17,30 +17,52 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 	protected $installSilent = false;
 
 	/**
-	 * @param \EasyDeployWorkflows\Source\DownloadSourceInterface $packageSource
+	 * @var string
 	 */
-	public function setDownloadSource(\EasyDeployWorkflows\Source\DownloadSourceInterface $packageSource) {
-		$this->downloadSource = $packageSource;
+	protected $releaseVersion;
 
+	/**
+	 * @param string $releaseVersion
+	 */
+	public function setReleaseVersion($releaseVersion)
+	{
+		$this->releaseVersion = $releaseVersion;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getReleaseVersion()
+	{
+		return $this->releaseVersion;
+	}
+
+	/**
+	 * @param \EasyDeployWorkflows\Source\SourceInterface $packageSource
+	 * @return self
+	 */
+	public function setSource(\EasyDeployWorkflows\Source\SourceInterface $packageSource) {
+		$this->source = $packageSource;
 		return $this;
 	}
 
 	/**
 	 * @return boolean
 	 */
-	public function hasDownloadSource() {
-		return isset($this->downloadSource);
+	public function hasSource() {
+		return isset($this->source);
 	}
 
 	/**
-	 * @return \EasyDeployWorkflows\Source\DownloadSourceInterface
+	 * @return \EasyDeployWorkflows\Source\SourceInterface
 	 */
-	public function getDownloadSource() {
-		return $this->downloadSource;
+	public function getSource() {
+		return $this->source;
 	}
 
 	/**
 	 * @param boolean $installSilent
+	 * @return self
 	 */
 	public function setInstallSilent($installSilent) {
 		$this->installSilent = $installSilent;

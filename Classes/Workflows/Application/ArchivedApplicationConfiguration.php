@@ -54,7 +54,7 @@ class ArchivedApplicationConfiguration extends Workflows\AbstractWorkflowConfigu
 
 	/**
 	 * @param string $hostName
-	 * @return NFSWebConfiguration
+	 * @return ArchivedApplicationConfiguration
 	 */
 	public function addInstallServer($hostName) {
 		$this->addServer($hostName,'installserver');
@@ -81,7 +81,7 @@ class ArchivedApplicationConfiguration extends Workflows\AbstractWorkflowConfigu
 			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException("Please configure the target folder for workflow: ".get_class($this));
 		}
 
-		if (!$this->hasDownloadSource()) {
+		if (!$this->hasSource()) {
 			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException("No download Source given: ".get_class($this));
 		}
 

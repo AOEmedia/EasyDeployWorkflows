@@ -25,22 +25,20 @@ class ServletWorkflow extends Workflows\TaskBasedWorkflow {
 		$this->addTask('check that we are on correct deploy node',new \EasyDeployWorkflows\Tasks\Common\CheckCorrectDeployNode());
 
 
-		$downloadTask = new \EasyDeployWorkflows\Tasks\Common\Download();
+		$downloadTask = new \EasyDeployWorkflows\Tasks\Common\SourceEvaluator();
 		$downloadTask->addServerByName('localhost');
-		$downloadTask->setDownloadSource( $this->workflowConfiguration->getDownloadSource() );
-		$downloadTask->setTargetFolder( $this->getFinalDeliveryFolder() );
+		$downloadTask->setSource( $this->workflowConfiguration->getSource() );
+		$downloadTask->setParentFolder( $this->getFinalDeliveryFolder() );
 		$this->addTask('Download tracker war to local delivery folder', $downloadTask);
 
-
-		$localDownloadSource = new \EasyDeployWorkflows\Source\DownloadSource($this->getFinalDeliveryFolder().$this->workflowConfiguration->getDownloadSource()->getFilename());
-		$copyTask = new \EasyDeployWorkflows\Tasks\Common\Download();
+		$copyTask = new \EasyDeployWorkflows\Tasks\Common\CopyLocalFile();
 		$copyTask->addServersByName($this->workflowConfiguration->getServletServers());
-		$copyTask->setDownloadSource( $localDownloadSource );
-		$copyTask->setTargetFolder( '/tmp/' );
+		$copyTask->setFrom( $this->getFinalDeliveryFolder().$this->workflowConfiguration->getSource()->getFileName() );
+		$copyTask->setTo( '/tmp/' );
 		$copyTask->setDeleteBeforeDownload(true);
 		$this->addTask('Load tracker war to tmp folder on servlet servers',	$copyTask);
 
-		$tmpWarLocation 			= '/tmp/'.$localDownloadSource->getFileName();
+		$tmpWarLocation 			= '/tmp/'.$this->workflowConfiguration->getSource()->getFileName();
 		$deployWarTask = new \EasyDeployWorkflows\Tasks\Servlet\DeployWarInTomcat();
 		$deployWarTask->addServersByName($this->workflowConfiguration->getServletServers());
 		$deployWarTask->setWarFileSourcePath( $tmpWarLocation );

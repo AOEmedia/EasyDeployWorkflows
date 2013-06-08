@@ -72,7 +72,7 @@ class WorkflowFactory {
 				$logDir = dirname(__FILE__).'/../../../';
 			}
 		}
-		\EasyDeployWorkflows\Logger\Logger::getInstance()->setLogFile( rtrim($logDir,'/') . '/deploy-'.$instanceConfiguration->getReleaseVersion().'-'.date('d.m.Y').'.log');
+		\EasyDeployWorkflows\Logger\Logger::getInstance()->setLogFile( rtrim($logDir,'/') . '/deploy-'.$workflowConfiguration->getReleaseVersion().'-'.date('d.m.Y').'.log');
 	}
 
 	/**

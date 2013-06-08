@@ -26,30 +26,10 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	protected $servers = array();
 
 	/**
-	 * @var string
-	 */
-	protected $releaseVersion;
-
-	/**
 	 * @var string a speaking title
 	 */
 	protected $title;
 
-	/**
-	 * @param string $releaseVersion
-	 */
-	public function setReleaseVersion($releaseVersion)
-	{
-		$this->releaseVersion = $releaseVersion;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getReleaseVersion()
-	{
-		return $this->releaseVersion;
-	}
 
 	/**
 	 * @param string $scope
@@ -214,6 +194,8 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	* @return boolean
 	* throws Exception\InvalidConfigurationException
 	*/
-	abstract function validate();
+	public function validate() {
+		return false;  
+	}
 
 }

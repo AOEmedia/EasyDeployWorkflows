@@ -20,7 +20,7 @@ class ArchivedApplicationWithNFSServerWorkflowTest extends \EasyDeployWorkflows\
 
 		$workflowConfiguration = new \EasyDeployWorkflows\Workflows\Application\ArchivedApplicationWithNFSServerConfiguration();
 		$workflowConfiguration->setInstallationTargetFolder($this->targetFolder);
-		$workflowConfiguration->setDownloadSource(new \EasyDeployWorkflows\Source\DownloadSource(EASYDEPLOY_WORKFLOW_ROOT.'Tests/Acceptance/Fixtures/Source/BasicApplication.tar.gz'));
+		$workflowConfiguration->setSource(new \EasyDeployWorkflows\Source\File\LocalFileSource(EASYDEPLOY_WORKFLOW_ROOT.'Tests/Acceptance/Fixtures/Source/BasicApplication.tar.gz'));
 		$workflowConfiguration->setNFSServer('localhost');
 
 		$instanceConfiguration = $this->getInitialisedInstanceConfiguration($localServer->getHostname());

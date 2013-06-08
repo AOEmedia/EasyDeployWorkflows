@@ -1,6 +1,6 @@
 <?php
 
-namespace EasyDeployWorkflows\Source;
+namespace EasyDeployWorkflows\Source\File;
 
 
 
@@ -47,20 +47,16 @@ class JenkinsArtifactSource extends DownloadSource  {
 	 */
 	protected $downloadAllArtifactsZipped = false;
 
-	/**
-	 * @var \EasyDeploy_Helper_Downloader
-	 */
-	protected $downloader;
 
-	public function __construct() {
-		$this->injectDownloader(new \EasyDeploy_Helper_Downloader());
-	}
-
-	/**
-	 * @param \EasyDeploy_Helper_Downloader $downloader
-	 */
-	public function injectDownloader(\EasyDeploy_Helper_Downloader $downloader) {
-		$this->downloader = $downloader;
+	protected function buildUrl() {
+		$source = $this->jenkinsBaseUrl.'job/'.$this->jobName.'/'.$this->buildNr.'/';
+		if ($this->downloadAllArtifactsZipped) {
+			$source.='*zip*/archive.zip';
+		}
+		else {
+			$source.=$this->artifactFileName;
+		}
+		return $source;
 	}
 
 	/**
@@ -161,34 +157,4 @@ class JenkinsArtifactSource extends DownloadSource  {
 		return $this->jenkinsBaseUrl;
 	}
 
-
-	/**
-	 * @param EasyDeploy_AbstractServer $server
-	 * @param $to
-	 */
-	public function download(EasyDeploy_AbstractServer $server, $targetFolder) {
-		$this->downloader->download($server,$this->buildSource(),$targetFolder);
-	}
-
-	public function getShortExplain() {
-		return 'Download from:'.$this->buildSource();
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getFileName() {
-		return $this->getFilenameFromPath($this->buildSource());
-	}
-
-	protected function buildSource() {
-		$source = $this->jenkinsBaseUrl.'job/'.$this->jobName.'/'.$this->buildNr.'/';
-		if ($this->downloadAllArtifactsZipped) {
-			$source.='*zip*/archive.zip';
-		}
-		else {
-			$source.=$this->artifactFileName;
-		}
-		return $source;
-	}
 }

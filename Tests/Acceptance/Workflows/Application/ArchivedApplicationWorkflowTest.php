@@ -20,7 +20,7 @@ class ArchivedApplicationWorkflowTest extends \EasyDeployWorkflows\Tests\Accepta
 
 		$workflowConfiguration = new \EasyDeployWorkflows\Workflows\Application\ArchivedApplicationConfiguration();
 		$workflowConfiguration->setInstallationTargetFolder($this->targetFolder);
-		$workflowConfiguration->setDownloadSource(new \EasyDeployWorkflows\Source\DownloadSource(EASYDEPLOY_WORKFLOW_ROOT.'Tests/Acceptance/Fixtures/Source/BasicApplication.tar.gz'));
+		$workflowConfiguration->setSource(new \EasyDeployWorkflows\Source\File\LocalFileSource(EASYDEPLOY_WORKFLOW_ROOT.'Tests/Acceptance/Fixtures/Source/BasicApplication.tar.gz'));
 		$workflowConfiguration->addInstallServer('localhost');
 
 		$instanceConfiguration = $this->getInitialisedInstanceConfiguration($localServer->getHostname());

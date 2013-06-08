@@ -36,7 +36,9 @@ abstract class AbstractTask extends \EasyDeployWorkflows\AbstractPart implements
 	 * @return boolean
 	 * throws Exception\InvalidConfigurationException
 	 */
-	abstract function validate();
+	public function validate() {
+		return false;
+	}
 
 	/**
 	 * @param TaskRunInformation $taskRunInformation

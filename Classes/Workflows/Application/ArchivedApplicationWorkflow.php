@@ -27,7 +27,7 @@ class ArchivedApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Untar Package', $task);
 
-		$extractedFolder = $this->replaceMarkers($this->getFinalDeliveryFolder()) . $this->getFileBaseName($this->workflowConfiguration->getDownloadSource()->getFileName());
+		$extractedFolder = $this->replaceMarkers($this->getFinalDeliveryFolder()) . $this->getFileBaseName($this->workflowConfiguration->getSource()->getFileName());
 
 		$task = $this->getInstallPackageTask($extractedFolder);
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
@@ -68,10 +68,10 @@ class ArchivedApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 
 	protected function getDownloadPackageTask()
 	{
-		$step = new \EasyDeployWorkflows\Tasks\Common\Download();
-		$step->setDownloadSource($this->workflowConfiguration->getDownloadSource());
-		$step->setTargetFolder($this->getFinalDeliveryFolder());
-		$step->setNotIfPathExists($this->getFinalDeliveryFolder() . $this->workflowConfiguration->getDownloadSource()->getFileName());
+		$step = new \EasyDeployWorkflows\Tasks\Common\SourceEvaluator();
+		$step->setSource($this->workflowConfiguration->getSource());
+		$step->setParentFolder($this->getFinalDeliveryFolder());
+		$step->setNotIfPathExists($this->getFinalDeliveryFolder() . $this->workflowConfiguration->getSource()->getFileName());
 		return $step;
 	}
 
@@ -79,7 +79,7 @@ class ArchivedApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 	protected function getUnzipPackageTask()
 	{
 		$step = new \EasyDeployWorkflows\Tasks\Common\Untar();
-		$step->autoInitByPackagePath($this->getFinalDeliveryFolder() . '/' . $this->workflowConfiguration->getDownloadSource()->getFileName());
+		$step->autoInitByPackagePath($this->getFinalDeliveryFolder() . '/' . $this->workflowConfiguration->getSource()->getFileName());
 		$step->setMode(\EasyDeployWorkflows\Tasks\Common\Untar::MODE_SKIP_IF_EXTRACTEDFOLDER_EXISTS);
 		return $step;
 	}

@@ -18,7 +18,7 @@ class ArchivedApplicationWorkflowTest extends AbstractMockedTest {
 		$workflowConfiguration = new \EasyDeployWorkflows\Workflows\Application\ArchivedApplicationConfiguration();
 		$workflowConfiguration->addInstallServer('www.mywebserver.de');
 		$workflowConfiguration->setInstallationTargetFolder('/webroot');
-		$workflowConfiguration->setDownloadSource(new EasyDeployWorkflows\Source\DownloadSource('http://www.jenkins.my/artifacts/my.tar.gz'));
+		$workflowConfiguration->setSource(new EasyDeployWorkflows\Source\File\DownloadSource('http://www.jenkins.my/artifacts/my.tar.gz'));
 
 		$instanceConfiguration = new Workflows\InstanceConfiguration();
 		$instanceConfiguration->setProjectName('project');

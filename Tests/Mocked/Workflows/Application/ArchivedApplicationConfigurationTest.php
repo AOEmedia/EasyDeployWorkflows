@@ -62,7 +62,7 @@ class ArchivedApplicationConfigurationTest extends PHPUnit_Framework_TestCase {
 	public function canValidateValid() {
 		$this->configuration->setInstallationTargetFolder('foo');
 		$this->configuration->addInstallServer('web1.hostname.com');
-		$this->configuration->setDownloadSource(new EasyDeployWorkflows\Source\DownloadSource('http://www.jenkins.my/artifacts/my.tar.gz'));
+		$this->configuration->setSource(new EasyDeployWorkflows\Source\File\DownloadSource('http://www.jenkins.my/artifacts/my.tar.gz'));
 		$this->configuration->validate();
 	}
 

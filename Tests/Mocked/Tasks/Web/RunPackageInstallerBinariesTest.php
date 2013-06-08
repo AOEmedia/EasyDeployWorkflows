@@ -56,10 +56,12 @@ class RunPackageInstallerBinariesTest extends AbstractMockedTest {
 
 
 
-		$this->commands = array();
+
+		$recordedCommands=new ArrayObject();
+
 		$serverMock->expects($this->any())->method('run')->will($this->returnCallback(
-			function ($command) {
-				$this->commands[] = $command;
+			function ($command) use($recordedCommands) {
+				$recordedCommands->append($command);
 			}
 		));
 
@@ -67,8 +69,8 @@ class RunPackageInstallerBinariesTest extends AbstractMockedTest {
 		$task->addServer($serverMock);
 		$task->run($taskConfiguration);
 
-		$this->assertContains('chmod -R ug+x /home/package/installbinaries',$this->commands);
-		$this->assertContains('php /home/package/installbinaries/install.php --systemPath="/opt/web" --environmentName="" --backupstorageroot="/home/homer.simpson"',$this->commands);
+		$this->assertContains('chmod -R ug+x /home/package/installbinaries',$recordedCommands);
+		$this->assertContains('php /home/package/installbinaries/install.php --systemPath="/opt/web" --environmentName="" --backupstorageroot="/home/homer.simpson"',$recordedCommands);
 
 	}
 }
