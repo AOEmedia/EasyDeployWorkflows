@@ -200,6 +200,7 @@ It used the commonly used Releasefolder Pattern:
    -  next (Symlink to <ReleaseVersion3> during deployment)
 
 Your htdocs folder typically points to something like this:
+
 - htdocs to <TargetReleaseFolder>/current/Public
 - htdocsNext to <TargetReleaseFolder>/next/Public
 
