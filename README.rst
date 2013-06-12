@@ -9,6 +9,7 @@ Concept
 -------------
 Each component of your Application is deployed using a Workflow.
 A workflow needs 3 Objects to run:
+
 * A Workflow Configuration (Specific Configuration Object for that Workflow, Including the releaseVersion.)
 * A InstanceConfiguration (Holding common Data about the name of the environment and the project.)
 
@@ -16,6 +17,7 @@ The idea ist, that the Workflows can be reused for deploying different projects 
 Managing the differences between the environments comes down to manage the WorkflowConfiguration.
 
 The typical Responsibility for a Workflow is:
+
 * Get the Application from a given source (e.g. Download the Artifact that should be installed from Jenkins)
 * Install the Application on the infrastructure - that means there might be multiple servers involved
 
@@ -27,8 +29,10 @@ List of Features:
 * Logging (details go in a logfile, important stuff go to STDOUT)
 * Tested (most part of the logic is unit tested - of course this tool is new and there is no warranty for anything)
 * "Best practice" Tasks and Workflows that can be used out of the box:
+
   * Dealing with Symlinks and a Releasefolder structure
   * Cleanup of old releases and/or deliveries
+
 * Source abstraction (Use git,svn or (zipped) jenkins artifacts)
 * "dryRun" flag - which does nothing but only logs what commands on which server it would have done
 * Varnish: Classes and Workflows to generate Varnish backend directors
@@ -67,6 +71,7 @@ To build our own Workflow you probably want to extend one of the existing task b
 
 WorkflowConfiguration and InfrastructureConfiguration
 ------------------------
+
 * The Workflow Configuration represents the data that is required by the Deployment Workflow.
 * It describes the target server Infrastructure of the deployment. Therefore it is the part of your Deployment, that typically is environment specific.
 * Normally you have versions of the Configuration for each Environment (devbox, staging, production, amazon). See below for the suggested folder structure.
@@ -152,9 +157,8 @@ The Logfiles are stored in the Instances LogFolder (defaults to the same folder 
 
 
 You can also set a custom log file by:
-
 ::
-    \EasyDeployWorkflows\Logger\Logger::getInstance()->setLogFile();
+   \EasyDeployWorkflows\Logger\Logger::getInstance()->setLogFile();
 
 
 .. |buildStatusIcon| image:: https://travis-ci.org/AOEmedia/EasyDeployWorkflows.png?branch=master
@@ -170,10 +174,10 @@ Workflow: SimpleApplicationWorkflow
 This is a simple Workflow that deploys a common Application based on a available archive.
 It deploys the Application to multiple Servers and uses the following steps:
 
- 1 Downloads the Artifact from the configured Source to all configured servers (to the delivery folder).
- 2 Extract the Artifact on all configured servers (within the delivery folder)
- 3 Install: Rsyncs the Artifact on all configured servers to the configured install target folder
- 4 Cleanup the extracted Folder
+ 1. Downloads the Artifact from the configured Source to all configured servers (to the delivery folder).
+ 2. Extract the Artifact on all configured servers (within the delivery folder)
+ 3. Install: Rsyncs the Artifact on all configured servers to the configured install target folder
+ 4. Cleanup the extracted Folder
 
 Workflow: SimpleApplicationWithNFSServerWorkflow
 ----------------------------------
@@ -201,15 +205,15 @@ Your htdocs folder typically points to something like this:
 
 It deploys the Application to multiple Servers and uses the following steps:
 
- # Optional: Might prepare the permission on the environment (with a given script)
- # Downloads the Artifact from the configured Source to all configured servers - directly to <ReleaseBaseFolder>/<ReleaseVersion> (It makes sure that it works for Archives and Folder Sources and takes care of renaming etc.)
- # Optional: Performs some "PreConfigure" tasks
- # Optional: Configures the application (that is done by calling a configuration script in the package.) This step should normally adjust the application to the environment. (see below for tipps)
- # Optional: Performs some "PostConfige"
- # Sets the "next" symlink to new Release
- # Optional: Executes SmokeTests
- # Updates current and previous symlink
- # Optional: Performs some "PostSwitch" tasks
+ 1. Optional: Might prepare the permission on the environment (with a given script)
+ 2. Downloads the Artifact from the configured Source to all configured servers - directly to <ReleaseBaseFolder>/<ReleaseVersion> (It makes sure that it works for Archives and Folder Sources and takes care of renaming etc.)
+ 3. Optional: Performs some "PreConfigure" tasks
+ 4. Optional: Configures the application (that is done by calling a configuration script in the package.) This step should normally adjust the application to the environment. (see below for tipps)
+ 5. Optional: Performs some "PostConfige"
+ 6. Sets the "next" symlink to new Release
+ 7. Optional: Executes SmokeTests
+ 8. Updates current and previous symlink
+ 9. Optional: Performs some "PostSwitch" tasks
 
 
 Try Run
