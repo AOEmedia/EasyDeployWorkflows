@@ -7,30 +7,30 @@ Build status: |buildStatusIcon|
 
 Concept
 -------------
-
 Each component of your Application is deployed using a Workflow.
 A workflow needs 3 Objects to run:
- * A Workflow Configuration (Specific Configuration Object for that Workflow, Including the releaseVersion.)
- * A InstanceConfiguration (Holding common Data about the name of the environment and the project.)
+* A Workflow Configuration (Specific Configuration Object for that Workflow, Including the releaseVersion.)
+* A InstanceConfiguration (Holding common Data about the name of the environment and the project.)
 
 The idea ist, that the Workflows can be reused for deploying different projects to different environments.
 Managing the differences between the environments comes down to manage the WorkflowConfiguration.
 
 The typical Responsibility for a Workflow is:
- * Get the Application from a given source (e.g. Download the Artifact that should be installed from Jenkins)
- * Install the Application on the infrastructure - that means there might be multiple servers involved
+* Get the Application from a given source (e.g. Download the Artifact that should be installed from Jenkins)
+* Install the Application on the infrastructure - that means there might be multiple servers involved
 
 Features
 -----------------
- * Reusable deployment abstraction (based on configurable workflows and tasks)
- * Logging (details go in a logfile, important stuff go to STDOUT)
- * Tested (most part of the logic is unit tested - of course this tool is new and there is no warranty for anything)
- * "Best practice" Tasks and Workflows that can be used out of the box:
- * * Dealing with Symlinks and a Releasefolder structure
- * * Cleanup of old releases and/or deliveries
- * Source abstraction (Use git,svn or (zipped) jenkins artifacts)
- * "dryRun" flag - which does nothing but only logs what commands on which server it would have done
- * Varnish: Classes and Workflows to generate Varnish backend directors
+List of Features:
+* Reusable deployment abstraction (based on configurable workflows and tasks)
+* Logging (details go in a logfile, important stuff go to STDOUT)
+* Tested (most part of the logic is unit tested - of course this tool is new and there is no warranty for anything)
+* "Best practice" Tasks and Workflows that can be used out of the box:
+  * Dealing with Symlinks and a Releasefolder structure
+  * Cleanup of old releases and/or deliveries
+* Source abstraction (Use git,svn or (zipped) jenkins artifacts)
+* "dryRun" flag - which does nothing but only logs what commands on which server it would have done
+* Varnish: Classes and Workflows to generate Varnish backend directors
 
 Motivation - or how it can be used
 -----------------
@@ -39,19 +39,20 @@ Like for example a search-application and a cms-application.
 
 You want to deploy that application as smooth as possible with simple commands.
 This will deploy and configure the two applications on our local virtualbox for example:
-
-git clone --recursive <yourdeploymentscriptrepository>
-php deployment/deploy.php --environment=devbox
+::
+	git clone --recursive <yourdeploymentscriptrepository>
+	php deployment/deploy.php --environment=devbox
 
 This will deploy and configure the same applications on our physical cluster with 10 nodes:
-php deployment/deploy.php --environment=production
+::
+	php deployment/deploy.php --environment=production
 
 This will deploy and configure the same applications on our aws cloud instances - during selfprovising:
-
-# search layer ec2 instances may run
-php deployment/deploy.php --environment=aws --subapplication=search
-# search layer ec2 instances may run
-php deployment/deploy.php --environment=aws --subapplication=cms
+::
+	# search layer ec2 instances may run
+	php deployment/deploy.php --environment=aws --subapplication=search
+	# search layer ec2 instances may run
+	php deployment/deploy.php --environment=aws --subapplication=cms
 
 
 
@@ -65,9 +66,9 @@ To build our own Workflow you probably want to extend one of the existing task b
 
 WorkflowConfiguration and InfrastructureConfiguration
 ------------------------
- *  The Workflow Configuration represents the data that is required by the Deployment Workflow.
- *  It describes the target server Infrastructure of the deployment. Therefore it is the part of your Deployment, that typically is environment specific.
- *  Normally you have versions of the Configuration for each Environment (devbox, staging, production, amazon). See below for the suggested folder structure.
+* The Workflow Configuration represents the data that is required by the Deployment Workflow.
+* It describes the target server Infrastructure of the deployment. Therefore it is the part of your Deployment, that typically is environment specific.
+* Normally you have versions of the Configuration for each Environment (devbox, staging, production, amazon). See below for the suggested folder structure.
 
 
 Sources
@@ -77,12 +78,12 @@ A Source can either be a file or a folder.
 If its a file most workflows expect this to be a archive. An archive is normaly downloaded to a deliveryfolder and unzipped there.
 
 File Locations:
- * a DownloadSource can Download from different Location (using Wget)
- * the Jenkins Source is very useful when you want to transfer certain Build Artifacts from your Jenkins CI Server (see below for an example)
+* a DownloadSource can Download from different Location (using Wget)
+* the Jenkins Source is very useful when you want to transfer certain Build Artifacts from your Jenkins CI Server (see below for an example)
 
 Folder Locations:
- * Git
- * SVN
+* Git
+* SVN
 
 Deployment Scripts Example
 ------------------------------
@@ -92,8 +93,8 @@ We recommend this structure:
  * EasyDeploy (EasyDeploy Git-Submodule)
  * EasyDeployWorkflows (EasyDeployWorkflows Git-Submodule)
  * Configuration (Workflow Configuration)
- * * [Projectname]
- * * * [Instancename].php
+   * [Projectname]
+     * [Instancename].php
 
 
 The deploy.php triggers your deployment:
