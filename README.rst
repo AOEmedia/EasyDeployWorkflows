@@ -25,11 +25,12 @@ Features
  * Reusable deployment abstraction (based on configurable workflows and tasks)
  * Logging (details go in a logfile, important stuff go to STDOUT)
  * Tested (most part of the logic is unit tested - of course this tool is new and there is no warranty for anything)
- * "Best practice" Tasks and Workflows:
+ * "Best practice" Tasks and Workflows that can be used out of the box:
  * * Dealing with Symlinks and a Releasefolder structure
  * * Cleanup of old releases and/or deliveries
  * Source abstraction (Use git,svn or (zipped) jenkins artifacts)
  * "dryRun" flag - which does nothing but only logs what commands on which server it would have done
+ * Varnish: Classes and Workflows to generate Varnish backend directors
 
 Motivation - or how it can be used
 -----------------
