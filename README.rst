@@ -22,6 +22,7 @@ The typical Responsibility for a Workflow is:
 Features
 -----------------
 List of Features:
+
 * Reusable deployment abstraction (based on configurable workflows and tasks)
 * Logging (details go in a logfile, important stuff go to STDOUT)
 * Tested (most part of the logic is unit tested - of course this tool is new and there is no warranty for anything)
@@ -78,10 +79,12 @@ A Source can either be a file or a folder.
 If its a file most workflows expect this to be a archive. An archive is normaly downloaded to a deliveryfolder and unzipped there.
 
 File Locations:
+
 * a DownloadSource can Download from different Location (using Wget)
 * the Jenkins Source is very useful when you want to transfer certain Build Artifacts from your Jenkins CI Server (see below for an example)
 
 Folder Locations:
+
 * Git
 * SVN
 
@@ -89,11 +92,14 @@ Deployment Scripts Example
 ------------------------------
 
 We recommend this structure:
+
  * deploy.php (your central deployment script, evaluating parameters and get things started)
  * EasyDeploy (EasyDeploy Git-Submodule)
  * EasyDeployWorkflows (EasyDeployWorkflows Git-Submodule)
  * Configuration (Workflow Configuration)
+
    * [Projectname]
+
      * [Instancename].php
 
 
