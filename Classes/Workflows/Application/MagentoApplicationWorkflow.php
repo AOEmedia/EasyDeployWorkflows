@@ -20,7 +20,13 @@ class MagentoApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 			new \EasyDeployWorkflows\Tasks\Common\CheckCorrectDeployNode());
 
 		$this->addTasksToDownloadFromSourceToReleaseFolder();
-		$this->addMagentoInstallTasks();
+		$this->addUpdateNextSymlinkTask();
+		$this->addPreSetupTasks();
+		$this->addSetupTasks();
+		$this->addPostSetupTasks();
+		$this->addSmokeTestTasks();
+		$this->addSwitchTask();
+		$this->addPreSwitchTasks();
 		$this->addCleanupTasks();
 
 	}
@@ -45,8 +51,6 @@ class MagentoApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 			$task->setSource($this->workflowConfiguration->getReleaseBaseFolder().$this->workflowConfiguration->getSource()->getFileName());
 			$task->setTarget($this->workflowConfiguration->getReleaseBaseFolder().$this->workflowConfiguration->getReleaseVersion());
 			$this->addTask('Rename Unzipped Package to Release', $task);
-
-
 		}
 		else {
 			//we expect this to be an archive - so we download it to deliveryfolder first
@@ -61,26 +65,75 @@ class MagentoApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		}
 	}
 
-	/**
-	 * Installation of Magento
-	 *
-	 * @return \EasyDeployWorkflows\Tasks\Web\RunPackageInstallBinaries
-	 */
-	protected function addMagentoInstallTasks()
-	{
-		$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
-		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder());
-		$task->setCommand($this->workflowConfiguration->getRelativeModmanPath().' deploy-all');
+	protected function addUpdateNextSymlinkTask() {
+		$task = new \EasyDeployWorkflows\Tasks\Release\UpdateNext();
+		$task->setReleasesBaseFolder($this->getFinalReleaseBaseFolder());
+		$task->setNextRelease($this->workflowConfiguration->getReleaseVersion());
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
-		$this->addTask('Modman Deployment',$task);
+		$this->addTask('Update next symlink',$task);
 	}
 
 	/**
-	 * Installation is simple copy
+	 * Possibility to add some tasks
 	 *
-	 * @return \EasyDeployWorkflows\Tasks\Common\DeleteFolder
+	 * @return void
 	 */
-	protected function addCleanupTasks($extractedFolder)
+	protected function addPreSetupTasks() {
+		foreach ($this->workflowConfiguration->getPreSetupTasks() as $name => $task) {
+			$this->addTask($name,$task);
+		}
+	}
+
+	/**
+	 * Installation of Magento
+	 *
+	 * @return void
+	 */
+	protected function addSetupTasks()
+	{
+		$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
+		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next');
+		$command = $this->replaceMarkers($this->workflowConfiguration->getSetupCommand());
+		$task->setCommand($command);
+		$task->addServersByName($this->workflowConfiguration->getInstallServers());
+		$this->addTask('Magento Setup Script',$task);
+	}
+
+	/**
+	 * Possibility to add some tasks
+	 *
+	 * @return void
+	 */
+	protected function addPostSetupTasks() {
+
+	}
+
+	/**
+	 */
+	protected function addSmokeTestTasks()
+	{
+		$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
+		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next');
+		$task->setCommand('php htdocs/shell/indexer.php status');
+		$task->addServersByName($this->workflowConfiguration->getInstallServers());
+		$this->addTask('Smoke Test - call status',$task);
+	}
+
+	protected function addSwitchTask() {
+		$task = new \EasyDeployWorkflows\Tasks\Release\UpdateCurrentAndPrevious();
+		$task->setReleasesBaseFolder($this->getFinalReleaseBaseFolder());
+		$task->addServersByName($this->workflowConfiguration->getInstallServers());
+		$this->addTask('Switch current symlink',$task);
+	}
+
+	protected function addPreSwitchTasks() {
+
+	}
+
+	/**
+	 * clean up old releases
+	 */
+	protected function addCleanupTasks()
 	{
 		$task = new \EasyDeployWorkflows\Tasks\Release\CleanupReleases();
 		$task->setReleasesBaseFolder($this->getFinalReleaseBaseFolder());

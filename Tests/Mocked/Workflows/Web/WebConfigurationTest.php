@@ -23,15 +23,15 @@ class WebConfigurationTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function canSetAndGetWebRoot() {
 		$this->configuration->setWebRootFolder('foo');
-		$this->assertEquals('foo', $this->configuration->getWebRootFolder(),'could not retrieve web root folder');
+		$this->assertEquals('foo/', $this->configuration->getWebRootFolder(),'could not retrieve web root folder');
 	}
 
 	/**
 	 * @test
 	 */
 	public function canChainSet() {
-		$this->configuration->setWebRootFolder('foo')->setWebRootFolder('bar');
-		$this->assertEquals('bar', $this->configuration->getWebRootFolder(),'Could not overwrite webroor');
+		$this->configuration->setWebRootFolder('foo')->setWebRootFolder('bar/');
+		$this->assertEquals('bar/', $this->configuration->getWebRootFolder(),'Could not overwrite webroor');
 	}
 
 	/**
@@ -73,8 +73,8 @@ class WebConfigurationTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	public function canSetIndexerStorageFolder() {
-		$this->configuration->addIndexerDataFolder('/var/lib/indexer');
-		$this->assertEquals($this->configuration->getIndexerDataFolders(),array('/var/lib/indexer'),'Could not get indexer data folder');
+		$this->configuration->addIndexerDataFolder('/var/lib/indexer/');
+		$this->assertEquals($this->configuration->getIndexerDataFolders(),array('/var/lib/indexer/'),'Could not get indexer data folder');
 	}
 
 	/**
@@ -114,7 +114,7 @@ class WebConfigurationTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function setBackupStorageRootFolder() {
 		$this->assertEquals('', $this->configuration->getBackupStorageRootFolder(),'Unexpected backup storage root folder');
-		$this->assertEquals('/var/lib', $this->configuration->setBackupStorageRootFolder('/var/lib')->getBackupStorageRootFolder());
+		$this->assertEquals('/var/lib/', $this->configuration->setBackupStorageRootFolder('/var/lib')->getBackupStorageRootFolder());
 	}
 
 	/**
@@ -122,7 +122,7 @@ class WebConfigurationTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function setBackupStorageMinifiedRootFolder() {
 		$this->assertEquals('', $this->configuration->getBackupStorageMinifiedRootFolder(),'Unexpected backup storage root folder');
-		$this->assertEquals('/var/lib.tgz', $this->configuration->setBackupStorageMinifiedRootFolder('/var/lib.tgz')->getBackupStorageMinifiedRootFolder());
+		$this->assertEquals('/var/libmini/', $this->configuration->setBackupStorageMinifiedRootFolder('/var/libmini/')->getBackupStorageMinifiedRootFolder());
 	}
 
 	/**

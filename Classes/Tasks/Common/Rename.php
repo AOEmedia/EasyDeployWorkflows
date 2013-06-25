@@ -39,7 +39,7 @@ class Rename extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 * @return mixed
 	 */
 	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
-			$server->run('mv '.$this->source.' '.$this->target);
+			$this->executeAndLog($server,'mv '.$this->source.' '.$this->target);
 	}
 
 	/**

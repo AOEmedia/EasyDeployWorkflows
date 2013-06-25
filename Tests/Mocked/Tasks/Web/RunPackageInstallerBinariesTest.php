@@ -70,7 +70,7 @@ class RunPackageInstallerBinariesTest extends AbstractMockedTest {
 		$task->run($taskConfiguration);
 
 		$this->assertContains('chmod -R ug+x /home/package/installbinaries',$recordedCommands);
-		$this->assertContains('php /home/package/installbinaries/install.php --systemPath="/opt/web" --environmentName="" --backupstorageroot="/home/homer.simpson"',$recordedCommands);
+		$this->assertContains('php /home/package/installbinaries/install.php --systemPath="/opt/web" --environmentName="" --backupstorageroot="/home/homer.simpson/"',$recordedCommands);
 
 	}
 }

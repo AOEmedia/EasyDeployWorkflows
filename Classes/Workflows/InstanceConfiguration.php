@@ -7,8 +7,6 @@ use EasyDeployWorkflows\Workflows\Exception as Exception;
 
 class InstanceConfiguration extends AbstractConfiguration {
 
-
-
 	/**
 	 * @var string
 	 */
@@ -47,7 +45,12 @@ class InstanceConfiguration extends AbstractConfiguration {
 	 * @return bool
 	 */
 	public function isAllowedDeployServer($hostname) {
-		return in_array($hostname, $this->getAllowedDeployServers());
+		foreach ($this->getAllowedDeployServers() as $serverName) {
+			if ($serverName == $hostname || $serverName == '*') {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -107,10 +110,6 @@ class InstanceConfiguration extends AbstractConfiguration {
 
 		if(!$this->hasEnvironmentName()) {
 			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('Please configure an environment name!');
-		}
-
-		if(!$this->hasDeliveryFolder()) {
-			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException("Please configure a delivery folder!");
 		}
 
 		return true;

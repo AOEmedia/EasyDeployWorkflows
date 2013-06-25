@@ -42,15 +42,17 @@ class GitCloneSource implements FolderSourceInterface  {
 		if (isset($this->tag)) {
 			$options .='-b '.$this->tag.' ';
 		}
-		$command .= 'git clone '.$options.$this->repository.' '.$this->individualTargetFolderName;
+		$command .= 'GIT_SSL_NO_VERIFY=1 git clone '.$options.$this->repository.' '.$this->individualTargetFolderName;
 		return trim($command);
 	}
 
 	/**
 	 * @param string $repository
+	 * @return self
 	 */
 	public function setRepository($repository) {
 		$this->repository = $repository;
+		return $this;
 	}
 
 	/**
@@ -79,7 +81,7 @@ class GitCloneSource implements FolderSourceInterface  {
 	 * @return string
 	 */
 	public function getShortExplain() {
-		return 'Checkout from:'.$this->getDownloadCommand('/');
+		return 'Checkout from: '.$this->repository.' Tag:'.$this->tag;
 	}
 
 	/**

@@ -45,6 +45,7 @@ class TaskBasedWorkflow extends AbstractWorkflow {
 			}
 			$this->logger->removeLogIndentLevel();
 		}
+		$this->logger->log(PHP_EOL.'[Workflow Successful]'.PHP_EOL,\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
 		$this->logger->removeLogIndentLevel();
 	}
 

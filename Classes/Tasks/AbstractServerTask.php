@@ -17,9 +17,11 @@ abstract class AbstractServerTask extends AbstractTask {
 
 	/**
 	 * Adds a server on which this task should be executed
+	 * @return self
 	 */
 	public function addServer(\EasyDeploy_AbstractServer $server) {
 		$this->servers[] = $server;
+		return $this;
 	}
 
 	/**
@@ -38,21 +40,25 @@ abstract class AbstractServerTask extends AbstractTask {
 
 	/**
 	 * Adds a server on which this task should be executed
+	 * @return self
 	 */
 	public function addServerByName($server) {
 		if (!is_string($server)) {
 			throw new \InvalidArgumentException('no string given: '.gettype($server));
 		}
 		$this->addServer($this->getServer($server));
+		return $this;
 	}
 
 	/**
 	 * Adds servers on which this task should be executed
+	 * @return self
 	 */
 	public function addServersByName(array $servers) {
 		foreach ($servers as $server) {
 			$this->addServerByName($server);
 		}
+		return $this;
 	}
 
 

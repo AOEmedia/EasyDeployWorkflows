@@ -71,10 +71,7 @@ abstract class AbstractWorkflow extends \EasyDeployWorkflows\AbstractPart {
 
 
 	protected function getFinalDeliveryFolder() {
-		if ($this->workflowConfiguration->hasDeliveryFolder()) {
-			return $this->replaceMarkers($this->workflowConfiguration->getDeliveryFolder());
-		}
-		return $this->replaceMarkers($this->instanceConfiguration->getDeliveryFolder());
+		return $this->replaceMarkers($this->workflowConfiguration->getDeliveryFolder());
 	}
 
 	/**

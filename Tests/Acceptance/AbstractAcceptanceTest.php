@@ -22,10 +22,9 @@ abstract class AbstractAcceptanceTest extends \PHPUnit_Framework_TestCase {
 		$this->deliveryFolder = EASYDEPLOY_WORKFLOW_ROOT.'Tests/Acceptance/Tmp/Delivery';
 		$this->targetFolder = EASYDEPLOY_WORKFLOW_ROOT.'Tests/Acceptance/Tmp/Target';
 
-		exec('rm -rf '.$this->logFolder);
-		exec('rm -rf '.$this->deliveryFolder);
-		exec('rm -rf '.$this->targetFolder);
+		exec('rm -rf '.EASYDEPLOY_WORKFLOW_ROOT.'Tests/Acceptance/Tmp');
 
+		mkdir(EASYDEPLOY_WORKFLOW_ROOT.'Tests/Acceptance/Tmp');
 		mkdir($this->deliveryFolder);
 		mkdir($this->targetFolder);
 		mkdir($this->logFolder);
@@ -64,7 +63,6 @@ abstract class AbstractAcceptanceTest extends \PHPUnit_Framework_TestCase {
 		$instanceConfiguration->setProjectName('project');
 		$instanceConfiguration->setEnvironmentName('production');
 		$instanceConfiguration->addAllowedDeployServer($hostname);
-		$instanceConfiguration->setDeliveryFolder($this->deliveryFolder);
 		\EasyDeployWorkflows\Logger\Logger::getInstance()->setLogFile($this->logFolder . '/deploy.log');
 
 		$instanceConfiguration->setDeployLogFolder($this->logFolder);

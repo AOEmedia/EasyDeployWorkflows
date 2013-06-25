@@ -10,10 +10,6 @@ require_once dirname(__FILE__) . '/../ValidateableInterface.php';
 
 abstract class AbstractConfiguration implements \EasyDeployWorkflows\ValidateableInterface {
 
-	/**
-	 * @var string
-	 */
-	protected $deliveryFolder = '';
 
 	/**
 	 * @var
@@ -71,7 +67,7 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 		if(!is_string($folderName)) {
 			throw new \InvalidArgumentException('Invalid folder '.serialize($folderName));
 		}
-
+		$folderName = rtrim($folderName,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 		$this->folders[$scope][$index] = $folderName;
 
 		return $this;
@@ -148,31 +144,6 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * @param string $deliveryFolder
-	 * @return \EasyDeployWorkflows\Workflows\InstanceConfiguration
-	 */
-	public function setDeliveryFolder($deliveryFolder) {
-		$this->deliveryFolder = rtrim($deliveryFolder,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-		return $this;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasDeliveryFolder() {
-		return $this->deliveryFolder != '';
-	}
-
-	/**
-	 * The delivery folder
-	 * Always ending with "/"
-	 * @return string
-	 */
-	public function getDeliveryFolder() {
-		return $this->deliveryFolder;
 	}
 
 	/**

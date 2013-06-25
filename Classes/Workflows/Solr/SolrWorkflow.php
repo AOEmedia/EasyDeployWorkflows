@@ -35,7 +35,7 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 
 	public function runDeployTasks()
 	{
-		$deliveryFolder = $this->replaceMarkers($this->instanceConfiguration->getDeliveryFolder());
+		$deliveryFolder = $this->replaceMarkers($this->getFinalDeliveryFolder());
 		$packageSource = $this->replaceMarkers($this->workflowConfiguration->getSource());
 
 		$this->logger->log('[Task] CheckCorrectDeployNode');

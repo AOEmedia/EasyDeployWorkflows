@@ -43,7 +43,8 @@ class LocalFolderSource implements FolderSourceInterface  {
 	 */
 	public function getDownloadCommand($parentFolder) {
 		$parentFolder = rtrim($parentFolder,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-		return 'cp  -R '.$this->source.' '.$parentFolder.$this->getFolderName();
+		$command = 'cp  -R '.$this->source.' '.$parentFolder.$this->getFolderName();
+		return $command;
 	}
 
 
@@ -68,6 +69,9 @@ class LocalFolderSource implements FolderSourceInterface  {
 	 * @return string
 	 */
 	public function getFolderName() {
+		if (isset($this->individualTargetFolderName)) {
+			return $this->individualTargetFolderName;
+		}
 		return $this->getFilenameFromPath($this->source);
 	}
 

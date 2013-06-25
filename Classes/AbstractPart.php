@@ -48,11 +48,32 @@ abstract class AbstractPart {
 	 * @param $string
 	 * @return mixed
 	 */
-	protected function replaceConfigurationMarkers($string, \EasyDeployWorkflows\Workflows\AbstractConfiguration $workflowConfiguration, \EasyDeployWorkflows\Workflows\InstanceConfiguration $instanceConfiguration) {
+	public function replaceConfigurationMarkers($string, \EasyDeployWorkflows\Workflows\AbstractConfiguration $workflowConfiguration, \EasyDeployWorkflows\Workflows\InstanceConfiguration $instanceConfiguration) {
 		$string = str_replace('###releaseversion###',$workflowConfiguration->getReleaseVersion(),$string);
 		$string = str_replace('###environment###',$instanceConfiguration->getEnvironmentName(),$string);
 		$string = str_replace('###environmentname###',$instanceConfiguration->getEnvironmentName(),$string);
 		$string = str_replace('###projectname###',$instanceConfiguration->getProjectName(),$string);
+		return $this->replaceWithEnvironmentVariables($string);
+	}
+
+	/**
+	 * Replaces this pattern ###ENV:TEST### with the environment variable
+	 * @param $string
+	 * @return string
+	 * @throws \Exception
+	 */
+	protected function replaceWithEnvironmentVariables($string) {
+		$matches=array();
+		preg_match_all('/###ENV:([^#]*)###/',$string,$matches,PREG_PATTERN_ORDER);
+		if (!is_array($matches) || !is_array($matches[0])) {
+			return $string;
+		}
+		foreach ($matches[0] as $index=>$completeMatch) {
+			if (getenv($matches[1][$index]) == FALSE) {
+				throw new \Exception('Expect an environmentvariable '.$matches[1][$index]);
+			}
+			$string = str_replace($completeMatch,getenv($matches[1][$index]),$string);
+		}
 		return $string;
 	}
 

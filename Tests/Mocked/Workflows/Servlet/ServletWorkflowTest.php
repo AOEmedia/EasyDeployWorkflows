@@ -28,14 +28,14 @@ class ServletWorkflowTest extends AbstractMockedTest {
 				->setTomcatVersion('6')
 				->setSource(new EasyDeployWorkflows\Source\File\DownloadSource('http://www.test.com/homer.simpson/###releaseversion###/somedownloadpackage.tar.gz'))
 				->setInstallSilent(false)
-				->setReleaseVersion('4711');
+				->setReleaseVersion('4711')
+				->setDeliveryFolder('/home/download/###projectname###/###releaseversion###');
 
 
 		$instanceConfiguration
 				->setProjectName('nasa')
 				->addAllowedDeployServer('allowedserver')
-				->setEnvironmentName('deploy')
-				->setDeliveryFolder('/home/download/###projectname###/###releaseversion###');
+				->setEnvironmentName('deploy');
 
 			/** @var $workflow  EasyDeployWorkflows\Workflows\Servlet\ServletWorkflow */
 		$workflow = new EasyDeployWorkflows\Workflows\Servlet\ServletWorkflow($instanceConfiguration,$workflowConfiguration);

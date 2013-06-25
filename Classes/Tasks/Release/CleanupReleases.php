@@ -57,7 +57,7 @@ class CleanupReleases extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 * @return mixed
 	 */
 	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
-		$releaseFolder = rtrim($this->replaceConfigurationMarkersWithTaskRunInformation($this->releaseFolder,$taskRunInformation),DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		$releaseFolder = rtrim($this->replaceConfigurationMarkersWithTaskRunInformation($this->releasesBaseFolder,$taskRunInformation),DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 
 		$currentReleaseIdentifier = trim($server->run('if [ -h '.$releaseFolder.'previous ]; then basename `readlink '.$releaseFolder.'previous` ; fi',FALSE,TRUE));
 		$previousReleaseIdentifier = trim($server->run('if [ -h '.$releaseFolder.'current ]; then basename `readlink '.$releaseFolder.'current` ; fi',FALSE,TRUE));

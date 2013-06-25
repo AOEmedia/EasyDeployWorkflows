@@ -127,8 +127,17 @@ The deploy.php triggers your deployment:
 
 
 
-Configuration Example
+Workflow Configuration Example
 ------------------------------
+
+Most of the configuration values support the following placeholders.
+
+ * ###releaseversion### - will be replaces with the releaseversion of the workflow configuration
+ * ###projectname### - will be replaces with the projectname of the workflow configuration
+ * ###environment### or ###environmentname###- will be replaced with the environmentname of the instanceconfiguration
+ * ###ENV:<value>### - will be replaced with the environment variable (Environmentvariable of the server that executes the deploy script!)
+
+Also the RunCommand Task will export the Variables ENVIRONMENT,PROJECTNAME, RELEASEVERSION and RELEASEVERSION_ESCAPED - so they will be available in your command.
 
 Sample deploy configuration (Configuration/projectname/aws.php)
 ::
@@ -235,6 +244,21 @@ This is best done by the application itself, therefore the Workflows above call 
 
 Best practice here, is to read everything from the systems environment variables.
 And it should be part of the provisioning script to set the correct Environment variables.
-( See http://php.net/manual/en/reserved.variables.environment.php )
+
+Export a Shell variable. This makes the variable available for subprocesses:
+::
+  export APPLICATION_DB_NAME="magento"
+
+Read it in php
+::
+  getenv('APPLICATION_DB_NAME')
+
+Read it in shell
+::
+	#!/bin/bash
+    echo ${APPLICATION_DB_NAME};
 
 You should also check for https://github.com/AOEmedia/EnvSettingsTool, you may want to include this in your application and use it for configuration.
+
+
+If you con

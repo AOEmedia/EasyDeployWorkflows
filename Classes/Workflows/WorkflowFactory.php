@@ -40,7 +40,7 @@ class WorkflowFactory {
 		if (!class_exists($workflowConfiguration->getWorkflowClassName())) {
 			throw new UnknownWorkflowException('Workflow "'.$workflowConfiguration->getWorkflowClassName().'" not existend or not loaded',2212);
 		}
-		$this->initLoggerLogFile($instanceConfiguration);
+		$this->initLoggerLogFile($instanceConfiguration, $workflowConfiguration);
 		$workflowClass = $workflowConfiguration->getWorkflowClassName();
 
 		$workflow = $this->getWorkflow($workflowClass, $instanceConfiguration, $workflowConfiguration);
@@ -49,7 +49,7 @@ class WorkflowFactory {
 		return $workflow;
 	}
 
-	protected function initLoggerLogFile(InstanceConfiguration $instanceConfiguration) {
+	protected function initLoggerLogFile(InstanceConfiguration $instanceConfiguration,$workflowConfiguration) {
 		$currentLogFile = \EasyDeployWorkflows\Logger\Logger::getInstance()->getLogFile();
 		if (!empty($currentLogFile)) {
 			return;
@@ -111,7 +111,6 @@ class WorkflowFactory {
 			throw new \EasyDeployWorkflows\Workflows\Exception\WorkflowConfigurationNotExistendException('No Workflow Configuration found or it is invalid! Expected a Variable with the name $'.$workFlowConfigurationVariableName);
 		}
 		$$workFlowConfigurationVariableName->setReleaseVersion($releaseVersion);
-		$instanceConfiguration->setReleaseVersion($releaseVersion);
 		return $this->create($instanceConfiguration, $$workFlowConfigurationVariableName);
 	}
 

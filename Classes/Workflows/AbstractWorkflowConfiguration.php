@@ -22,11 +22,43 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 	protected $releaseVersion;
 
 	/**
+	 * @var string
+	 */
+	protected $deliveryFolder;
+
+	/**
+	 * @param string $deliveryFolder
+	 * @return \EasyDeployWorkflows\Workflows\InstanceConfiguration
+	 */
+	public function setDeliveryFolder($deliveryFolder) {
+		$this->deliveryFolder = rtrim($deliveryFolder,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasDeliveryFolder() {
+		return $this->deliveryFolder != '';
+	}
+
+	/**
+	 * The delivery folder
+	 * Always ending with "/"
+	 * @return string
+	 */
+	public function getDeliveryFolder() {
+		return $this->deliveryFolder;
+	}
+
+	/**
 	 * @param string $releaseVersion
+	 * @return self
 	 */
 	public function setReleaseVersion($releaseVersion)
 	{
 		$this->releaseVersion = $releaseVersion;
+		return $this;
 	}
 
 	/**

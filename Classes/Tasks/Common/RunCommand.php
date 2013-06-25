@@ -44,7 +44,11 @@ class RunCommand extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 		if (isset($this->changeToDirectory)) {
 			$command = 'cd '.$this->changeToDirectory.'; '.$command;
 		}
-		$server->run($command, FALSE, FALSE, $this->logger->getLogFile());
+		$environmentVariables = 'export ENVIRONMENT="'.$taskRunInformation->getInstanceConfiguration()->getEnvironmentName() .'"';
+		$environmentVariables .= ' && export PROJECTNAME="'.$taskRunInformation->getInstanceConfiguration()->getProjectName() .'"';
+		$environmentVariables .= ' && export RELEASEVERSION="'.$taskRunInformation->getWorkflowConfiguration()->getReleaseVersion() .'"';
+		$environmentVariables .= ' && export RELEASEVERSION_ESCAPED="'.PREG_REPLACE("/[^0-9a-zA-Z]/i", '', $taskRunInformation->getWorkflowConfiguration()->getReleaseVersion()) .'" && ';
+		$this->executeAndLog($server,$environmentVariables.$command);
 	}
 
 	/**

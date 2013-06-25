@@ -12,9 +12,10 @@ use EasyDeployWorkflows\Workflows\Exception as Exception;
  */
 class MagentoApplicationConfiguration extends ReleaseFolderApplicationConfiguration {
 
-	protected $relativeModmanPath;
-	protected $envSettingsTool;
-	protected $settingsFile;
+	/**
+	 * @var string
+	 */
+	protected $setupCommand = './Setup/Setup.sh';
 
 	/**
 	 * @return bool
@@ -29,6 +30,12 @@ class MagentoApplicationConfiguration extends ReleaseFolderApplicationConfigurat
 		return true;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getWorkflowClassName() {
+		return 'EasyDeployWorkflows\Workflows\Application\MagentoApplicationWorkflow';
+	}
 
 
 

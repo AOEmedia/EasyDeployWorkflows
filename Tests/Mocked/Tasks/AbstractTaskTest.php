@@ -13,7 +13,9 @@ class AbstractTaskTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function canValidate() {
 		$task = $this->getMockForAbstractClass('EasyDeployWorkflows\Tasks\AbstractTask');
-		$this->assertTrue($task->isValid());
+		$this->assertFalse($task->isValid());
 	}
+
+
 
 }

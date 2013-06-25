@@ -37,6 +37,7 @@ abstract class AbstractTask extends \EasyDeployWorkflows\AbstractPart implements
 	 * throws Exception\InvalidConfigurationException
 	 */
 	public function validate() {
+		throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('IMPLEMENT YOUR OWN VALIDATION');
 		return false;
 	}
 

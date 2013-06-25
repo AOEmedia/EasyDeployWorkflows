@@ -7,7 +7,7 @@ require_once EASYDEPLOY_WORKFLOW_ROOT . 'Classes/Autoloader.php';
 class ArchivedApplicationConfigurationTest extends PHPUnit_Framework_TestCase {
 
 	/**
-	 * @var EasyDeployWorkflows\Workflows\Application\ArchivedApplicationConfiguration
+	 * @var EasyDeployWorkflows\Workflows\Application\SimpleApplicationConfiguration
 	 */
 	protected $configuration;
 
@@ -15,7 +15,7 @@ class ArchivedApplicationConfigurationTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function setUp() {
-		$this->configuration = new EasyDeployWorkflows\Workflows\Application\ArchivedApplicationConfiguration();
+		$this->configuration = new EasyDeployWorkflows\Workflows\Application\StandardApplicationConfiguration();
 	}
 
 	/**
@@ -24,7 +24,7 @@ class ArchivedApplicationConfigurationTest extends PHPUnit_Framework_TestCase {
 	public function canSetAndGetInstallationRoot() {
 		$this->assertFalse($this->configuration->hasInstallationTargetFolder());
 		$this->configuration->setInstallationTargetFolder('foo');
-		$this->assertEquals('foo', $this->configuration->getInstallationTargetFolder(),'could not retrieve install root folder');
+		$this->assertEquals('foo/', $this->configuration->getInstallationTargetFolder(),'could not retrieve install root folder');
 		$this->assertTrue($this->configuration->hasInstallationTargetFolder());
 	}
 

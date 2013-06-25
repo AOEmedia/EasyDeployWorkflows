@@ -15,7 +15,7 @@ class ArchivedApplicationWorkflowTest extends AbstractMockedTest {
 	 */
 	public function canDeploy() {
 		$this->requireEasyDeployClassesOrSkip();
-		$workflowConfiguration = new \EasyDeployWorkflows\Workflows\Application\ArchivedApplicationConfiguration();
+		$workflowConfiguration = new \EasyDeployWorkflows\Workflows\Application\StandardApplicationConfiguration();
 		$workflowConfiguration->addInstallServer('www.mywebserver.de');
 		$workflowConfiguration->setInstallationTargetFolder('/webroot');
 		$workflowConfiguration->setSource(new EasyDeployWorkflows\Source\File\DownloadSource('http://www.jenkins.my/artifacts/my.tar.gz'));
@@ -24,9 +24,8 @@ class ArchivedApplicationWorkflowTest extends AbstractMockedTest {
 		$instanceConfiguration->setProjectName('project');
 		$instanceConfiguration->setEnvironmentName('production');
 		$instanceConfiguration->addAllowedDeployServer('localhost');
-		$instanceConfiguration->setDeliveryFolder('/here');
 
-		$workflow = new \EasyDeployWorkflows\Workflows\Application\ArchivedApplicationWorkflow($instanceConfiguration,$workflowConfiguration);
+		$workflow = new \EasyDeployWorkflows\Workflows\Application\StandardApplicationWorkflow($instanceConfiguration,$workflowConfiguration);
 		$tasks = $workflow->getTasks();
 	}
 

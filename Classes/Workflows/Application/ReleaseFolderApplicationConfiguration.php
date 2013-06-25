@@ -15,22 +15,65 @@ class ReleaseFolderApplicationConfiguration extends Workflows\AbstractWorkflowCo
 	/**
 	 * @var the command for configuring the application
 	 */
-	protected $configurationCommand;
+	protected $setupCommand;
+
+	/**
+	 * @var array
+	 */
+	protected $preSetupTasks = array();
+
+	/**
+	 * @var array
+	 */
+	protected $postSetupTasks = array();
 
 	/**
 	 * @param \EasyDeployWorkflows\Workflows\Application\the $configurationCommand
 	 */
-	public function setConfigurationCommand($configurationCommand) {
-		$this->configurationCommand = $configurationCommand;
+	public function setSetupCommand($configurationCommand) {
+		$this->setupCommand = $configurationCommand;
 	}
 
 	/**
 	 * @return \EasyDeployWorkflows\Workflows\Application\the
 	 */
-	public function getConfigurationCommand() {
-		return $this->configurationCommand;
+	public function getSetupCommand() {
+		return $this->setupCommand;
 	}
 
+	/**
+	 * @param $name
+	 * @param \EasyDeployWorkflows\Tasks\AbstractTask $step
+	 * @throws \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException
+	 */
+	public function addPreSetupTask($name, \EasyDeployWorkflows\Tasks\AbstractTask $step) {
+		if (isset($this->preSetupTasks[$name])) {
+			throw new \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException($name.' already existend!');
+		}
+		$step->validate();
+		$this->preSetupTasks[$name] = $step;
+	}
+
+	/**
+	 * @param $name
+	 * @param \EasyDeployWorkflows\Tasks\AbstractTask $step
+	 * @throws \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException
+	 */
+	public function addPostSetupTask($name, \EasyDeployWorkflows\Tasks\AbstractTask $step) {
+		if (isset($this->postSetupTasks[$name])) {
+			throw new \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException($name.' already existend!');
+		}
+		$step->validate();
+		$this->postSetupTasks[$name] = $step;
+	}
+
+	public function getPreSetupTasks() {
+		return $this->preSetupTasks;
+	}
+
+	public function getPostSetupTasks() {
+		return $this->postSetupTasks;
+	}
 
 
 	/**
