@@ -82,7 +82,7 @@ class SetupDatabaseFromBackupStorage extends \EasyDeployWorkflows\Tasks\Abstract
 	 */
 	protected function prependCommandWithChangeToFolder($command,$taskRunInformation) {
 		if (isset($this->changeToFolder)) {
-			$command ='cd '.$this->replaceConfigurationMarkersWithTaskRunInformation($this->changeToFolder,$taskRunInformation).' '.$command;
+			$command ='cd '.$this->replaceConfigurationMarkersWithTaskRunInformation($this->changeToFolder,$taskRunInformation).'; '.$command;
 		}
 		return $command;
 	}
