@@ -107,8 +107,8 @@ class MagentoApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		$sharedFolder = $this->replaceMarkers($this->workflowConfiguration->getSharedFolder());
 		if (!empty($sharedFolder)) {
 			$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
-			$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next');
-			$task->setCommand('ln -s '.$sharedFolder.'media media');
+			$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next/htdocs');
+			$task->setCommand('rm -rf media && ln -s '.$sharedFolder.'media media');
 			$task->addServersByName($this->workflowConfiguration->getInstallServers());
 			$this->addTask('Link shared folder',$task);
 		}
