@@ -21,9 +21,11 @@ class Rsync extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 	/**
 	 * @param string $sourceFolder
+	 * @return self
 	 */
 	public function setSourceFolder($sourceFolder) {
 		$this->sourceFolder = $sourceFolder;
+		return $this;
 	}
 
 	/**
@@ -35,9 +37,11 @@ class Rsync extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 	/**
 	 * @param string $targetFolder
+	 * @return self
 	 */
 	public function setTargetFolder($targetFolder) {
 		$this->targetFolder = $targetFolder;
+		return $this;
 	}
 
 	/**

@@ -21,7 +21,7 @@ class SetupDatabaseFromBackupStorage extends \EasyDeployWorkflows\Tasks\Abstract
 	 */
 	protected $detectDbSettingsScriptPath;
 
-	protected $databaseImportScript = 'mgdeployscripts/import_dump_diffable.sh -u "###DB_USERNAME###" -p "###DB_PASSWORD###" -h "###DB_HOST###" -d "###DB_DBNAME###" -s "###BACKUPSOURCEFOLDER###/database"';
+	protected $databaseImportScript = 'mgdeployscripts/import_dump_diffable.sh -u "###DB_USER###" -p "###DB_PASSWORD###" -h "###DB_HOST###" -d "###DB_NAME###" -s "###BACKUPSOURCEFOLDER###/db/latest"';
 
 	protected $changeToFolder;
 

@@ -23,6 +23,7 @@ class MagentoApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		$this->addUpdateNextSymlinkTask();
 		$this->addPreSetupTasks();
 		$this->addSetupTasks();
+		$this->addSymlinkSharedFoldersTasks();
 		$this->addPostSetupTasks();
 		$this->addSmokeTestTasks();
 		$this->addSwitchTask();
@@ -97,6 +98,20 @@ class MagentoApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		$task->setCommand($command);
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Magento Setup Script',$task);
+	}
+
+	/**
+	 * Symlinks media folder
+	 */
+	protected function addSymlinkSharedFoldersTasks() {
+		$sharedFolder = $this->replaceMarkers($this->workflowConfiguration->getSharedFolder());
+		if (!empty($sharedFolder)) {
+			$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
+			$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next');
+			$task->setCommand('ln -s '.$sharedFolder.'media media');
+			$task->addServersByName($this->workflowConfiguration->getInstallServers());
+			$this->addTask('Link shared folder',$task);
+		}
 	}
 
 	/**
