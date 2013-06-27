@@ -30,6 +30,11 @@ class SetupDatabaseFromBackupStorage extends \EasyDeployWorkflows\Tasks\Abstract
 	protected $dbUser;
 	protected $dbPassword;
 
+	/**
+	 * @var bool
+	 */
+	protected $skipIfTablesExist = true;
+
 
 
 	/**
@@ -66,15 +71,55 @@ class SetupDatabaseFromBackupStorage extends \EasyDeployWorkflows\Tasks\Abstract
 			throw new \Exception('No database host given - cannot setup from backupstorage');
 		}
 
+		/*
+		 * todo
+		 * if (!$this->databaseConnectionWorks()) {
+			throw new \Exception('DB connection not working from server');
+		}
+		 */
 
+
+		$host = $this->replaceConfigurationMarkersWithTaskRunInformation($this->dbHost,$taskRunInformation);
+		$dbName = $this->replaceConfigurationMarkersWithTaskRunInformation($this->dbName,$taskRunInformation);
+		$dbUser = $this->replaceConfigurationMarkersWithTaskRunInformation($this->dbUser,$taskRunInformation);
+		$dbPassword = $this->replaceConfigurationMarkersWithTaskRunInformation($this->dbPassword,$taskRunInformation);
+		if ($this->skipIfTablesExist && $this->databaseHasTables($server,$host,$dbName,$dbUser,$dbPassword)) {
+			$this->logger->log('The database already has tables - skipping import!',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
+			return;
+		}
 		$importCommand = $this->replaceConfigurationMarkersWithTaskRunInformation($this->databaseImportScript,$taskRunInformation);
-		$importCommand = str_replace('###DB_HOST###',$this->replaceConfigurationMarkersWithTaskRunInformation($this->dbHost,$taskRunInformation),$importCommand);
-		$importCommand = str_replace('###DB_NAME###',$this->replaceConfigurationMarkersWithTaskRunInformation($this->dbName,$taskRunInformation),$importCommand);
-		$importCommand = str_replace('###DB_USER###',$this->replaceConfigurationMarkersWithTaskRunInformation($this->dbUser,$taskRunInformation),$importCommand);
-		$importCommand = str_replace('###DB_PASSWORD###',$this->replaceConfigurationMarkersWithTaskRunInformation($this->dbPassword,$taskRunInformation),$importCommand);
+		$importCommand = str_replace('###DB_HOST###',$host,$importCommand);
+		$importCommand = str_replace('###DB_NAME###',$dbName,$importCommand);
+		$importCommand = str_replace('###DB_USER###',$dbUser,$importCommand);
+		$importCommand = str_replace('###DB_PASSWORD###',$dbPassword,$importCommand);
 		$importCommand = str_replace('###BACKUPSOURCEFOLDER###',$this->replaceConfigurationMarkersWithTaskRunInformation($this->backupSourceFolder,$taskRunInformation),$importCommand);
+
 		$this->executeAndLog($server,$this->prependCommandWithChangeToFolder($importCommand,$taskRunInformation));
 	}
+
+	/**
+	 * @param $server
+	 * @param $host
+	 * @param $dbName
+	 * @param $dbUser
+	 * @param $dbPassword
+	 * @return bool
+	 */
+	protected function databaseHasTables($server,$host,$dbName,$dbUser,$dbPassword) {
+		try {
+			$tables = $server->run('mysql -u '.$dbUser.' -p'.$dbPassword.' -h '.$host.' '.$dbName.' -e "show tables"',FALSE,TRUE);
+			if (strpos($tables,'core_config_data') !==false) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		catch (\EasyDeploy_Exception_CommandFailedException $e) {
+			return false;
+		}
+	}
+
 
 	/**
 	 * @param $command
