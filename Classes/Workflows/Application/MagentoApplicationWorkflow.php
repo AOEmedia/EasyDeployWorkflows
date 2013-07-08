@@ -120,7 +120,9 @@ class MagentoApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 	 * @return void
 	 */
 	protected function addPostSetupTasks() {
-
+        foreach ($this->workflowConfiguration->getPostSetupTasks() as $name => $task) {
+            $this->addTask($name,$task);
+        }
 	}
 
 	/**
