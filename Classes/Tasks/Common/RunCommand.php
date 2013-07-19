@@ -18,6 +18,11 @@ class RunCommand extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 */
 	protected $changeToDirectory;
 
+	/**
+	 * @var bool
+	 */
+	protected $runInBackground = FALSE;
+
 
 
 	/**
@@ -34,6 +39,21 @@ class RunCommand extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 		$this->changeToDirectory = $changeToDirectory;
 	}
 
+	/**
+	 * @param boolean $runInBackground
+	 */
+	public function setRunInBackground($runInBackground) {
+		$this->runInBackground = $runInBackground;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getRunInBackground() {
+		return $this->runInBackground;
+	}
+
+
 
 	/**
 	 * @param TaskRunInformation $taskRunInformation
@@ -41,6 +61,9 @@ class RunCommand extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 */
 	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 		$command = $this->command;
+		if ($this->runInBackground) {
+			$command .= ' >/dev/null &';
+		}
 		if (isset($this->changeToDirectory)) {
 			$command = 'cd '.$this->changeToDirectory.'; '.$command;
 		}

@@ -17,6 +17,12 @@ class MagentoApplicationConfiguration extends ReleaseFolderApplicationConfigurat
 	 */
 	protected $setupCommand = './Setup/Setup.sh';
 
+	protected $reindexAllMode;
+
+	const REINDEX_MODE_NONE = 0;
+	const REINDEX_MODE_FOREGROUND = 1;
+	const REINDEX_MODE_BACKGROUND = 2;
+
 	/**
 	 * @return bool
 	 */
@@ -29,6 +35,27 @@ class MagentoApplicationConfiguration extends ReleaseFolderApplicationConfigurat
 		*/
 		return true;
 	}
+
+	/**
+	 * @param mixed $reindexAllMode
+	 * @return self
+	 */
+	public function setReindexAllMode($reindexAllMode) {
+		$this->reindexAllMode = $reindexAllMode;
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getReindexAllMode() {
+		if (!isset($this->reindexAllMode) || !in_array($this->reindexAllMode,array(0,1,2))) {
+			return self::REINDEX_MODE_NONE;
+		}
+		return $this->reindexAllMode;
+	}
+
+
 
 	/**
 	 * @return string
