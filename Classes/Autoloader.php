@@ -1,5 +1,8 @@
 <?php
 
+/* Bug https://bugs.php.net/bug.php?id=43200 requires PHP to be >= 5.3.9 */
+if (version_compare(PHP_VERSION, '5.3.9') < 0) die('EasyDeployWorkflow neede PHP v5.3.9 or above because of bug https://bugs.php.net/bug.php?id=43200');
+
 namespace EasyDeployWorkflows;
 
 spl_autoload_register(__NAMESPACE__ .'\Autoloader::autoload');
