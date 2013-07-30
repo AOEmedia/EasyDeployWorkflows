@@ -77,8 +77,28 @@ class Untar extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 		if (!$server->isFile($folder.$packageFileName)) {
 			throw new \Exception('The given file "'.$folder.$packageFileName.'" is not existend.');
 		}
-		//extract
-		$server->run('cd ' . $folder . '; tar -xzf ' . $packageFileName);
+		
+		// extract
+		if ($this->isOfTypeZip($packageFileName)) {
+			$server->run('cd ' . $folder . '; unzip ' . $packageFileName);
+		} else {
+			$server->run('cd ' . $folder . '; tar -xzf ' . $packageFileName);
+		}
+	}
+
+	/**
+	 * Indicate if the given file is of type Zip or not
+	 *
+	 * @return boolean
+	 */
+	protected function isOfTypeZip($filename) {
+		$extension = strtolower(substr($filename, -3));
+		
+		if ($extension === 'zip') {
+			return TRUE;
+		}
+		
+		return FALSE;
 	}
 
 	/**
