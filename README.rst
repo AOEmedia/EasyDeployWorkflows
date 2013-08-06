@@ -258,6 +258,6 @@ You should also check for https://github.com/AOEmedia/EnvSettingsTool, you may w
 
 
 
-.. |buildStatusIcon| image:: https://travis-ci.org/AOEmedia/EasyDeployWorkflows.png?branch=refactorworkflow
+.. |buildStatusIcon| image:: https://travis-ci.org/AOEmedia/EasyDeployWorkflows.png?branch=refactorworkflows
 :alt: Build Status
    :target: http://travis-ci.org/AOEmedia/EasyDeployWorkflows
