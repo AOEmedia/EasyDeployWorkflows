@@ -170,11 +170,6 @@ You can also set a custom log file by:
    \EasyDeployWorkflows\Logger\Logger::getInstance()->setLogFile();
 
 
-.. |buildStatusIcon| image:: https://travis-ci.org/AOEmedia/EasyDeployWorkflows.png?branch=master
-   :alt: Build Status
-   :target: http://travis-ci.org/AOEmedia/EasyDeployWorkflows
-
-
 
 
 
@@ -261,4 +256,8 @@ Read it in shell
 You should also check for https://github.com/AOEmedia/EnvSettingsTool, you may want to include this in your application and use it for configuration.
 
 
-If you con
+
+
+.. |buildStatusIcon| image:: https://travis-ci.org/AOEmedia/EasyDeployWorkflows.png?branch=refactorworkflow
+:alt: Build Status
+   :target: http://travis-ci.org/AOEmedia/EasyDeployWorkflows
