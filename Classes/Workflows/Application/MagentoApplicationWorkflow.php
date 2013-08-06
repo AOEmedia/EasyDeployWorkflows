@@ -12,6 +12,16 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 	protected $workflowConfiguration;
 
 	/**
+	 * add version file write
+	 */
+	protected function addWriteVersionFileTask() {
+		$task = new \EasyDeployWorkflows\Tasks\Common\WriteVersionFile();
+		$task->setTargetPath($this->getFinalReleaseBaseFolder().'next/htdocs');
+		$task->setVersion($this->workflowConfiguration->getReleaseVersion());
+		$this->addTask('Write Version File',$task);
+	}
+
+	/**
 	 * Symlinks media folder
 	 */
 	protected function addSymlinkSharedFoldersTasks() {
@@ -63,8 +73,6 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 				return;
 			break;
 		}
-
-
 	}
 
 

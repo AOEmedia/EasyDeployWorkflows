@@ -22,6 +22,7 @@ class ReleaseFolderApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		$this->addTasksToDownloadFromSourceToReleaseFolder();
 		$this->addUpdateNextSymlinkTask();
 		$this->addPreSetupTasks();
+		$this->addWriteVersionFileTask();
 		$this->addSetupTasks();
 		$this->addSymlinkSharedFoldersTasks();
 		$this->addPostSetupTasks();
@@ -83,6 +84,16 @@ class ReleaseFolderApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		foreach ($this->workflowConfiguration->getPreSetupTasks() as $name => $task) {
 			$this->addTask($name,$task);
 		}
+	}
+
+	/**
+	 * add version file write
+	 */
+	protected function addWriteVersionFileTask() {
+		$task = new \EasyDeployWorkflows\Tasks\Common\WriteVersionFile();
+		$task->setTargetPath($this->getFinalReleaseBaseFolder().'next');
+		$task->setVersion($this->workflowConfiguration->getReleaseVersion());
+		$this->addTask('Write Version File',$task);
 	}
 
 	/**
