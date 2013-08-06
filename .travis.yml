@@ -4,3 +4,4 @@ php:
   - "5.3"
 script:
   - phpunit -c Tests/phpunit.xml
+  - phpunit -c Tests/phpunit.acceptance.xml

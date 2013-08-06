@@ -18,6 +18,7 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 		$task = new \EasyDeployWorkflows\Tasks\Common\WriteVersionFile();
 		$task->setTargetPath($this->getFinalReleaseBaseFolder().'next/htdocs');
 		$task->setVersion($this->workflowConfiguration->getReleaseVersion());
+		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Write Version File',$task);
 	}
 

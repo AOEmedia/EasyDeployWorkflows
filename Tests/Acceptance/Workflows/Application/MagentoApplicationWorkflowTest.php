@@ -29,6 +29,7 @@ class MagentoApplicationWorkflowTest extends \EasyDeployWorkflows\Tests\Acceptan
 		$workflow->deploy();
 
 		$this->assertTrue(is_file($this->targetFolder.'/release1/htdocs/index.php'),'Expected to have the /release1/htdocs/index.php target folder:'.$this->targetFolder);
+		$this->assertTrue(is_file($this->targetFolder.'/current/htdocs/version.txt'),'Expected to have the version file:'.$this->targetFolder);
 
 	}
 

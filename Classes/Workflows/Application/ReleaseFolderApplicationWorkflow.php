@@ -93,6 +93,7 @@ class ReleaseFolderApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		$task = new \EasyDeployWorkflows\Tasks\Common\WriteVersionFile();
 		$task->setTargetPath($this->getFinalReleaseBaseFolder().'next');
 		$task->setVersion($this->workflowConfiguration->getReleaseVersion());
+		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Write Version File',$task);
 	}
 

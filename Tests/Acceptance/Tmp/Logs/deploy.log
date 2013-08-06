@@ -1,0 +1,29 @@
+
+INFO: [Workflow]  (EasyDeployWorkflows\Workflows\Application\StandardApplicationWorkflow)
+	INFO: [Task] check correct deploy node
+		OK: [Task Successful]
+	INFO: [Task] Download Package
+		INFO: Run on Server localhost
+			INFO: Download Infos: Copy from:/Users/danielpotzinger/Development/QVC/newdeployment/EasyDeployWorkflows/Tests/../Tests/Acceptance/Fixtures/Source/BasicApplication.tar.gz to /Users/danielpotzinger/Development/QVC/newdeployment/EasyDeployWorkflows/Tests/../Tests/Acceptance/Tmp/Delivery/ on server Daniels-MacBook-Pro.local
+			COMMAND: cp  /Users/danielpotzinger/Development/QVC/newdeployment/EasyDeployWorkflows/Tests/../Tests/Acceptance/Fixtures/Source/BasicApplication.tar.gz /Users/danielpotzinger/Development/QVC/newdeployment/EasyDeployWorkflows/Tests/../Tests/Acceptance/Tmp/Delivery/
+			COMMANDOUTPUT: 
+			INFO: Download ready
+		OK: [Task Successful]
+	INFO: [Task] Untar Package
+		INFO: Run on Server localhost
+			COMMAND: cd /Users/danielpotzinger/Development/QVC/newdeployment/EasyDeployWorkflows/Tests/../Tests/Acceptance/Tmp/Delivery/; tar -xzf BasicApplication.tar.gz
+			COMMANDOUTPUT: 
+		OK: [Task Successful]
+	INFO: [Task] Install Package
+		INFO: Run on Server localhost
+			COMMAND: rsync -az /Users/danielpotzinger/Development/QVC/newdeployment/EasyDeployWorkflows/Tests/../Tests/Acceptance/Tmp/Delivery/BasicApplication/ /Users/danielpotzinger/Development/QVC/newdeployment/EasyDeployWorkflows/Tests/../Tests/Acceptance/Tmp/Target/
+			COMMANDOUTPUT: 
+		OK: [Task Successful]
+	INFO: [Task] Cleanup Archive
+		INFO: Run on Server localhost
+			COMMAND: rm -rf /Users/danielpotzinger/Development/QVC/newdeployment/EasyDeployWorkflows/Tests/../Tests/Acceptance/Tmp/Delivery/BasicApplication
+			COMMANDOUTPUT: 
+		OK: [Task Successful]
+	OK: 
+[Workflow Successful]
+
