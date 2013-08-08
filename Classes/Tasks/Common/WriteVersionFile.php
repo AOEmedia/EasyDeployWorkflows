@@ -52,6 +52,7 @@ class WriteVersionFile extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 */
 	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 			$this->executeAndLog($server,'echo "'.$this->version.'" > '.$this->targetPath.'version.txt');
+		$this->executeAndLog($server,'echo "'.gmdate('r').'" > '.$this->targetPath.'deploytime.txt');
 	}
 
 	/**
