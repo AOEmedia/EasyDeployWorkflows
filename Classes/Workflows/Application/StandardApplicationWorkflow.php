@@ -4,7 +4,7 @@ namespace EasyDeployWorkflows\Workflows\Application;
 
 use EasyDeployWorkflows\Workflows as Workflows;
 
-class StandardApplicationWorkflow extends Workflows\TaskBasedWorkflow {
+class StandardApplicationWorkflow extends BaseApplicationWorkflow {
 
 	/**
 	 * @var StandardApplicationConfiguration
@@ -19,6 +19,8 @@ class StandardApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		$this->addTask('check correct deploy node',
 			new \EasyDeployWorkflows\Tasks\Common\CheckCorrectDeployNode());
 
+		$this->addPreSetupTasks();
+
 		$task = $this->getDownloadPackageTask();
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Download Package',$task	);
@@ -27,16 +29,32 @@ class StandardApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Untar Package', $task);
 
-		$extractedFolder = $this->replaceMarkers($this->getFinalDeliveryFolder()) . $this->getFileBaseName($this->workflowConfiguration->getSource()->getFileName());
+		$extractedFolder = $this->replaceMarkers($this->getFinalDeliveryFolder() . $this->workflowConfiguration->getSource()->getFileNameWithOutExtension());
 
 		$task = $this->getInstallPackageTask($extractedFolder);
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Install Package', $task);
 
+		$this->addPostSetupTasks();
+
 		$task = $this->getCleanupTask($extractedFolder);
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Cleanup Archive',$task);
 
+	}
+
+	/**
+	 * Installation of Magento
+	 *
+	 * @return void
+	 */
+	protected function addSetupTasks()
+	{
+		$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
+
+
+		$task->addServersByName($this->workflowConfiguration->getInstallServers());
+		$this->addTask('Setup Script',$task);
 	}
 
 	/**
@@ -46,10 +64,14 @@ class StandardApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 	 */
 	protected function getInstallPackageTask($extractedFolder)
 	{
-		$step = new \EasyDeployWorkflows\Tasks\Common\Rsync();
-		$step->setSourceFolder($extractedFolder);
-		$step->setTargetFolder($this->replaceMarkers($this->workflowConfiguration->getInstallationTargetFolder()));
-		return $step;
+		$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
+		$task->setChangeToDirectory($extractedFolder);
+
+		$command = $this->replaceMarkers($this->workflowConfiguration->getSetupCommand());
+		$command = str_replace('###targetfolder###',$this->replaceMarkers($this->workflowConfiguration->getInstallationTargetFolder()),$command);
+		$task->setCommand($command);
+
+		return $task;
 	}
 
 	/**
@@ -70,6 +92,7 @@ class StandardApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 	{
 		$step = new \EasyDeployWorkflows\Tasks\Common\SourceEvaluator();
 		$step->setSource($this->workflowConfiguration->getSource());
+		$step->setNotIfPathExists($this->getFinalDeliveryFolder().$this->workflowConfiguration->getSource()->getFileName());
 		$step->setParentFolder($this->getFinalDeliveryFolder());
 		$step->setNotIfPathExists($this->getFinalDeliveryFolder() . $this->workflowConfiguration->getSource()->getFileName());
 		return $step;

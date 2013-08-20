@@ -41,9 +41,12 @@ class DownloadSource implements FileSourceInterface  {
 		if (!isset($parsedUrlParts['scheme'])) {
 			throw new \Exception('No valid Download Source given. ('.$url.')');
 		}
-
+		$anchorFragment = '';
+		if (isset($parsedUrlParts['fragment'])) {
+			$anchorFragment = '#'.$parsedUrlParts['fragment'];
+		}
 		$command = 'cd '.$parentFolder.';';
-		$command .= 'wget '.$options.$parsedUrlParts['scheme'].'://'.$parsedUrlParts['host'].$parsedUrlParts['path'].@$parsedUrlParts['fragment'];
+		$command .= 'wget '.$options.$parsedUrlParts['scheme'].'://'.$parsedUrlParts['host'].$parsedUrlParts['path'].$anchorFragment;
 		return $command;
 	}
 
@@ -72,6 +75,13 @@ class DownloadSource implements FileSourceInterface  {
 	 */
 	public function getFileName() {
 		return $this->getFilenameFromPath($this->url);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getFileNameWithOutExtension() {
+		return substr($this->getFileName(),0,strpos($this->getFileName(),'.'));
 	}
 
 	/**

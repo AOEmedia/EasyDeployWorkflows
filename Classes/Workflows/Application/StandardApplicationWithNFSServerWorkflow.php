@@ -7,7 +7,7 @@ use EasyDeployWorkflows\Workflows as Workflows;
 class StandardApplicationWithNFSServerWorkflow extends StandardApplicationWorkflow {
 
 	/**
-	 * @var BasicApplicationWithNFSServerConfiguration
+	 * @var StandardApplicationWithNFSServerConfiguration
 	 */
 	protected $workflowConfiguration;
 
@@ -27,7 +27,7 @@ class StandardApplicationWithNFSServerWorkflow extends StandardApplicationWorkfl
 		$task->addServerByName($this->workflowConfiguration->getNFSServer());
 		$this->addTask('Untar Package', $task);
 
-		$extractedFolder = $this->replaceMarkers($this->getFinalDeliveryFolder()) . $this->getFileBaseName($this->workflowConfiguration->getSource()->getFileName());
+		$extractedFolder = $this->replaceMarkers($this->getFinalDeliveryFolder() . $this->workflowConfiguration->getSource()->getFileNameWithOutExtension());
 
 		$task = $this->getInstallPackageTask($extractedFolder);
 		$task->addServerByName($this->workflowConfiguration->getNFSServer());
@@ -53,6 +53,7 @@ class StandardApplicationWithNFSServerWorkflow extends StandardApplicationWorkfl
 	{
 		$step = new \EasyDeployWorkflows\Tasks\Common\RunScript();
 		$step->setScript($this->workflowConfiguration->getSyncFromNFSScript());
+		$step->addServersByName($this->workflowConfiguration->getNfsServer());
 		$step->setIsOptional(true);
 		return $step;
 	}

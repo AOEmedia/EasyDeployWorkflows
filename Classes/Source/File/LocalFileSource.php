@@ -55,6 +55,13 @@ class LocalFileSource implements FileSourceInterface  {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getFileNameWithOutExtension() {
+		return substr($this->getFileName(),0,strpos($this->getFileName(),'.'));
+	}
+
+	/**
 	 * @param $path
 	 * @return string
 	 */

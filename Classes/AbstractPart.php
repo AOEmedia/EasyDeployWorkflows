@@ -83,8 +83,4 @@ abstract class AbstractPart {
 		return str_replace($dir,'',$path);
 	}
 
-	protected function getFileBaseName($filename) {
-		return substr($filename,0,strpos($filename,'.'));
-	}
-
 }

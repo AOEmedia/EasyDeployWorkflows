@@ -103,6 +103,7 @@ class SourceEvaluator extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 			return;
 		}
 
+		# skip or delete file if existend
 		if ($this->source instanceof \EasyDeployWorkflows\Source\File\FileSourceInterface
 			&& $server->isFile($parentFolder.$this->source->getFileName())) {
 			if ($this->deleteBeforeDownload) {
@@ -113,16 +114,19 @@ class SourceEvaluator extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 				return;
 			}
 		}
-
+		# skip if folder is existend
 		if ($this->source instanceof \EasyDeployWorkflows\Source\Folder\FolderSourceInterface
 			&& $server->isDir($parentFolder.$this->source->getFolderName())) {
 			$this->logger->log('Target Folder "'.$parentFolder.$this->source->getFolderName().'" already exists! I am skipping the download!',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 			return;
 		}
-
-		$this->logger->log('Download Infos: '.$this->source->getShortExplain().' to '.$parentFolder.' on server '.$server->getHostname());
-		$command = $this->replaceConfigurationMarkers($this->source->getDownloadCommand($parentFolder),$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
-		$this->executeAndLog($server,$command);
+		# download
+		if (!$server->isDir($parentFolder)) {
+			$this->executeAndLog($server, 'mkdir '.$parentFolder);
+		}
+		$this->logger->log('Download Infos: '. $this->replaceConfigurationMarkersWithTaskRunInformation($this->source->getShortExplain(),$taskRunInformation).' to '.$parentFolder.' on server '.$server->getHostname());
+		$command = $this->replaceConfigurationMarkersWithTaskRunInformation($this->source->getDownloadCommand($parentFolder),$taskRunInformation);
+		$this->executeAndLog($server, $command);
 		$this->logger->log('Download ready');
 	}
 

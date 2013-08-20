@@ -46,7 +46,7 @@ class ServletWorkflowTest extends AbstractMockedTest {
 		$dowloadFromCiServerTask = $workflow->getTaskByName('Download tracker war to local delivery folder');
 		$this->assertEquals(1,count($dowloadFromCiServerTask->getServers()));
 		$this->assertTrue($dowloadFromCiServerTask instanceof EasyDeployWorkflows\Tasks\Common\SourceEvaluator);
-		$this->assertEquals('cd /;wget http://www.test.com/homer.simpson/##releaseversion###/somedownloadpackage.tar.gz', $dowloadFromCiServerTask->getSource()->getDownloadCommand('/'));
+		$this->assertEquals('cd /;wget http://www.test.com/homer.simpson/###releaseversion###/somedownloadpackage.tar.gz', $dowloadFromCiServerTask->getSource()->getDownloadCommand('/'));
 		$this->assertEquals('/home/download/nasa/4711/', $dowloadFromCiServerTask->getParentFolder());
 
 		//second uploads to servlet servers

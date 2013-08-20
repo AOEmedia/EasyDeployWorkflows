@@ -10,70 +10,9 @@ use EasyDeployWorkflows\Workflows\Exception as Exception;
  * Configuration for the Basic Application Workflow
  *
  */
-class ReleaseFolderApplicationConfiguration extends Workflows\AbstractWorkflowConfiguration {
+class ReleaseFolderApplicationConfiguration extends AbstractBaseApplicationConfiguration {
 
-	/**
-	 * @var the command for configuring the application
-	 */
-	protected $setupCommand;
 
-	/**
-	 * @var array
-	 */
-	protected $preSetupTasks = array();
-
-	/**
-	 * @var array
-	 */
-	protected $postSetupTasks = array();
-
-	/**
-	 * @param \EasyDeployWorkflows\Workflows\Application\the $configurationCommand
-	 */
-	public function setSetupCommand($configurationCommand) {
-		$this->setupCommand = $configurationCommand;
-	}
-
-	/**
-	 * @return \EasyDeployWorkflows\Workflows\Application\the
-	 */
-	public function getSetupCommand() {
-		return $this->setupCommand;
-	}
-
-	/**
-	 * @param $name
-	 * @param \EasyDeployWorkflows\Tasks\AbstractTask $step
-	 * @throws \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException
-	 */
-	public function addPreSetupTask($name, \EasyDeployWorkflows\Tasks\AbstractTask $step) {
-		if (isset($this->preSetupTasks[$name])) {
-			throw new \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException($name.' already existend!');
-		}
-		$step->validate();
-		$this->preSetupTasks[$name] = $step;
-	}
-
-	/**
-	 * @param $name
-	 * @param \EasyDeployWorkflows\Tasks\AbstractTask $step
-	 * @throws \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException
-	 */
-	public function addPostSetupTask($name, \EasyDeployWorkflows\Tasks\AbstractTask $step) {
-		if (isset($this->postSetupTasks[$name])) {
-			throw new \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException($name.' already existend!');
-		}
-		$step->validate();
-		$this->postSetupTasks[$name] = $step;
-	}
-
-	public function getPreSetupTasks() {
-		return $this->preSetupTasks;
-	}
-
-	public function getPostSetupTasks() {
-		return $this->postSetupTasks;
-	}
 
 
 	/**
@@ -117,29 +56,6 @@ class ReleaseFolderApplicationConfiguration extends Workflows\AbstractWorkflowCo
 		return $this->getSharedFolder() !='';
 	}
 
-
-	/**
-	 * @return array
-	 */
-	public function getInstallServers() {
-		return $this->getServers('installserver');
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasInstallServers() {
-		return count($this->getInstallServers()) > 0;
-	}
-
-	/**
-	 * @param string $hostName
-	 * @return self
-	 */
-	public function addInstallServer($hostName) {
-		$this->addServer($hostName,'installserver');
-		return $this;
-	}
 
 
 	/**

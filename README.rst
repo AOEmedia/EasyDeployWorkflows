@@ -170,32 +170,12 @@ You can also set a custom log file by:
    \EasyDeployWorkflows\Logger\Logger::getInstance()->setLogFile();
 
 
-
-
-
-Workflow: SimpleApplicationWorkflow
-----------------------------------
-This is a simple Workflow that deploys a common Application based on a available archive.
-It deploys the Application to multiple Servers and uses the following steps:
-
- 1. Downloads the Artifact from the configured Source to all configured servers (to the delivery folder).
- 2. Extract the Artifact on all configured servers (within the delivery folder)
- 3. Install: Rsyncs the Artifact on all configured servers to the configured install target folder
- 4. Cleanup the extracted Folder
-
-Workflow: SimpleApplicationWithNFSServerWorkflow
-----------------------------------
-Like ArchivedApplicationWorkflow, but it expects, that there is a central NFS server that has the filesystem shared with potential frontend servers.
-It deploys the Application to your infrastructure by doing the same step like using the ArchivedApplicationWorkflow only on the NFS server.
-But followed by a Sync Script on all the configured Installservers (Frontendservers).
-
-
 Workflow: ReleaseFolderApplicationWorkflow
 ----------------------------------
-This is a simple Workflow that deploys a common Application based on a available source.
-It used the commonly used Releasefolder Pattern:
+This is a typical best practice Workflow.
+It deploys a common Application based on a available source and uses the Releasefolder Pattern:
 
-<TargetReleaseFolder>
+<ReleaseBaseFolder>
    -  <ReleaseVersion1>
    -  <ReleaseVersion2>
    -  <ReleaseVersion3>
@@ -205,21 +185,107 @@ It used the commonly used Releasefolder Pattern:
 
 Your htdocs folder typically points to something like this:
 
-- htdocs to <TargetReleaseFolder>/current/Public
-- htdocsNext to <TargetReleaseFolder>/next/Public
+- htdocs to <ReleaseBaseFolder>/current/Public
+- htdocsNext to <ReleaseBaseFolder>/next/Public
 
 It deploys the Application to multiple Servers and uses the following steps:
+::
+	$this->addTasksToDownloadFromSourceToReleaseFolder();
+	$this->addUpdateNextSymlinkTask();
+	$this->addPreSetupTasks();
+	$this->addWriteVersionFileTask();
+	$this->addSetupTasks();
+	$this->addSymlinkSharedFoldersTasks();
+	$this->addPostSetupTasks();
+	$this->addSmokeTestTasks();
+	$this->addSwitchTask();
+	$this->addPostSwitchTasks();
+	# Cleanup old releases
+	$this->addCleanupTasks();
 
- 1. Optional: Might prepare the permission on the environment (with a given script)
- 2. Downloads the Artifact from the configured Source to all configured servers - directly to <ReleaseBaseFolder>/<ReleaseVersion> (It makes sure that it works for Archives and Folder Sources and takes care of renaming etc.)
- 3. Optional: Performs some "PreConfigure" tasks
- 4. Optional: Configures the application (that is done by calling a configuration script in the package.) This step should normally adjust the application to the environment. (see below for tipps)
- 5. Optional: Performs some "PostConfige"
- 6. Sets the "next" symlink to new Release
- 7. Optional: Executes SmokeTests
- 8. Updates current and previous symlink
- 9. Optional: Performs some "PostSwitch" tasks
+The workflow can be configured:
+ReleaseFolderApplicationConfiguration:
++-------------------------+-----------------------------------------+
+| Configuration           | Description                             |
++=========================+=========================================+
+| setReleaseBaseFolder    | root of release folder (see above)      |
++-------------------------+-----------------------------------------+
+| setSharedFolder         | Folder with shared ressources           |
++-------------------------+-----------------------------------------+
+| addInstallServer        | The servers where the workflow should be executed        |
++-------------------------+-----------------------------------------+
+| setSetupCommand         | Defaults to "rsync -az . ###targetfolder###"             |
+|                         | use the common markers and the marker ###targetfolder### |
++-------------------------+-----------------------------------------+
+| addPreSetupTask         | add as many Tasks like you want to be executed before Setup |
++-------------------------+-----------------------------------------+
+| addPostSetupTask        | add as many Tasks like you want to be executed after Setup |
++-------------------------+-----------------------------------------+
 
+
+Workflow: MagentoApplicationWorkflow
+----------------------------------
+
+Extends ReleaseFolderApplicationWorkflow and adds Magento Deployment Steps:
+
+ * Expects:
+  	* htdocs folder in the Code Source (with Magento Core Code)
+  	* default Setup command is "./Setup/Setup.sh"
+ * Symlinks media folder in shared ressources folder
+ * As Smoke Test the script "php htdocs/shell/indexer.php status" is called
+
++-------------------------+-----------------------------------------+
+| Configuration           | Description                             |
++=========================+=========================================+
+| setReindexAllMode		  | set a reindex mode (triggerd before switch) Defaults to self::REINDEX_MODE_NONE       |
++-------------------------+-----------------------------------------+
+| ....                    | see above (SimpleApplicationWorkflow )  |
++-------------------------+-----------------------------------------+
+
+
+Workflow: InstallableApplicationWorkflow
+----------------------------------
+This is a simple Workflow that deploys a common Application based on a available archive.
+It deploys the Application to multiple Servers and uses the following steps:
+
+ 1. Downloads the Artifact from the configured Source to all configured servers (to the delivery folder).
+ 2. Extract the Artifact on all configured servers (within the delivery folder)
+ 3. Install (or Setup): Runs a specified Setup command. (Per default it rsyncs the installation target folder)
+ 4. Cleanup the extracted Folder
+
+The workflow can be configured:
+Configuration:
++-------------------------+-----------------------------------------+
+| Configuration           | Description                             |
++=========================+=========================================+
+| setInstallTargetFolder  | used as input for the setupcommand      |
++-------------------------+-----------------------------------------+
+| addInstallServer        | The servers where the workflow should be executed        |
++-------------------------+-----------------------------------------+
+| setSetupCommand         | The Setup Script that is executed. The working Directory for the Execution is the Dowloaded Source. |
+|                         | You can use the common markers and the marker ###targetfolder### |
+|                         | Defaults to "rsync -az . ###targetfolder###"  |
++-------------------------+-----------------------------------------+
+| addPreSetupTask         | add as many Tasks like you want to be executed before Setup |
++-------------------------+-----------------------------------------+
+| addPostSetupTask        | add as many Tasks like you want to be executed after Setup |
++-------------------------+-----------------------------------------+
+
+Workflow: SimpleApplicationWithNFSServerWorkflow
+----------------------------------
+Like SimpleApplicationWorkflow, but it expects, that there is a central NFS server that has the filesystem shared with potential frontend servers.
+It deploys the Application to your infrastructure by doing the same step like using the ArchivedApplicationWorkflow only on the NFS server.
+But followed by a Sync Script on all the configured Installservers (Frontendservers).
+
++-------------------------+-----------------------------------------+
+| Configuration           | Description                             |
++=========================+=========================================+
+| setNFSServer			  | set the name of nfs server (only on the nfs server the application is downloaded and installed)             |
++-------------------------+-----------------------------------------+
+| setSyncFromNFSScript    | this script is executed on all given install servers      |
++-------------------------+-----------------------------------------+
+| ....                    | see above (SimpleApplicationWorkflow )  |
++-------------------------+-----------------------------------------+
 
 Try Run
 --------------------------

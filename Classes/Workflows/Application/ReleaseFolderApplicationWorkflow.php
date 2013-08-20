@@ -4,7 +4,7 @@ namespace EasyDeployWorkflows\Workflows\Application;
 
 use EasyDeployWorkflows\Workflows as Workflows;
 
-class ReleaseFolderApplicationWorkflow extends Workflows\TaskBasedWorkflow {
+class ReleaseFolderApplicationWorkflow extends BaseApplicationWorkflow {
 
 	/**
 	 * @var MagentoApplicationConfiguration
@@ -75,24 +75,13 @@ class ReleaseFolderApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		$this->addTask('Update next symlink',$task);
 	}
 
-	/**
-	 * Possibility to add some tasks
-	 *
-	 * @return void
-	 */
-	protected function addPreSetupTasks() {
-		foreach ($this->workflowConfiguration->getPreSetupTasks() as $name => $task) {
-			$this->addTask($name,$task);
-		}
-	}
+
 
 	/**
 	 * add version file write
 	 */
 	protected function addWriteVersionFileTask() {
-		$task = new \EasyDeployWorkflows\Tasks\Common\WriteVersionFile();
-		$task->setTargetPath($this->getFinalReleaseBaseFolder().'next');
-		$task->setVersion($this->workflowConfiguration->getReleaseVersion());
+		$task = $this->getWriteVersionFileTask($this->getFinalReleaseBaseFolder().'next');
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Write Version File',$task);
 	}
@@ -104,10 +93,7 @@ class ReleaseFolderApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 	 */
 	protected function addSetupTasks()
 	{
-		$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
-		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next');
-		$command = $this->replaceMarkers($this->workflowConfiguration->getSetupCommand());
-		$task->setCommand($command);
+		$task = $this->getSetupTask($this->getFinalReleaseBaseFolder().'next');
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Setup Script',$task);
 	}
@@ -119,16 +105,6 @@ class ReleaseFolderApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 
 	}
 
-	/**
-	 * Possibility to add some tasks
-	 *
-	 * @return void
-	 */
-	protected function addPostSetupTasks() {
-		foreach ($this->workflowConfiguration->getPostSetupTasks() as $name => $task) {
-			$this->addTask($name,$task);
-		}
-	}
 
 	/**
 	 */
@@ -137,6 +113,7 @@ class ReleaseFolderApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 
 	}
 
+
 	protected function addSwitchTask() {
 		$task = new \EasyDeployWorkflows\Tasks\Release\UpdateCurrentAndPrevious();
 		$task->setReleasesBaseFolder($this->getFinalReleaseBaseFolder());
@@ -144,9 +121,6 @@ class ReleaseFolderApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 		$this->addTask('Switch current symlink',$task);
 	}
 
-	protected function addPostSwitchTasks() {
-
-	}
 
 	/**
 	 * clean up old releases

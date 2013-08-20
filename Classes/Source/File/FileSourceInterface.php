@@ -15,5 +15,10 @@ interface FileSourceInterface extends \EasyDeployWorkflows\Source\SourceInterfac
 	 */
 	public function getFileName();
 
+	/**
+	 * @return string
+	 */
+	public function getFileNameWithOutExtension();
+
 
 }

@@ -98,4 +98,7 @@ class SolrWorkflow extends Workflows\AbstractWorkflow {
 		}
 	}
 
+	protected function getFileBaseName($filename) {
+		return substr($filename,0,strpos($filename,'.'));
+	}
 }

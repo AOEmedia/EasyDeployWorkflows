@@ -132,9 +132,10 @@ class DownloadMinifiedBackup extends \EasyDeployWorkflows\Tasks\AbstractServerTa
 		$task->setChangeToDirectory($this->getBackupTargetParentFolder());
 		$task->run($taskRunInformation);
 
+
 		$task = new \EasyDeployWorkflows\Tasks\Common\Rename();
 		$task->addServer($server);
-		$task->setSource($this->getBackupTargetParentFolder() . $this->getDownloadSource()->getFileName());
+		$task->setSource($this->getBackupTargetParentFolder() . $this->getDownloadSource()->getFileNameWithOutExtension());
 		$task->setTarget($this->getBackupTargetParentFolder() . $this->getTargetFolderName());
 		$task->run($taskRunInformation);
 

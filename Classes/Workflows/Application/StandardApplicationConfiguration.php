@@ -10,8 +10,12 @@ use EasyDeployWorkflows\Workflows\Exception as Exception;
  * Configuration for the Basic Application Workflow
  *
  */
-class StandardApplicationConfiguration extends Workflows\AbstractWorkflowConfiguration {
+class StandardApplicationConfiguration extends AbstractBaseApplicationConfiguration {
 
+	/**
+	 * @var string
+	 */
+	protected $setupCommand = 'rsync -az . ###targetfolder###';
 
 
 	/**
