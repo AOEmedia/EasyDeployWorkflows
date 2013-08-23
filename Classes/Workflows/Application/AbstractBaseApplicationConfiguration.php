@@ -27,6 +27,11 @@ abstract class AbstractBaseApplicationConfiguration extends Workflows\AbstractWo
 	 */
 	protected $postSetupTasks = array();
 
+    /**
+     * @var array
+     */
+    protected $smokeTestTasks = array();
+
 	/**
 	 * @param \EasyDeployWorkflows\Workflows\Application\the $configurationCommand
 	 */
@@ -67,6 +72,18 @@ abstract class AbstractBaseApplicationConfiguration extends Workflows\AbstractWo
 		$this->postSetupTasks[$name] = $step;
 	}
 
+    /**
+     * @param $name
+     * @param \EasyDeployWorkflows\Tasks\AbstractTask $task
+     */
+    public function addSmokeTestTask($name, \EasyDeployWorkflows\Tasks\AbstractTask $task) {
+        if (isset($this->smokeTestTasks[$name])) {
+            throw new \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException($name.' already existend!');
+        }
+        $task->validate();
+        $this->smokeTestTasks[$name] = $task;
+    }
+
 	/**
 	 * @return array
 	 */
@@ -80,6 +97,13 @@ abstract class AbstractBaseApplicationConfiguration extends Workflows\AbstractWo
 	public function getPostSetupTasks() {
 		return $this->postSetupTasks;
 	}
+
+    /**
+     * @return array
+     */
+    public function getSmokeTestTasks() {
+        return $this->smokeTestTasks;
+    }
 
 	/**
 	 * @return array
