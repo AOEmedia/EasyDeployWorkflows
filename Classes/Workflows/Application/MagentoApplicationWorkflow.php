@@ -11,6 +11,14 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 	 */
 	protected $workflowConfiguration;
 
+    /**
+     * Contains list of \EasyDeployWorkflows\Tasks\ elements
+     * which then are added in addSmokeTestTasks method
+     *
+     * @var array
+     */
+    protected $smokeTestTasks = array();
+
 	/**
 	 * add version file write
 	 */
@@ -40,11 +48,17 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 	 * See if commandline indexer can return a status
 	 */
 	protected function addSmokeTestTasks() {
+        // add default smoke test
 		$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
 		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next');
 		$task->setCommand('php htdocs/shell/indexer.php status');
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Smoke Test - call status',$task);
+
+        // add defined tasks
+        foreach ($this->smokeTestTasks as $taskData) {
+            $this->addTask($taskData['description'], $taskData['task']);
+        }
 	}
 
 	/**
@@ -75,6 +89,19 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 			break;
 		}
 	}
+
+    /**
+     * Save additional smoke test tasks internally for later execution
+     *
+     * @param $description
+     * @param $task
+     */
+    public function addAdditionalSmokeTestTasks($description, $task) {
+        $this->smokeTestTasks[] = array(
+            'description' => $description,
+            'task'        => $task,
+        );
+    }
 
 
 }
