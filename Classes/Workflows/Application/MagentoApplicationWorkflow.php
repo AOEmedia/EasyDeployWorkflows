@@ -48,8 +48,8 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 		$this->addTask('Smoke Test - call status',$task);
 
         // add defined tasks
-        foreach ($this->workflowConfiguration->getSmokeTestTasks() as $taskData) {
-            $this->addTask($taskData['description'], $taskData['task']);
+        foreach ($this->workflowConfiguration->getSmokeTestTasks() as $description => $task) {
+            $this->addTask($description, $task);
         }
 	}
 
