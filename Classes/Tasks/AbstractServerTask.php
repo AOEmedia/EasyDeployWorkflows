@@ -2,6 +2,8 @@
 
 namespace EasyDeployWorkflows\Tasks;
 
+use EasyDeployWorkflows\Exception\InvalidConfigurationException;
+use EasyDeployWorkflows\Logger\Logger;
 use EasyDeployWorkflows\Workflows;
 
 
@@ -11,28 +13,31 @@ use EasyDeployWorkflows\Workflows;
 abstract class AbstractServerTask extends AbstractTask {
 
 	/**
-	 * @var array
+	 * @var \EasyDeploy_AbstractServer[]
 	 */
 	protected $servers = array();
 
 	/**
 	 * Adds a server on which this task should be executed
-	 * @return self
+	 *
+	 * @param \EasyDeploy_AbstractServer $server
+	 * @return $this
 	 */
 	public function addServer(\EasyDeploy_AbstractServer $server) {
 		$this->servers[] = $server;
+
 		return $this;
 	}
 
 	/**
-	 * @return array
+	 * @return \EasyDeploy_AbstractServer[]
 	 */
 	public function getServers() {
 		return $this->servers;
 	}
 
 	/**
-	 * @return array
+	 * @return bool
 	 */
 	public function hasServers() {
 		return count($this->servers) > 0;
@@ -40,39 +45,46 @@ abstract class AbstractServerTask extends AbstractTask {
 
 	/**
 	 * Adds a server on which this task should be executed
-	 * @return self
+	 *
+	 * @param string $server
+	 * @return $this
+	 * @throws \InvalidArgumentException
 	 */
 	public function addServerByName($server) {
 		if (!is_string($server)) {
-			throw new \InvalidArgumentException('no string given: '.gettype($server));
+			throw new \InvalidArgumentException('no string given: ' . gettype($server));
 		}
 		$this->addServer($this->getServer($server));
+
 		return $this;
 	}
 
 	/**
 	 * Adds servers on which this task should be executed
-	 * @return self
+	 *
+	 * @param string[] $servers
+	 * @return $this
 	 */
 	public function addServersByName(array $servers) {
 		foreach ($servers as $server) {
 			$this->addServerByName($server);
 		}
+
 		return $this;
 	}
 
-
 	/**
 	 * @param TaskRunInformation $taskRunInformation
-	 * @return mixed
+	 * @return mixed|void
+	 * @throws InvalidConfigurationException
 	 */
 	public function run(TaskRunInformation $taskRunInformation) {
 		$this->validate();
 		if (!$this->hasServers()) {
-			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('no server set for server based task: '.get_class($this));
+			throw new InvalidConfigurationException('no server set for server based task: ' . get_class($this));
 		}
-		foreach ($this->getServers() as  $server) {
-			$this->logger->log('Run on Server '.$server->getInternalTitle());
+		foreach ($this->getServers() as $server) {
+			$this->logger->log('Run on Server ' . $server->getInternalTitle());
 			$this->logger->addLogIndentLevel();
 			$this->runOnServer($taskRunInformation, $server);
 			$this->logger->removeLogIndentLevel();
@@ -82,21 +94,25 @@ abstract class AbstractServerTask extends AbstractTask {
 	/**
 	 * Use this function as Wrapper to $server->run($command) to ensure that the output is logged properly
 	 * Also this function takes care of tryRun
+	 *
 	 * @param \EasyDeploy_AbstractServer $server
-	 * @param $command
+	 * @param string $command
+	 * @return null
 	 */
 	protected function executeAndLog(\EasyDeploy_AbstractServer $server, $command) {
-		$this->logger->log($command,\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_COMMAND);
+		$this->logger->log($command, Logger::MESSAGE_TYPE_COMMAND);
 		if (isset($GLOBALS['tryRun'])) {
-			return;
+			return null;
 		}
-		$this->logger->log('',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_COMMANDOUTPUT);
-		return $server->run($command,FALSE,FALSE,$this->logger->getLogFile());
+		$this->logger->log('', Logger::MESSAGE_TYPE_COMMANDOUTPUT);
+
+		return $server->run($command, false, false, $this->logger->getLogFile());
 	}
 
 	/**
 	 * @param TaskRunInformation $taskRunInformation
+	 * @param \EasyDeploy_AbstractServer $server
 	 * @return mixed
 	 */
-	abstract protected function runOnServer(TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server);
+	abstract protected function runOnServer(TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server);
 }
