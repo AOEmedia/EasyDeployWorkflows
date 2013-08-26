@@ -26,13 +26,15 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 	 * Symlinks media folder
 	 */
 	protected function addSymlinkSharedFoldersTasks() {
-		$sharedFolder = $this->replaceMarkers($this->workflowConfiguration->getSharedFolder());
-		if (!empty($sharedFolder)) {
-			$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
-			$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next/htdocs');
-			$task->setCommand('rm -rf media && ln -s '.$sharedFolder.'media media');
-			$task->addServersByName($this->workflowConfiguration->getInstallServers());
-			$this->addTask('Link shared folder',$task);
+		if ($this->workflowConfiguration->hasSharedFolder()) {
+			$sharedFolder = $this->replaceMarkers($this->workflowConfiguration->getSharedFolder());
+			if (!empty($sharedFolder)) {
+				$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
+				$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next/htdocs');
+				$task->setCommand('rm -rf media && ln -s '.$sharedFolder.'media media');
+				$task->addServersByName($this->workflowConfiguration->getInstallServers());
+				$this->addTask('Link shared folder',$task);
+			}
 		}
 	}
 

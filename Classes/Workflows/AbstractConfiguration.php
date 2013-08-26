@@ -2,14 +2,15 @@
 
 namespace EasyDeployWorkflows\Workflows;
 
+use EasyDeployWorkflows\Exception\InvalidConfigurationException;
+use EasyDeployWorkflows\ValidateableInterface;
 use EasyDeployWorkflows\Workflows;
 use EasyDeployWorkflows\Workflows\Exception as Exception;
 
 require_once dirname(__FILE__) . '/../ValidateableInterface.php';
 
 
-abstract class AbstractConfiguration implements \EasyDeployWorkflows\ValidateableInterface {
-
+abstract class AbstractConfiguration implements ValidateableInterface {
 
 	/**
 	 * @var
@@ -26,13 +27,13 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	 */
 	protected $title;
 
-
 	/**
 	 * @param string $scope
 	 * @param int $index
+	 * @return string
 	 */
-	protected function getFolder($scope, $index=0) {
-		if(!isset($this->folders[$scope][$index])) {
+	protected function getFolder($scope, $index = 0) {
+		if (!isset($this->folders[$scope][$index])) {
 			return '';
 		}
 
@@ -41,10 +42,10 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 
 	/**
 	 * @param string $scope
-	 * @param int $index
+	 * @return array
 	 */
 	protected function getFolders($scope) {
-		if(!isset($this->folders[$scope])) {
+		if (!isset($this->folders[$scope])) {
 			return array();
 		}
 
@@ -52,39 +53,58 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	}
 
 	/**
-	 * @param string  $folderName
+	 * @param string $folderName
 	 * @param string $scope
 	 * @param int $index
-	 * @throws InvalidArgumentException
+	 * @return $this
+	 * @throws \InvalidArgumentException
 	 */
 	protected function setFolder($folderName, $scope, $index = 0) {
-		if(!is_int($index)) {
-			throw new \InvalidArgumentException('Invalid index '.serialize($index));
+		if (!is_int($index)) {
+			throw new \InvalidArgumentException('Invalid index ' . serialize($index));
 		}
-		if(!is_string($scope)) {
-			throw new \InvalidArgumentException('Invalid scope '.serialize($scope));
+		if (!is_string($scope)) {
+			throw new \InvalidArgumentException('Invalid scope ' . serialize($scope));
 		}
-		if(!is_string($folderName)) {
-			throw new \InvalidArgumentException('Invalid folder '.serialize($folderName));
+		if (!is_string($folderName)) {
+			throw new \InvalidArgumentException('Invalid folder ' . serialize($folderName));
 		}
-		$folderName = rtrim($folderName,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		$folderName = rtrim($folderName, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 		$this->folders[$scope][$index] = $folderName;
 
 		return $this;
 	}
 
 	/**
-	 * @param string  $folderName
 	 * @param string $scope
 	 * @param int $index
-	 * @throws InvalidArgumentException
+	 * @return $this
+	 * @throws \InvalidArgumentException
+	 */
+	protected function unsetFolder($scope, $index = 0) {
+		if (!is_int($index)) {
+			throw new \InvalidArgumentException('Invalid index ' . serialize($index));
+		}
+		if (!is_string($scope)) {
+			throw new \InvalidArgumentException('Invalid scope ' . serialize($scope));
+		}
+		unset($this->folders[$scope][$index]);
+
+		return $this;
+	}
+
+	/**
+	 * @param string $folderName
+	 * @param string $scope
+	 * @return $this
+	 * @throws \InvalidArgumentException
 	 */
 	protected function addFolder($folderName, $scope) {
-		if(!is_string($scope)) {
-			throw new \InvalidArgumentException('Invalid scope '.serialize($scope));
+		if (!is_string($scope)) {
+			throw new \InvalidArgumentException('Invalid scope ' . serialize($scope));
 		}
-		if(!is_string($folderName)) {
-			throw new \InvalidArgumentException('Invalid folder '.serialize($folderName));
+		if (!is_string($folderName)) {
+			throw new \InvalidArgumentException('Invalid folder ' . serialize($folderName));
 		}
 
 		$this->folders[$scope][] = $folderName;
@@ -92,23 +112,23 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 		return $this;
 	}
 
-
 	/**
 	 * @param string $hostName
 	 * @param string $scope
-	 * @throws InvalidArgumentException
+	 * @return $this
+	 * @throws \InvalidArgumentException
 	 */
 	protected function addServer($hostName, $scope) {
-		if(!is_string($scope)) {
-			throw new \InvalidArgumentException('Invalid scope '.serialize($scope));
+		if (!is_string($scope)) {
+			throw new \InvalidArgumentException('Invalid scope ' . serialize($scope));
 		}
 
-		if(!is_string($hostName)) {
-			throw new \InvalidArgumentException('Invalid hostname '.serialize($hostName));
+		if (!is_string($hostName)) {
+			throw new \InvalidArgumentException('Invalid hostname ' . serialize($hostName));
 		}
 
 		$hasHost = isset($this->servers[$scope]) && is_array($this->servers[$scope]);
-		if($hasHost && in_array($hostName, $this->servers[$scope])) {
+		if ($hasHost && in_array($hostName, $this->servers[$scope])) {
 			throw new \InvalidArgumentException('Could not set same hostname twice');
 		}
 
@@ -120,14 +140,14 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	/**
 	 * @param $scope
 	 * @return array
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
-	protected function getServers($scope)  {
-		if(!is_string($scope)) {
-			throw new \InvalidArgumentException('Invalid scope '.serialize($scope));
+	protected function getServers($scope) {
+		if (!is_string($scope)) {
+			throw new \InvalidArgumentException('Invalid scope ' . serialize($scope));
 		}
 
-		if(!isset($this->servers[$scope]) || !is_array($this->servers[$scope])) {
+		if (!isset($this->servers[$scope]) || !is_array($this->servers[$scope])) {
 			return array();
 		}
 
@@ -135,22 +155,25 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	}
 
 	/**
-	* @return boolean
-	*/
+	 * @return boolean
+	 */
 	public function isValid() {
 		try {
 			$this->validate();
-		}catch(\EasyDeployWorkflows\Exception\InvalidConfigurationException $e) {
+		} catch (InvalidConfigurationException $e) {
 			return false;
 		}
+
 		return true;
 	}
 
 	/**
 	 * @param string $title
+	 * @return $this
 	 */
 	public function setTitle($title) {
 		$this->title = $title;
+
 		return $this;
 	}
 
@@ -162,11 +185,11 @@ abstract class AbstractConfiguration implements \EasyDeployWorkflows\Validateabl
 	}
 
 	/**
-	* @return boolean
-	* throws Exception\InvalidConfigurationException
-	*/
+	 * @return boolean
+	 * throws Exception\InvalidConfigurationException
+	 */
 	public function validate() {
-		return false;  
+		return false;
 	}
 
 }
