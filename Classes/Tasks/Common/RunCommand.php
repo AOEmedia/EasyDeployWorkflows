@@ -2,11 +2,13 @@
 
 namespace EasyDeployWorkflows\Tasks\Common;
 
+use EasyDeployWorkflows\Exception\InvalidConfigurationException;
 use EasyDeployWorkflows\Tasks;
+use EasyDeployWorkflows\Tasks\AbstractServerTask;
+use EasyDeployWorkflows\Tasks\TaskRunInformation;
 
 
-
-class RunCommand extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
+class RunCommand extends AbstractServerTask  {
 
 	/**
 	 * @var string
@@ -23,27 +25,34 @@ class RunCommand extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 */
 	protected $runInBackground = FALSE;
 
-
-
 	/**
-	 * @param string $folder
+	 * @param string $script
+	 * @return $this
 	 */
 	public function setCommand($script) {
 		$this->command = $script;
+
+		return $this;
 	}
 
 	/**
 	 * @param string $changeToDirectory
+	 * @return $this
 	 */
 	public function setChangeToDirectory($changeToDirectory) {
 		$this->changeToDirectory = $changeToDirectory;
+
+		return $this;
 	}
 
 	/**
 	 * @param boolean $runInBackground
+	 * @return $this
 	 */
 	public function setRunInBackground($runInBackground) {
 		$this->runInBackground = $runInBackground;
+
+		return $this;
 	}
 
 	/**
@@ -53,13 +62,12 @@ class RunCommand extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 		return $this->runInBackground;
 	}
 
-
-
 	/**
 	 * @param TaskRunInformation $taskRunInformation
+	 * @param \EasyDeploy_AbstractServer $server
 	 * @return mixed
 	 */
-	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
+	protected function runOnServer(TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 		$command = $this->command;
 		if ($this->runInBackground) {
 			$command .= ' >/dev/null &';
@@ -76,11 +84,11 @@ class RunCommand extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 	/**
 	 * @return boolean
-	 * @throws \EasyDeployWorkflows\Exception\InvalidConfigurationException
+	 * @throws InvalidConfigurationException
 	 */
 	public function validate() {
 		if (!isset($this->command)) {
-			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('Command not set');
+			throw new InvalidConfigurationException('Command not set');
 		}
 
 		return true;
