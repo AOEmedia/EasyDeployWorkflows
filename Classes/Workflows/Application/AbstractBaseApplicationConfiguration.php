@@ -2,58 +2,60 @@
 
 namespace EasyDeployWorkflows\Workflows\Application;
 
+use EasyDeployWorkflows\Tasks\AbstractTask;
 use EasyDeployWorkflows\Workflows as Workflows;
 use EasyDeployWorkflows\Workflows\Exception as Exception;
 
 
 /**
  * Configuration for the Basic Application Workflow
- *
  */
 abstract class AbstractBaseApplicationConfiguration extends Workflows\AbstractWorkflowConfiguration {
 
 	/**
-	 * @var the command for configuring the application
+	 * Command for configuring the application
+	 *
+	 * @var string
 	 */
 	protected $setupCommand;
 
 	/**
-	 * @var array
+	 * @var AbstractTask[]
 	 */
 	protected $preSetupTasks = array();
 
 	/**
-	 * @var array
+	 * @var AbstractTask[]
 	 */
 	protected $postSetupTasks = array();
 
-    /**
-     * @var array
-     */
-    protected $smokeTestTasks = array();
+	/**
+	 * @var AbstractTask[]
+	 */
+	protected $smokeTestTasks = array();
 
 	/**
-	 * @param \EasyDeployWorkflows\Workflows\Application\the $configurationCommand
+	 * @param string $setupCommand
 	 */
-	public function setSetupCommand($configurationCommand) {
-		$this->setupCommand = $configurationCommand;
+	public function setSetupCommand($setupCommand) {
+		$this->setupCommand = $setupCommand;
 	}
 
 	/**
-	 * @return \EasyDeployWorkflows\Workflows\Application\the
+	 * @return string
 	 */
 	public function getSetupCommand() {
 		return $this->setupCommand;
 	}
 
 	/**
-	 * @param $name
-	 * @param \EasyDeployWorkflows\Tasks\AbstractTask $step
-	 * @throws \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException
+	 * @param string $name
+	 * @param AbstractTask $step
+	 * @throws Exception\DuplicateStepAssignmentException
 	 */
-	public function addPreSetupTask($name, \EasyDeployWorkflows\Tasks\AbstractTask $step) {
+	public function addPreSetupTask($name, AbstractTask $step) {
 		if (isset($this->preSetupTasks[$name])) {
-			throw new \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException($name.' already existend!');
+			throw new Exception\DuplicateStepAssignmentException($name . ' already exists!');
 		}
 		$step->validate();
 		$this->preSetupTasks[$name] = $step;
@@ -61,49 +63,50 @@ abstract class AbstractBaseApplicationConfiguration extends Workflows\AbstractWo
 
 	/**
 	 * @param $name
-	 * @param \EasyDeployWorkflows\Tasks\AbstractTask $step
-	 * @throws \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException
+	 * @param AbstractTask $step
+	 * @throws Exception\DuplicateStepAssignmentException
 	 */
-	public function addPostSetupTask($name, \EasyDeployWorkflows\Tasks\AbstractTask $step) {
+	public function addPostSetupTask($name, AbstractTask $step) {
 		if (isset($this->postSetupTasks[$name])) {
-			throw new \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException($name.' already existend!');
+			throw new Exception\DuplicateStepAssignmentException($name . ' already exists!');
 		}
 		$step->validate();
 		$this->postSetupTasks[$name] = $step;
 	}
 
-    /**
-     * @param $name
-     * @param \EasyDeployWorkflows\Tasks\AbstractTask $task
-     */
-    public function addSmokeTestTask($name, \EasyDeployWorkflows\Tasks\AbstractTask $task) {
-        if (isset($this->smokeTestTasks[$name])) {
-            throw new \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException($name.' already existend!');
-        }
-        $task->validate();
-        $this->smokeTestTasks[$name] = $task;
-    }
+	/**
+	 * @param string $name
+	 * @param AbstractTask $task
+	 * @throws Exception\DuplicateStepAssignmentException
+	 */
+	public function addSmokeTestTask($name, AbstractTask $task) {
+		if (isset($this->smokeTestTasks[$name])) {
+			throw new Exception\DuplicateStepAssignmentException($name . ' already exists!');
+		}
+		$task->validate();
+		$this->smokeTestTasks[$name] = $task;
+	}
 
 	/**
-	 * @return array
+	 * @return AbstractTask[]
 	 */
 	public function getPreSetupTasks() {
 		return $this->preSetupTasks;
 	}
 
 	/**
-	 * @return array
+	 * @return AbstractTask[]
 	 */
 	public function getPostSetupTasks() {
 		return $this->postSetupTasks;
 	}
 
-    /**
-     * @return array
-     */
-    public function getSmokeTestTasks() {
-        return $this->smokeTestTasks;
-    }
+	/**
+	 * @return AbstractTask[]
+	 */
+	public function getSmokeTestTasks() {
+		return $this->smokeTestTasks;
+	}
 
 	/**
 	 * @return array
@@ -121,10 +124,11 @@ abstract class AbstractBaseApplicationConfiguration extends Workflows\AbstractWo
 
 	/**
 	 * @param string $hostName
-	 * @return self
+	 * @return $this
 	 */
 	public function addInstallServer($hostName) {
-		$this->addServer($hostName,'installserver');
+		$this->addServer($hostName, 'installserver');
+
 		return $this;
 	}
 

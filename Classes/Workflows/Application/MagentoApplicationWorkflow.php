@@ -2,6 +2,8 @@
 
 namespace EasyDeployWorkflows\Workflows\Application;
 
+use EasyDeployWorkflows\Tasks\Common\RunCommand;
+use EasyDeployWorkflows\Tasks\Common\WriteVersionFile;
 use EasyDeployWorkflows\Workflows as Workflows;
 
 class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
@@ -15,11 +17,11 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 	 * add version file write
 	 */
 	protected function addWriteVersionFileTask() {
-		$task = new \EasyDeployWorkflows\Tasks\Common\WriteVersionFile();
-		$task->setTargetPath($this->getFinalReleaseBaseFolder().'next/htdocs');
+		$task = new WriteVersionFile();
+		$task->setTargetPath($this->getFinalReleaseBaseFolder() . 'next/htdocs');
 		$task->setVersion($this->workflowConfiguration->getReleaseVersion());
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
-		$this->addTask('Write Version File',$task);
+		$this->addTask('Write Version File', $task);
 	}
 
 	/**
@@ -29,11 +31,11 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 		if ($this->workflowConfiguration->hasSharedFolder()) {
 			$sharedFolder = $this->replaceMarkers($this->workflowConfiguration->getSharedFolder());
 			if (!empty($sharedFolder)) {
-				$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
-				$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next/htdocs');
-				$task->setCommand('rm -rf media && ln -s '.$sharedFolder.'media media');
+				$task = new RunCommand();
+				$task->setChangeToDirectory($this->getFinalReleaseBaseFolder() . 'next/htdocs');
+				$task->setCommand('rm -rf media && ln -s ' . $sharedFolder . 'media media');
 				$task->addServersByName($this->workflowConfiguration->getInstallServers());
-				$this->addTask('Link shared folder',$task);
+				$this->addTask('Link shared folder', $task);
 			}
 		}
 	}
@@ -42,17 +44,17 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 	 * See if commandline indexer can return a status
 	 */
 	protected function addSmokeTestTasks() {
-        // add default smoke test
-		$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
-		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next');
+		// add default smoke test
+		$task = new RunCommand();
+		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder() . 'next');
 		$task->setCommand('php htdocs/shell/indexer.php status');
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
-		$this->addTask('Smoke Test - call status',$task);
+		$this->addTask('Smoke Test - call indexer.php status', $task);
 
-        // add defined tasks
-        foreach ($this->workflowConfiguration->getSmokeTestTasks() as $description => $task) {
-            $this->addTask($description, $task);
-        }
+		// add defined tasks
+		foreach ($this->workflowConfiguration->getSmokeTestTasks() as $description => $task) {
+			$this->addTask($description, $task);
+		}
 	}
 
 	/**
@@ -63,24 +65,26 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 	protected function addPostSetupTasks() {
 		parent::addPostSetupTasks();
 
-		$task = new \EasyDeployWorkflows\Tasks\Common\RunCommand();
-		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder().'next');
+		$task = new RunCommand();
+		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder() . 'next');
 		$task->setCommand('php htdocs/shell/indexer.php --reindexall');
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 
 		switch ($this->workflowConfiguration->getReindexAllMode()) {
 			case MagentoApplicationConfiguration::REINDEX_MODE_NONE:
 				return;
-			break;
+				break;
 			case MagentoApplicationConfiguration::REINDEX_MODE_FOREGROUND:
-				$this->addTask('Reindex all in foreground',$task);
+				$this->addTask('Reindex all in foreground', $task);
+
 				return;
-			break;
+				break;
 			case MagentoApplicationConfiguration::REINDEX_MODE_BACKGROUND:
-				$task->setRunInBackground(TRUE);
-				$this->addTask('Reindex all in background',$task);
+				$task->setRunInBackground(true);
+				$this->addTask('Reindex all in background', $task);
+
 				return;
-			break;
+				break;
 		}
 	}
 
