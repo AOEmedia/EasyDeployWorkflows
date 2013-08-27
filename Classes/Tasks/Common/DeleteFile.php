@@ -5,8 +5,7 @@ namespace EasyDeployWorkflows\Tasks\Common;
 use EasyDeployWorkflows\Tasks;
 
 
-
-class DeleteFile extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
+class DeleteFile extends Tasks\AbstractServerTask {
 
 	/**
 	 * @var string
@@ -15,23 +14,25 @@ class DeleteFile extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 	/**
 	 * @param string $file
+	 * @return $this
 	 */
-	public function setFile($file)
-	{
+	public function setFile($file) {
 		$this->file = $file;
+
+		return $this;
 	}
 
 	/**
-	 * @param TaskRunInformation $taskRunInformation
+	 * @param Tasks\TaskRunInformation $taskRunInformation
+	 * @param \EasyDeploy_AbstractServer $server
 	 * @return mixed
 	 */
-	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
-			$server->run('rm '.$this->file);
+	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server) {
+		$server->run('rm ' . $this->file);
 	}
 
 	/**
 	 * @return boolean
-	 * throws Exception\InvalidConfigurationException
 	 */
 	public function validate() {
 		return true;

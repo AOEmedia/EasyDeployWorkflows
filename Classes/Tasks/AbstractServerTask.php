@@ -18,6 +18,16 @@ abstract class AbstractServerTask extends AbstractTask {
 	protected $servers = array();
 
 	/**
+	 * @var string
+	 */
+	protected $changeToDirectory;
+
+	/**
+	 * @var bool
+	 */
+	protected $runInBackground = false;
+
+	/**
 	 * Adds a server on which this task should be executed
 	 *
 	 * @param \EasyDeploy_AbstractServer $server
@@ -92,6 +102,43 @@ abstract class AbstractServerTask extends AbstractTask {
 	}
 
 	/**
+	 * Set a directory that should be changed to before extracting the archive.
+	 * If not set the directory of the archive is used
+	 *
+	 * @param string $changeToDirectory
+	 * @return $this
+	 */
+	public function setChangeToDirectory($changeToDirectory) {
+		$this->changeToDirectory = rtrim($changeToDirectory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getChangeToDirectory() {
+		return $this->changeToDirectory;
+	}
+
+	/**
+	 * @param boolean $runInBackground
+	 * @return $this
+	 */
+	public function setRunInBackground($runInBackground) {
+		$this->runInBackground = $runInBackground;
+
+		return $this;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getRunInBackground() {
+		return $this->runInBackground;
+	}
+
+	/**
 	 * Use this function as Wrapper to $server->run($command) to ensure that the output is logged properly
 	 * Also this function takes care of tryRun
 	 *
@@ -115,4 +162,33 @@ abstract class AbstractServerTask extends AbstractTask {
 	 * @return mixed
 	 */
 	abstract protected function runOnServer(TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server);
+
+	/**
+	 * Prepend $command with cd $this->changeToDirectory;
+	 *
+	 * @param string $command
+	 * @return string
+	 */
+	protected function _prependWithCd($command) {
+		if (isset($this->changeToDirectory)) {
+			$command = 'cd ' . $this->changeToDirectory . '; ' . $command;
+		}
+
+		return $command;
+	}
+
+	/**
+	 * Append to $command >/dev/null & to run it in the background
+	 *
+	 * @param string $command
+	 * @return string
+	 */
+	protected function _appendRunInBackground($command)
+	{
+		if ($this->runInBackground) {
+			$command .= ' >/dev/null &';
+		}
+
+		return $command;
+	}
 }

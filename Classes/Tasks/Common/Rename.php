@@ -2,11 +2,11 @@
 
 namespace EasyDeployWorkflows\Tasks\Common;
 
+use EasyDeployWorkflows\Exception\InvalidConfigurationException;
 use EasyDeployWorkflows\Tasks;
 
 
-
-class Rename extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
+class Rename extends Tasks\AbstractServerTask {
 
 	/**
 	 * @var string
@@ -19,39 +19,46 @@ class Rename extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	protected $target;
 
 	/**
-	 * @param string $file
+	 * @param string $source
+	 * @return $this
 	 */
-	public function setSource($sourceFile)
+	public function setSource($source)
 	{
-		$this->source = $sourceFile;
+		$this->source = $source;
+
+		return $this;
 	}
 
 	/**
-	 * @param string $file
+	 * @param string $target
+	 * @return $this
 	 */
-	public function setTarget($targetFile)
+	public function setTarget($target)
 	{
-		$this->target = $targetFile;
+		$this->target = $target;
+
+		return $this;
 	}
 
 	/**
-	 * @param TaskRunInformation $taskRunInformation
+	 * @param Tasks\TaskRunInformation $taskRunInformation
+	 * @param \EasyDeploy_AbstractServer $server
 	 * @return mixed
 	 */
-	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
-			$this->executeAndLog($server,'mv '.$this->source.' '.$this->target);
+	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
+		$this->executeAndLog($server,'mv '.$this->source.' '.$this->target);
 	}
 
 	/**
 	 * @return boolean
-	 * throws Exception\InvalidConfigurationException
+	 * @throws InvalidConfigurationException
 	 */
 	public function validate() {
 		if (empty($this->source)) {
-			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('source not set');
+			throw new InvalidConfigurationException('source not set');
 		}
 		if (empty($this->target)) {
-			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('target not set');
+			throw new InvalidConfigurationException('target not set');
 		}
 	}
 }

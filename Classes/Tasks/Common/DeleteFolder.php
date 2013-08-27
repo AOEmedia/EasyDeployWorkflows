@@ -2,11 +2,11 @@
 
 namespace EasyDeployWorkflows\Tasks\Common;
 
+use EasyDeployWorkflows\Exception\InvalidConfigurationException;
 use EasyDeployWorkflows\Tasks;
 
 
-
-class DeleteFolder extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
+class DeleteFolder extends Tasks\AbstractServerTask {
 
 	/**
 	 * @var string
@@ -16,30 +16,32 @@ class DeleteFolder extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	/**
 	 * @param string $folder
 	 */
-	public function setFolder($folder)
-	{
+	public function setFolder($folder) {
 		$this->folder = $folder;
 	}
 
 	/**
-	 * @param TaskRunInformation $taskRunInformation
+	 * @param Tasks\TaskRunInformation $taskRunInformation
+	 * @param \EasyDeploy_AbstractServer $server
 	 * @return mixed
+	 * @throws \Exception
 	 */
-	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
+	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server) {
 		if (!$server->isDir($this->folder)) {
-			throw new \Exception('Folder "'.$this->folder.'" on Node "'.$server->getHostname().'" is not present!');
+			throw new \Exception('Folder "' . $this->folder . '" on Node "' . $server->getHostname() . '" is not present!');
 		}
-		$this->executeAndLog($server,'rm -rf '.$this->folder);
+		$this->executeAndLog($server, 'rm -rf ' . $this->folder);
 	}
 
 	/**
 	 * @return boolean
-	 * throws Exception\InvalidConfigurationException
+	 * @throws InvalidConfigurationException
 	 */
 	public function validate() {
 		if (!isset($this->folder)) {
-			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('Folder not set');
+			throw new InvalidConfigurationException('Folder not set');
 		}
+
 		return true;
 	}
 }
