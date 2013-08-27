@@ -43,8 +43,13 @@ class ChangePermissions extends Tasks\Common\RunCommand {
 	 */
 	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server) {
 		foreach ($this->targets as $target => $options) {
-			if (!$server->targetExists($target)) {
-				$message = "Target to change permissions is not present! Try to create '" . $target . "' first";
+			$directory = $this->getChangeToDirectory();
+			$path = $target;
+			if ($this->getChangeToDirectory()) {
+				$path = $directory . $target;
+			}
+			if (!$server->targetExists($path)) {
+				$message = "Target to change permissions is not present! Try to create '" . $path . "' first";
 				$this->logger->log($message, Logger::MESSAGE_TYPE_WARNING);
 			} else {
 				$command = 'chmod ';
