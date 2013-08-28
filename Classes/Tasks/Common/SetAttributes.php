@@ -81,14 +81,14 @@ class SetAttributes extends Tasks\Common\RunCommand {
 		$this->logger->log($message, Logger::MESSAGE_TYPE_INFO);
 
 		if ($this->attributes['owner'] || $this->attributes['group']) {
-			$command = sprintf("chown %s %s:%s '%s'", $this->attributes['recursive'] ? '-r' : '',
+			$command = sprintf("chown %s %s:%s '%s'", $this->attributes['recursive'] ? '-R' : '',
 				$this->attributes['owner'], $this->attributes['group'], $this->target
 			);
 			$this->executeAndLog($server, $this->_prependWithCd($command));
 		}
 
 		if ($this->attributes['permissions']) {
-			$command = sprintf("chmod %s %o '%s'", $this->attributes['recursive'] ? '-r' : '',
+			$command = sprintf("chmod %s %o '%s'", $this->attributes['recursive'] ? '-R' : '',
 				$this->attributes['permissions'], $this->target
 			);
 			$this->executeAndLog($server, $this->_prependWithCd($command));
