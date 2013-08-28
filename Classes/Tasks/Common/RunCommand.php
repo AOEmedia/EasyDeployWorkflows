@@ -33,7 +33,7 @@ class RunCommand extends AbstractServerTask {
 	protected function runOnServer(TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server) {
 		$command = $this->command;
 		$command = $this->_appendRunInBackground($command);
-		$command = $this->_prependWithCd($command);
+		$command = $this->_prependWithCd($command, $taskRunInformation);
 		$environmentVariables = 'export ENVIRONMENT="' . $taskRunInformation->getInstanceConfiguration()->getEnvironmentName() . '"';
 		$environmentVariables .= ' && export PROJECTNAME="' . $taskRunInformation->getInstanceConfiguration()->getProjectName() . '"';
 		$environmentVariables .= ' && export RELEASEVERSION="' . $taskRunInformation->getWorkflowConfiguration()->getReleaseVersion() . '"';

@@ -20,18 +20,6 @@ class SetAttributes extends Tasks\Common\RunCommand {
 	protected $attributes = array();
 
 	/**
-	 * Set target (file, folder, unix file pattern)
-	 *
-	 * @param string $target
-	 * @return $this
-	 */
-	public function setTarget($target) {
-		$this->target = $target;
-
-		return $this;
-	}
-
-	/**
 	 * Set target attributes
 	 *
 	 * @param string $target file, folder, unix file pattern
@@ -43,15 +31,6 @@ class SetAttributes extends Tasks\Common\RunCommand {
 	 * @throws \InvalidArgumentException
 	 */
 	public function setAttributes($target, $permissions = null, $owner = null, $group = null, $recursive = false) {
-		if (empty($target)) {
-			throw new \InvalidArgumentException("Target can't be empty");
-		}
-		if ($permissions) {
-			if (!is_int($permissions) || $permissions > 0777) {
-				throw new \InvalidArgumentException('Target permissions must be set as integer value <= 0777');
-			}
-		}
-
 		$this->target     = $target;
 		$this->attributes = array(
 			'permissions' => $permissions,
@@ -84,24 +63,32 @@ class SetAttributes extends Tasks\Common\RunCommand {
 			$command = sprintf("chown %s %s:%s '%s'", $this->attributes['recursive'] ? '-R' : '',
 				$this->attributes['owner'], $this->attributes['group'], $this->target
 			);
-			$this->executeAndLog($server, $this->_prependWithCd($command));
+			$this->executeAndLog($server, $this->_prependWithCd($command, $taskRunInformation));
 		}
 
 		if ($this->attributes['permissions']) {
 			$command = sprintf("chmod %s %o '%s'", $this->attributes['recursive'] ? '-R' : '',
 				$this->attributes['permissions'], $this->target
 			);
-			$this->executeAndLog($server, $this->_prependWithCd($command));
+			$this->executeAndLog($server, $this->_prependWithCd($command, $taskRunInformation));
 		}
 	}
 
 	/**
-	 * @return boolean
+	 * Validate task before running
+	 *
 	 * @throws InvalidConfigurationException
+	 * @return boolean
 	 */
 	public function validate() {
 		if (!isset($this->target)) {
-			throw new InvalidConfigurationException('No targets are set');
+			throw new InvalidConfigurationException('No target is set');
+		}
+
+		if ($this->attributes['permissions'] !== null) {
+			if (!is_int($this->attributes['permissions']) || $this->attributes['permissions'] > 0777) {
+				throw new InvalidConfigurationException('Target permissions must be set as integer value <= 0777');
+			}
 		}
 
 		return true;

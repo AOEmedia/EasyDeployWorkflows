@@ -167,11 +167,16 @@ abstract class AbstractServerTask extends AbstractTask {
 	 * Prepend $command with cd $this->changeToDirectory;
 	 *
 	 * @param string $command
+	 * @param TaskRunInformation $taskRunInformation
 	 * @return string
 	 */
-	protected function _prependWithCd($command) {
+	protected function _prependWithCd($command, TaskRunInformation $taskRunInformation) {
 		if (isset($this->changeToDirectory)) {
-			$command = 'cd ' . $this->changeToDirectory . '; ' . $command;
+			$changeToDirectory = rtrim(
+				$this->replaceConfigurationMarkersWithTaskRunInformation($this->changeToDirectory, $taskRunInformation),
+				DIRECTORY_SEPARATOR
+			) . DIRECTORY_SEPARATOR;
+			$command = 'cd ' . $changeToDirectory . '; ' . $command;
 		}
 
 		return $command;
