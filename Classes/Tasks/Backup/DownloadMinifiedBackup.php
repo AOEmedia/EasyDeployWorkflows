@@ -133,11 +133,13 @@ class DownloadMinifiedBackup extends \EasyDeployWorkflows\Tasks\AbstractServerTa
 		$task->run($taskRunInformation);
 
 
-		$task = new \EasyDeployWorkflows\Tasks\Common\Rename();
-		$task->addServer($server);
-		$task->setSource($this->getBackupTargetParentFolder() . $this->getDownloadSource()->getFileNameWithOutExtension());
-		$task->setTarget($this->getBackupTargetParentFolder() . $this->getTargetFolderName());
-		$task->run($taskRunInformation);
+		if (!$server->exists($this->getBackupTargetParentFolder() . $this->getTargetFolderName())) {
+			$task = new \EasyDeployWorkflows\Tasks\Common\Rename();
+			$task->addServer($server);
+			$task->setSource($this->getBackupTargetParentFolder() . $this->getDownloadSource()->getFileNameWithOutExtension());
+			$task->setTarget($this->getBackupTargetParentFolder() . $this->getTargetFolderName());
+			$task->run($taskRunInformation);
+		}
 
 		if (isset($this->timestampFile)) {
 			$command = 'date +\''.$this->timestampFormat.'\' > "'.$this->getBackupTargetParentFolder() . $this->getTargetFolderName().'/'.$this->timestampFile.'"';
