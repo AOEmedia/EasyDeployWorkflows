@@ -113,6 +113,7 @@ class DownloadMinifiedBackup extends \EasyDeployWorkflows\Tasks\AbstractServerTa
 	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 		if ($this->skipIfTargetPathPresent && $server->isDir($this->getBackupTargetParentFolder() . $this->getTargetFolderName())) {
 			$this->logger->log('Skipping because target exists already in: '.$this->getBackupTargetParentFolder() . $this->getTargetFolderName());
+			$this->fakeBackupTime($server);
 			return;
 		}
 		if (!$server->isDir($this->getBackupTargetParentFolder())) {
@@ -141,15 +142,22 @@ class DownloadMinifiedBackup extends \EasyDeployWorkflows\Tasks\AbstractServerTa
 			$task->run($taskRunInformation);
 		}
 
-		if (isset($this->timestampFile)) {
-			$command = 'date +\''.$this->timestampFormat.'\' > "'.$this->getBackupTargetParentFolder() . $this->getTargetFolderName().'/'.$this->timestampFile.'"';
-			$this->executeAndLog($server,$command);
-		}
+		$this->fakeBackupTime($server);
 	}
 
 	public function validate() {
 		if (!isset($this->backupTargetParentFolder)) {
 			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('Backup Folder not set');
+		}
+	}
+
+	/**
+	 * @param \EasyDeploy_AbstractServer $server
+	 */
+	protected function fakeBackupTime(\EasyDeploy_AbstractServer $server) {
+		if (isset($this->timestampFile)) {
+			$command = 'date +\'' . $this->timestampFormat . '\' > "' . $this->getBackupTargetParentFolder() . $this->getTargetFolderName() . '/' . $this->timestampFile . '"';
+			$this->executeAndLog($server, $command);
 		}
 	}
 }
