@@ -21,7 +21,7 @@ class SetupDatabaseFromBackupStorage extends \EasyDeployWorkflows\Tasks\Abstract
 	 */
 	protected $detectDbSettingsScriptPath;
 
-	protected $databaseImportScript = 'mgdeployscripts/import_dump_diffable.sh -u "###DB_USER###" -p "###DB_PASSWORD###" -h "###DB_HOST###" -d "###DB_NAME###" -s "###BACKUPSOURCEFOLDER###/db/latest"';
+	protected $databaseImportScript = 'mgdeployscripts/import_dump_diffable.sh -u "###DB_USER###" -p "###DB_PASSWORD###" -h "###DB_HOST###" -d "###DB_NAME###" -s "###BACKUPSOURCEFOLDER###/db/latest" -t "###DB_TMP_DIR###"';
 
 	protected $changeToFolder;
 
@@ -29,6 +29,7 @@ class SetupDatabaseFromBackupStorage extends \EasyDeployWorkflows\Tasks\Abstract
 	protected $dbHost;
 	protected $dbUser;
 	protected $dbPassword;
+    protected $tmpDir;
 
 	/**
 	 * @var bool
@@ -83,6 +84,7 @@ class SetupDatabaseFromBackupStorage extends \EasyDeployWorkflows\Tasks\Abstract
 		$dbName = $this->replaceConfigurationMarkersWithTaskRunInformation($this->dbName,$taskRunInformation);
 		$dbUser = $this->replaceConfigurationMarkersWithTaskRunInformation($this->dbUser,$taskRunInformation);
 		$dbPassword = $this->replaceConfigurationMarkersWithTaskRunInformation($this->dbPassword,$taskRunInformation);
+		$tmpDir = $this->replaceConfigurationMarkersWithTaskRunInformation($this->tmpDir, $taskRunInformation);
 		if ($this->skipIfTablesExist && $this->databaseHasTables($server,$host,$dbName,$dbUser,$dbPassword)) {
 			$this->logger->log('The database already has tables - skipping import!',\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_WARNING);
 			return;
@@ -92,6 +94,7 @@ class SetupDatabaseFromBackupStorage extends \EasyDeployWorkflows\Tasks\Abstract
 		$importCommand = str_replace('###DB_NAME###',$dbName,$importCommand);
 		$importCommand = str_replace('###DB_USER###',$dbUser,$importCommand);
 		$importCommand = str_replace('###DB_PASSWORD###',$dbPassword,$importCommand);
+		$importCommand = str_replace('###DB_TMP_DIR###', $tmpDir, $importCommand);
 		$importCommand = str_replace('###BACKUPSOURCEFOLDER###',$this->replaceConfigurationMarkersWithTaskRunInformation($this->backupSourceFolder,$taskRunInformation),$importCommand);
 
 		$this->executeAndLog($server,$this->prependCommandWithChangeToFolder($importCommand,$taskRunInformation));
@@ -225,6 +228,19 @@ class SetupDatabaseFromBackupStorage extends \EasyDeployWorkflows\Tasks\Abstract
 	public function getDbUser() {
 		return $this->dbUser;
 	}
+
+    /**
+     * @param $tmpDir
+     * @return SetupDatabaseFromBackupStorage
+     */
+    public function setTmpDir($tmpDir) {
+        $this->tmpDir = $tmpDir;
+        return $this;
+    }
+
+    public function getTmpDir() {
+        return $this->tmpDir;
+    }
 
 	public function setDetectDbSettingsScriptPath($detectDbSettingsScriptPath) {
 		$this->detectDbSettingsScriptPath = $detectDbSettingsScriptPath;
