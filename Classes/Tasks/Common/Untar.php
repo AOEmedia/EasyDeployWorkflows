@@ -90,11 +90,16 @@ class Untar extends Tasks\AbstractServerTask {
 			throw new \Exception("The given file '" . $targetDirectory . $packageFileName . "' doesn't exist.");
 		}
 		//extract
-		$args = 'x';
-		if (strpos($packageFileName, '.zip') !== false || strpos($packageFileName, '.gz') !== false) {
-			$args = 'xz';
+		if(strpos($packageFileName, '.zip')) {
+			$this->executeAndLog($server, 'cd ' . $targetDirectory . '; unzip -o ' . $packageFileName);
 		}
-		$this->executeAndLog($server, 'cd ' . $targetDirectory . '; tar -' . $args . 'f ' . $packageFileName);
+		else {
+			$args = 'x';
+			if (strpos($packageFileName, '.gz') !== false) {
+				$args = 'xz';
+			}
+			$this->executeAndLog($server, 'cd ' . $targetDirectory . '; tar -' . $args . 'f ' . $packageFileName);
+		}
 	}
 
 	/**
