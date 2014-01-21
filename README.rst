@@ -115,7 +115,7 @@ The deploy.php triggers your deployment:
     require_once dirname(__FILE__) . '/EasyDeploy/Classes/Utils.php';
     EasyDeploy_Utils::includeAll();
     $project = 'myprojectname';
-    $environment = \EasyDeploy_Utils::getParameterOrUserSelectionInput('environment','Which environment do you want to install?',array('staging','production'));
+    $environment = \EasyDeploy_Utils::getParameterOrUserSelectionInput('environment','Which environment do you want to install?',array('local','production'));
 
     try {
         $WebDeploymentWorkflow = $workflowFactory->createByConfigurationVariable($project,$environment,$releaseVersion, 'webWorkflowConfiguration');
@@ -125,7 +125,22 @@ The deploy.php triggers your deployment:
         exit(1);
     }
 
+Lets say you have a environment "local" which is used to deploy the application on "localhost", then you would have a file "Configuration/myprojectname/local.php" with:
+::
+	<?php
 
+	$source = new EasyDeployWorkflows\Source\File\JenkinsArtifactSource();
+	$source
+		->setJenkinsBaseUrl('your jenkins server')
+		->setJobName('searchperience_experiencemanager_build')
+		->setBuildNr('###version###')
+		->setArtifactFileName('experiencemanager.tar.gz');
+
+	$experiencemanagerConfiguration = new EasyDeployWorkflows\Workflows\Application\StandardApplicationConfiguration();
+	$experiencemanagerConfiguration
+			->addInstallServer('localhost')
+			->setInstallationTargetFolder('###ENV:SPM_WEBROOT###')
+			->setSource($source);
 
 Workflow Configuration Example
 ------------------------------

@@ -20,7 +20,7 @@ class CleanupReleases extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	 * How many releases (current and previous not counted) should be keept
 	 * @var int
 	 */
-	protected $keepReleases = 2;
+	protected $keepReleases = 4;
 
 	/**
 	 * @param int $keepReleases
@@ -71,6 +71,7 @@ class CleanupReleases extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 			}
 		}
 		sort($removableReleases);
+		$this->logger->log('Removeable Releases:'.var_export($removableReleases,true),\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_DEBUG);
 		$removeReleases = array_slice($removableReleases, 0, count($removableReleases) - $this->keepReleases);
 
 		foreach ($removeReleases as $removeRelease) {

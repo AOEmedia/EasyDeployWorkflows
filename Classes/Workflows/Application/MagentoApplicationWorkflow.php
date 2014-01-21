@@ -43,18 +43,15 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 	/**
 	 * See if commandline indexer can return a status
 	 */
-	protected function addSmokeTestTasks() {
+	protected function addSmokeTestTaskGroup($additionalTasks = array()) {
 		// add default smoke test
 		$task = new RunCommand();
 		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder() . 'next');
 		$task->setCommand('php htdocs/shell/indexer.php status');
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
-		$this->addTask('Smoke Test - call indexer.php status', $task);
+		$additionalTasks['Smoke Test - call indexer.php status'] = $task;
 
-		// add defined tasks
-		foreach ($this->workflowConfiguration->getSmokeTestTasks() as $description => $task) {
-			$this->addTask($description, $task);
-		}
+		parent::addSmokeTestTaskGroup($additionalTasks);
 	}
 
 	/**

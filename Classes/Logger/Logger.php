@@ -39,6 +39,11 @@ class Logger {
 	/**
 	 * @var string
 	 */
+	const MESSAGE_TYPE_DEBUG = "DEBUG";
+
+	/**
+	 * @var string
+	 */
 	const MESSAGE_TYPE_INFO = "INFO";
 
 	/**
@@ -116,7 +121,9 @@ class Logger {
 				$this->logToScreen($message,$type);
 				$this->logToFile($message,$type);
 				break;
-			case self::MESSAGE_TYPE_COMMANDOUTPUT: case self::MESSAGE_TYPE_COMMAND:
+			case self::MESSAGE_TYPE_COMMANDOUTPUT:
+			case self::MESSAGE_TYPE_COMMAND:
+			case self::MESSAGE_TYPE_DEBUG:
 				$this->logToFile($message,$type);
 				break;
 			default:
@@ -124,6 +131,14 @@ class Logger {
 				$this->logToFile($message,$type);
 				break;
 		}
+	}
+
+	/**
+	 * @param $headline Logs a nice divider to the screen
+	 */
+	public function logDivider($headline) {
+		$messageIndented = $this->indentMessage('********* '.$headline.' *********');
+		$this->screenBackend->output(PHP_EOL.$messageIndented,'cyan');
 	}
 
 	public function printLogFileInfoMessage() {

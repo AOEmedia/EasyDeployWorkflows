@@ -34,7 +34,12 @@ class TaskBasedWorkflow extends AbstractWorkflow {
 		$this->logger->log('[Workflow] ' . $this->getWorkflowConfiguration()->getTitle() . ' (' . get_class($this) . ')');
 		$this->logger->addLogIndentLevel();
 		foreach ($this->tasks as $taskName => $task) {
-			$this->logger->log('[Task] ' . $taskName);
+			if ($task instanceof \EasyDeployWorkflows\Tasks\Common\TaskGroup) {
+				$this->logger->logDivider($task->getHeadline());
+			}
+			else {
+				$this->logger->log('[Task] ' . $taskName);
+			}
 			$this->logger->addLogIndentLevel();
 			try {
 				$task->run($taskRunInformation);

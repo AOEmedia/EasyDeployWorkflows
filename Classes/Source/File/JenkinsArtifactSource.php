@@ -49,21 +49,27 @@ class JenkinsArtifactSource extends DownloadSource  {
 
 
 	protected function buildUrl() {
-		$source = $this->jenkinsBaseUrl.'job/'.$this->jobName.'/'.$this->buildNr.'/';
+		$source = $this->jenkinsBaseUrl.'job/'.$this->jobName.'/'.$this->buildNr.'/artifact/';
 		if ($this->downloadAllArtifactsZipped) {
 			$source.='*zip*/archive.zip';
 		}
 		else {
 			$source.=$this->artifactFileName;
 		}
+		if (isset($this->user) && isset($this->password)) {
+			$auth = $this->user.':'.$this->password;
+			$source = str_replace('://','://'.$auth.'@',$source);
+		}
 		return $source;
 	}
 
 	/**
 	 * @param string $artifactName
+     * @return self
 	 */
 	public function setArtifactFileName($artifactName) {
 		$this->artifactFileName = $artifactName;
+        return $this;
 	}
 
 	/**
@@ -75,9 +81,11 @@ class JenkinsArtifactSource extends DownloadSource  {
 
 	/**
 	 * @param string $buildNr
+     * @return self
 	 */
 	public function setBuildNr($buildNr) {
 		$this->buildNr = $buildNr;
+        return $this;
 	}
 
 	/**
@@ -103,9 +111,11 @@ class JenkinsArtifactSource extends DownloadSource  {
 
 	/**
 	 * @param string $jobName
+     * @return self
 	 */
 	public function setJobName($jobName) {
 		$this->jobName = $jobName;
+        return $this;
 	}
 
 	/**
@@ -117,9 +127,11 @@ class JenkinsArtifactSource extends DownloadSource  {
 
 	/**
 	 * @param string $password
+     * @return self
 	 */
 	public function setPassword($password) {
 		$this->password = $password;
+        return $this;
 	}
 
 	/**
@@ -131,9 +143,11 @@ class JenkinsArtifactSource extends DownloadSource  {
 
 	/**
 	 * @param string $user
+     * @return self
 	 */
 	public function setUser($user) {
 		$this->user = $user;
+        return $this;
 	}
 
 	/**
@@ -145,9 +159,11 @@ class JenkinsArtifactSource extends DownloadSource  {
 
 	/**
 	 * @param string $jenkinsBaseUrl
+     * @return self
 	 */
 	public function setJenkinsBaseUrl($jenkinsBaseUrl) {
 		$this->jenkinsBaseUrl = rtrim($jenkinsBaseUrl,'/').'/';
+        return $this;
 	}
 
 	/**

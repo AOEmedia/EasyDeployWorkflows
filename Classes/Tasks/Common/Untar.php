@@ -6,7 +6,19 @@ use EasyDeployWorkflows\Exception\InvalidConfigurationException;
 use EasyDeployWorkflows\Logger\Logger;
 use EasyDeployWorkflows\Tasks;
 
-
+/**
+ * Class Untar
+ * This Task can Unpackage (Tar or Zip) a package
+ *
+ * It needs:
+ * 	Absolute Path to Package
+ *  Folder (where to extract that content) (setFolder)
+ *
+ * You can also set the path the the expected folder that exists after unpacking the archive
+ * - depending on the mode the Task will then skip the extraction if the folder already exists...
+ *
+ * @package EasyDeployWorkflows\Tasks\Common
+ */
 class Untar extends Tasks\AbstractServerTask {
 
 	const MODE_SKIP_IF_EXTRACTEDFOLDER_EXISTS   = 1;
@@ -14,7 +26,7 @@ class Untar extends Tasks\AbstractServerTask {
 
 	protected $folder;
 
-	protected $packageFileName;
+	protected $packagePath;
 
 	protected $expectedExtractedFolder;
 
@@ -38,24 +50,30 @@ class Untar extends Tasks\AbstractServerTask {
 		return $this;
 	}
 
-	public function setPackageFileName($packageFileName) {
-		$this->packageFileName = $packageFileName;
+	public function setPackagePath($packagePath) {
+		$this->packagePath = $packagePath;
 
 		return $this;
 	}
 
 	/**
+	 * Will init the task to unpack at place
+	 *
 	 * @param string $path
 	 */
 	public function autoInitByPackagePath($path) {
-
+		if (empty($path) || $path == '/') {
+			throw new \Exception('No path given - cannot autoinit Untar Task');
+		}
 		$info = pathinfo($path);
 		$this->setFolder($info['dirname']);
 		//fix .tar.gz
 		$extractedFolder = str_replace('.tar', '', $info['filename']);
+		$extractedFolder = str_replace('.gz', '', $extractedFolder);
+		$extractedFolder = str_replace('.zip', '', $extractedFolder);
 		$this->setExpectedExtractedFolder($extractedFolder);
-
-		$this->setPackageFileName($info['filename'] . '.' . $info['extension']);
+		$this->setChangeToDirectory($info['dirname']);
+		$this->setPackagePath($path);
 
 		return $this;
 	}
@@ -68,16 +86,14 @@ class Untar extends Tasks\AbstractServerTask {
 	 */
 	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server) {
 
-		$packageFileName         = $this->replaceConfigurationMarkersWithTaskRunInformation($this->packageFileName, $taskRunInformation);
+		$packagePath         = $this->replaceConfigurationMarkersWithTaskRunInformation($this->packagePath, $taskRunInformation);
 		$expectedExtractedFolder = $this->replaceConfigurationMarkersWithTaskRunInformation($this->expectedExtractedFolder, $taskRunInformation);
+		$changeToDirectory = $this->replaceConfigurationMarkersWithTaskRunInformation($this->changeToDirectory, $taskRunInformation);
 
-		if (isset($this->changeToDirectory)) {
-			$targetDirectory = $this->replaceConfigurationMarkersWithTaskRunInformation($this->changeToDirectory, $taskRunInformation);
-		} else {
-			$targetDirectory = rtrim($this->replaceConfigurationMarkersWithTaskRunInformation($this->folder, $taskRunInformation), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		}
+		$targetDirectory = rtrim($this->replaceConfigurationMarkersWithTaskRunInformation($this->folder, $taskRunInformation), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
-		if ($server->isDir($targetDirectory . $expectedExtractedFolder)) {
+
+		if (!empty($expectedExtractedFolder) && $server->isDir($targetDirectory . $expectedExtractedFolder)) {
 			if ($this->mode == self::MODE_SKIP_IF_EXTRACTEDFOLDER_EXISTS) {
 				$this->logger->log('Extracted folder "' . $targetDirectory . $expectedExtractedFolder . '" already exists! I am skipping the extraction.', Logger::MESSAGE_TYPE_WARNING);
 
@@ -86,19 +102,19 @@ class Untar extends Tasks\AbstractServerTask {
 				$this->executeAndLog($server, 'rm -rf ' . $targetDirectory . $expectedExtractedFolder);
 			}
 		}
-		if (!$server->isFile($targetDirectory . $packageFileName)) {
-			throw new \Exception("The given file '" . $targetDirectory . $packageFileName . "' doesn't exist.");
+		if (!$server->isFile($packagePath)) {
+			throw new \Exception("The given file '" . $packagePath . "' doesn't exist.");
 		}
 		//extract
-		if(strpos($packageFileName, '.zip')) {
-			$this->executeAndLog($server, 'cd ' . $targetDirectory . '; unzip -o ' . $packageFileName);
+		if(strpos($packagePath, '.zip') !== false) {
+			$this->executeAndLog($server, 'cd ' . $changeToDirectory . '; unzip -d '.$targetDirectory.' -o ' . $packagePath);
 		}
 		else {
 			$args = 'x';
-			if (strpos($packageFileName, '.gz') !== false) {
+			if (strpos($packagePath, '.gz') !== false) {
 				$args = 'xz';
 			}
-			$this->executeAndLog($server, 'cd ' . $targetDirectory . '; tar -' . $args . 'f ' . $packageFileName);
+			$this->executeAndLog($server, 'cd ' . $changeToDirectory . '; tar --directory='.$targetDirectory.' -' . $args . 'f ' . $packagePath);
 		}
 	}
 
@@ -110,11 +126,11 @@ class Untar extends Tasks\AbstractServerTask {
 		if (empty($this->folder)) {
 			throw new InvalidConfigurationException('source not set');
 		}
-		if (empty($this->packageFileName)) {
-			throw new InvalidConfigurationException('packageFileName not set');
+		if (empty($this->packagePath)) {
+			throw new InvalidConfigurationException('packagePath not set');
 		}
-		if (empty($this->expectedExtractedFolder)) {
-			throw new InvalidConfigurationException('expectedExtractedFolder not set');
+		if (isset($this->expectedExtractedFolder) && substr($this->expectedExtractedFolder,0,1) == '/') {
+			throw new InvalidConfigurationException('expectedExtractedFolder set to absolute path. It should be relative to folder.');
 		}
 
 		return true;

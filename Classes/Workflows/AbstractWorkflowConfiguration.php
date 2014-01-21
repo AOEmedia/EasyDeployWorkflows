@@ -29,6 +29,7 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 	/**
 	 * @param string $deliveryFolder
 	 * @return \EasyDeployWorkflows\Workflows\InstanceConfiguration
+	 * @return self
 	 */
 	public function setDeliveryFolder($deliveryFolder) {
 		$this->deliveryFolder = rtrim($deliveryFolder,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;

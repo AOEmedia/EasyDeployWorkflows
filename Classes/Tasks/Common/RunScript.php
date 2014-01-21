@@ -43,14 +43,15 @@ class RunScript extends Tasks\AbstractServerTask {
 	 */
 	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 
-		if (!$server->isFile($this->script) && !$this->isOptional) {
-			$message = 'Try to run script that not exists '.htmlspecialchars($this->script);
+		if (!$server->isFile($this->changeToDirectory.$this->script) && !$this->isOptional) {
+			$message = 'Try to run script that not exists '.htmlspecialchars($this->changeToDirectory.$this->script);
 			throw new \EasyDeployWorkflows\Exception\FileNotFoundException($message);
 		}
+		$command = $this->_prependWithCd($this->script, $taskRunInformation);
 
-		if ($server->isFile($this->script)) {
-			$this->logger->log('Run Script: "'.$this->script.'"');
-			$this->executeAndLog($server,$this->script, FALSE, FALSE, $this->logger->getLogFile());
+		if ($server->isFile($this->changeToDirectory.$this->script)) {
+			$this->logger->log('Run Script: "'.$command.'"');
+			$this->executeAndLog($server,$command, FALSE, FALSE, $this->logger->getLogFile());
 		}
 	}
 

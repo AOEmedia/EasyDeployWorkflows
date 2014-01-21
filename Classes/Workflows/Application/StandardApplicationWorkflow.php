@@ -35,7 +35,7 @@ class StandardApplicationWorkflow extends BaseApplicationWorkflow {
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());
 		$this->addTask('Install Package', $task);
 
-		$this->addPostSetupTasks();
+		$this->addPostSetupTaskGroup();
 
 		$task = $this->getCleanupTask($extractedFolder);
 		$task->addServersByName($this->workflowConfiguration->getInstallServers());

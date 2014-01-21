@@ -8,6 +8,9 @@ use EasyDeployWorkflows\Tasks;
 
 class Rename extends Tasks\AbstractServerTask {
 
+	const MODE_SKIP_IF_TARGET_EXISTS   = 1;
+	const MODE_FAIL_IF_TARGET_EXISTS = 2;
+
 	/**
 	 * @var string
 	 */
@@ -19,12 +22,23 @@ class Rename extends Tasks\AbstractServerTask {
 	protected $target;
 
 	/**
+	 * @var int
+	 */
+	protected $mode = 2;
+
+	/**
 	 * @param string $source
 	 * @return $this
 	 */
 	public function setSource($source)
 	{
 		$this->source = $source;
+
+		return $this;
+	}
+
+	public function setMode($mode) {
+		$this->mode = $mode;
 
 		return $this;
 	}
@@ -46,7 +60,18 @@ class Rename extends Tasks\AbstractServerTask {
 	 * @return mixed
 	 */
 	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
-		$this->executeAndLog($server,'mv '.$this->source.' '.$this->target);
+		$source = $this->replaceConfigurationMarkersWithTaskRunInformation($this->source,$taskRunInformation);
+		$target = $this->replaceConfigurationMarkersWithTaskRunInformation($this->target,$taskRunInformation);
+		if ($server->isDir($target) || $server->isFile($target)) {
+			if ($this->mode == self::MODE_FAIL_IF_TARGET_EXISTS) {
+				throw new \Exception('Target "'.$target.'" for the Rename Task already existend!');
+			}
+			else if ($this->mode == self::MODE_SKIP_IF_TARGET_EXISTS) {
+				$this->logger->log('Target "'.$target.'" for the Rename Task already existend! Skipping the Rename',LOG_WARNING);
+				return;
+			}
+		}
+		$this->executeAndLog($server,'mv '.$source.' '.$target);
 	}
 
 	/**

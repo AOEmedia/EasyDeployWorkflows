@@ -74,7 +74,7 @@ class DownloadSource implements FileSourceInterface  {
 	 * @return string
 	 */
 	public function getFileName() {
-		return $this->getFilenameFromPath($this->url);
+		return $this->getFilenameFromPath($this->buildUrl());
 	}
 
 	/**

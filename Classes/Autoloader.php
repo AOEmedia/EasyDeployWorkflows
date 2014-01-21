@@ -23,6 +23,9 @@ class Autoloader {
 				require_once dirname(__FILE__).'/..'.$classPath;
 				return;
 			}
+			if (!is_file(dirname(__FILE__).$classPath)) {
+				throw new \Exception('Autoloader cannot find file: "'.dirname(__FILE__).$classPath.'"'.debug_print_backtrace());
+			}
 			require_once dirname(__FILE__).$classPath;
 		}
 	}

@@ -95,12 +95,21 @@ class WorkflowFactory {
 		include( $configurationFile );
 
 		if (!isset($$instanceConfigurationVariableName)) {
-			throw new \Exception('No Instance Configuration found! Expect a variable $'.$instanceConfigurationVariableName);
+			\EasyDeployWorkflows\Logger\Logger::getInstance()->log('No Instance Configuration found! Expect a variable $'.$instanceConfigurationVariableName.'. I am creating a default one now...');
+			$instanceConfiguration = new \EasyDeployWorkflows\Workflows\InstanceConfiguration();
+			$instanceConfiguration->addAllowedDeployServer('*')
+					->setEnvironmentName($environmentName)
+					->setProjectName($projectName)
+					->setTitle('Default Instance Configuration');
 		}
+
 		if (!$$instanceConfigurationVariableName instanceof InstanceConfiguration) {
-			throw new \Exception('No Instance Configuration found! Expect  $'.$instanceConfigurationVariableName.'  is instance of "InstanceConfiguration"');
+			throw new \Exception('No Instance Configuration found! Expect  $'.$instanceConfigurationVariableName.'  is instance of "InstanceConfiguration".');
 		}
+
 		$instanceConfiguration = $$instanceConfigurationVariableName;
+
+
 		if (  $instanceConfiguration->getEnvironmentName() != $environmentName
 			|| $instanceConfiguration->getProjectName() != $projectName) {
 			throw new \Exception('Instance Environment Data invalid! Check that project and environment is set and valid! Current:'.$instanceConfiguration->getProjectName().' / '.$instanceConfiguration->getEnvironmentName());

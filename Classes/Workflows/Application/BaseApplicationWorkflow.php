@@ -56,10 +56,8 @@ class BaseApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 	 *
 	 * @return void
 	 */
-	protected function addPostSetupTasks() {
-		foreach ($this->workflowConfiguration->getPostSetupTasks() as $name => $task) {
-			$this->addTask($name, $task);
-		}
+	protected function addPostSetupTaskGroup() {
+		$this->addTask('Post Setup',$this->getTaskGroup('Post Setup', $this->workflowConfiguration->getPostSetupTasks() ));
 	}
 
 	/**
@@ -67,6 +65,25 @@ class BaseApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 	 */
 	protected function addPostSwitchTasks() {
 
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getTaskGroup($headline, array $tasks) {
+		$taskGroup = new \EasyDeployWorkflows\Tasks\Common\TaskGroup();
+		$taskGroup->setHeadline($headline);
+		// add defined tasks
+		foreach ($tasks as $description => $task) {
+			/** @var $task \EasyDeployWorkflows\Tasks\AbstractTask */
+			if ($task instanceof \EasyDeployWorkflows\Tasks\AbstractServerTask) {
+				/** @var $task \EasyDeployWorkflows\Tasks\AbstractServerTask */
+				$task->addServersByName($this->workflowConfiguration->getInstallServers());
+				$task->setChangeToDirectory($this->getFinalReleaseBaseFolder() . 'next');
+			}
+			$taskGroup->addTask($description, $task);
+		}
+		return $taskGroup;
 	}
 
 }
