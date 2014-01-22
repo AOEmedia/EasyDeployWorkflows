@@ -2,5 +2,7 @@ language: php
 php:
   - "5.4"
   - "5.3"
+before_script:
+  - git clone https://github.com/AOEmedia/EasyDeploy.git ../EasyDeploy
 script:
   - phpunit -c Tests/phpunit.xml
