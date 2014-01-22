@@ -35,7 +35,7 @@ class ServletRemoteWorkflowTest extends AbstractMockedTest {
 
 			/** @var $workflow  EasyDeployWorkflows\Workflows\Servlet\ServletRemoteWorkflow */
 		$workflow = new EasyDeployWorkflows\Workflows\Servlet\ServletRemoteWorkflow($instanceConfiguration,$workflowConfiguration);
-		$this->assertEquals(count($workflow->getTasks()),3,'expected 3 tasks in the workflow');
+		$this->assertEquals(count($workflow->getTasks()),4,'expected 4 tasks in the workflow');
 
 
 		$this->assertTrue($workflowConfiguration->getIsRemoteTomcat());
@@ -44,7 +44,7 @@ class ServletRemoteWorkflowTest extends AbstractMockedTest {
 		$this->assertEquals(1,count($dowloadFromCiServerTask->getServers()));
 		$this->assertInstanceOf('EasyDeployWorkflows\Tasks\Common\Download',$dowloadFromCiServerTask);
 		$this->assertEquals('/home/homer.simpson/4711/somedownloadpackage.tar.gz', $dowloadFromCiServerTask->getDownloadSource());
-		$this->assertEquals('/home/download/nasa/4711/', $dowloadFromCiServerTask->getTargetFolder());
+		$this->assertEquals('/tmp/tracker_nasa_deploy_4711/', $dowloadFromCiServerTask->getTargetFolder());
 
 
 		// last step deploys war local on 2 servers
@@ -53,6 +53,6 @@ class ServletRemoteWorkflowTest extends AbstractMockedTest {
 		$this->assertEquals(1,count($servletTask->getServers()));
 		$this->assertEquals(8080,$servletTask->getTomcatPort());
 		$this->assertEquals('foo',$servletTask->getTomcatUser());
-		$this->assertEquals('/home/download/nasa/4711/somedownloadpackage.tar.gz',$servletTask->getWarFileSourcePath());
+		$this->assertEquals('/tmp/tracker_nasa_deploy_4711/somedownloadpackage.tar.gz',$servletTask->getWarFileSourcePath());
 	}
 }

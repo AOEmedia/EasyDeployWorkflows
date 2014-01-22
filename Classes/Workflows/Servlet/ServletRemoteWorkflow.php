@@ -22,7 +22,7 @@ class ServletRemoteWorkflow extends Workflows\TaskBasedWorkflow {
 	 */
 	protected function workflowInitialisation() {
 		$deploymentSource = $this->replaceMarkers( $this->workflowConfiguration->getDeploymentSource() );
-		$localDownloadTargetFolder = rtrim($this->replaceMarkers( $this->instanceConfiguration->getDeliveryFolder() ),'/').'/';
+		$localDownloadTargetFolder = rtrim($this->replaceMarkers( '/tmp/tracker_###projectname###_###environment###_###releaseversion###' ),'/').'/';
 		$this->addTask('check that we are on correct deploy node',new \EasyDeployWorkflows\Tasks\Common\CheckCorrectDeployNode());
 
 		$downloadTask = new \EasyDeployWorkflows\Tasks\Common\Download();
@@ -46,5 +46,11 @@ class ServletRemoteWorkflow extends Workflows\TaskBasedWorkflow {
 		$deployWarTask->setTomcatVersion( $this->workflowConfiguration->getTomcatVersion() );
 
 		$this->addTask('deploy the war file to the tomcat servers',$deployWarTask);
+
+		$deleteWarFolder = new \EasyDeployWorkflows\Tasks\Common\DeleteFolder();
+		$deleteWarFolder->setFolder($localDownloadTargetFolder);
+		$deleteWarFolder->addServersByName(array('localhost'));
+
+		$this->addTask('removing download folder',$deleteWarFolder);
 	}
 }
