@@ -33,12 +33,16 @@ class RunCommand extends AbstractServerTask {
 	protected function runOnServer(TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server) {
 		$command = $this->command;
 		$command = $this->_appendRunInBackground($command);
-		$command = $this->_prependWithCd($command, $taskRunInformation);
+		//$command = $this->_prependWithEnvVarExport($command);
+
 		$environmentVariables = 'export ENVIRONMENT="' . $taskRunInformation->getInstanceConfiguration()->getEnvironmentName() . '"';
 		$environmentVariables .= ' && export PROJECTNAME="' . $taskRunInformation->getInstanceConfiguration()->getProjectName() . '"';
 		$environmentVariables .= ' && export RELEASEVERSION="' . $taskRunInformation->getWorkflowConfiguration()->getReleaseVersion() . '"';
 		$environmentVariables .= ' && export RELEASEVERSION_ESCAPED="' . PREG_REPLACE("/[^0-9a-zA-Z]/i", '', $taskRunInformation->getWorkflowConfiguration()->getReleaseVersion()) . '" && ';
-		$this->executeAndLog($server, $environmentVariables . $command);
+
+		$command = $environmentVariables . $command;
+		$command = $this->_prependWithCd($command, $taskRunInformation);
+		$this->executeAndLog($server, $command);
 	}
 
 	/**
@@ -49,7 +53,6 @@ class RunCommand extends AbstractServerTask {
 		if (!isset($this->command)) {
 			throw new InvalidConfigurationException('Command not set');
 		}
-
 		return true;
 	}
 }

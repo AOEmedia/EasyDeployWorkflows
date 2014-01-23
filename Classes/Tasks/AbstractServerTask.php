@@ -183,6 +183,24 @@ abstract class AbstractServerTask extends AbstractTask {
 	}
 
 	/**
+	 * @param $command
+	 * @param array $whiteList
+	 * @return string
+	 */
+	protected function _prependWithEnvVarExport($command, $whiteList = array()) {
+		foreach ($_ENV as $key => $value) {
+			if (!empty($whiteList) && !in_array($key,$whiteList)) {
+				continue;
+			}
+			$command = 'export '.$key.'="'.escapeshellarg($value).'" && '.$command;
+		}
+
+
+
+		return $command;
+	}
+
+	/**
 	 * Append to $command >/dev/null & to run it in the background
 	 *
 	 * @param string $command
