@@ -15,7 +15,7 @@ class WorkflowFactory {
 	 * sets the folder by convention
 	 */
 	public function __construct() {
-		$this->setConfigurationFolder(dirname(__FILE__).'/../../../Configuration/');
+		$this->autoSetConfigurationFolder();
 	}
 
 	/**
@@ -85,8 +85,9 @@ class WorkflowFactory {
 	 * @throws \Exception
 	 */
 	public function createByConfigurationVariable($projectName,$environmentName,$releaseVersion,$workFlowConfigurationVariableName, $instanceConfigurationVariableName='instanceConfiguration') {
+
 		if (!is_dir($this->configurationFolder)) {
-			throw new \Exception('Configurationfolder not existend. Please check if you followed the convention - or set your Configurationfolder explicit');
+			throw new \Exception('Configurationfolder "'.$this->configurationFolder.'" not existend. Please check if you followed the convention - or set your Configurationfolder explicit');
 		}
 		$configurationFile = $this->configurationFolder.$projectName.DIRECTORY_SEPARATOR.$environmentName.'.php';
 		if (!is_file($configurationFile)) {
@@ -125,4 +126,16 @@ class WorkflowFactory {
 		return new $name($instanceConfiguration,$workflowConfiguration);
 	}
 
+	/**
+	 * from _SERVER env
+	 */
+	private function autoSetConfigurationFolder() {
+		$scriptDir = dirname ( $_SERVER['PWD'].DIRECTORY_SEPARATOR. $_SERVER['SCRIPT_NAME']);
+		if (is_dir($scriptDir.DIRECTORY_SEPARATOR.'Configuration')) {
+			$this->setConfigurationFolder($scriptDir.DIRECTORY_SEPARATOR.'Configuration'.DIRECTORY_SEPARATOR);
+		}
+		else {
+			$this->setConfigurationFolder(dirname(__FILE__).'/../../../Configuration/');
+		}
+	}
 }
