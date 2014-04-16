@@ -11,6 +11,11 @@
 			"name": "Daniel Pötzinger"
 		}
     ],
+	"autoload": {
+		"psr-4": {
+			"EasyDeployWorkflows\\": "Classes/"
+		}
+	},
     "require": {
 
     }
