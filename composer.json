@@ -2,6 +2,7 @@
     "name": "aoepeople/easy-deploy-workflows",
     "description": "EasyDeployWorkflows offers a concept to develop Deployment Workflows on Top of EasyDeploy",
 	"license": "GPL v3",
+	"minimum-stability":"dev",
     "authors": [
         {
             "name": "Timo schmidt"
