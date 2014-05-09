@@ -148,8 +148,13 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 	 */
 	protected function getBackupStorageRoot(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 
-		$backupStorageRoot 			= $taskRunInformation->getWorkflowConfiguration()->getBackupStorageRootFolder();
-		$backupMasterEnvironment	= $taskRunInformation->getWorkflowConfiguration()->getBackupMasterEnvironment();
+		$backupMasterEnvironment = $taskRunInformation->getWorkflowConfiguration()->getBackupMasterEnvironment();
+		$backupStorageRoot = $taskRunInformation->getWorkflowConfiguration()->getBackupStorageRootFolder();
+		$backupStorageRoot = $this->replaceConfigurationMarkers(
+			$backupStorageRoot,
+			$taskRunInformation->getWorkflowConfiguration(),
+			$taskRunInformation->getInstanceConfiguration()
+		);
 
 		if ($this->hasBackupStorage($server,$backupStorageRoot,$backupMasterEnvironment)) {
 			return $backupStorageRoot;
