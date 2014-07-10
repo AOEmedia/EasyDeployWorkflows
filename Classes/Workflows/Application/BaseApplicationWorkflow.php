@@ -79,7 +79,9 @@ class BaseApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 			if ($task instanceof \EasyDeployWorkflows\Tasks\AbstractServerTask) {
 				/** @var $task \EasyDeployWorkflows\Tasks\AbstractServerTask */
 				$task->addServersByName($this->workflowConfiguration->getInstallServers());
-				$task->setChangeToDirectory($this->getFinalReleaseBaseFolder() . 'next');
+				if (!$task->hasChangeToDirectorySet()) {
+					$task->setChangeToDirectory($this->getFinalReleaseBaseFolder() . 'next');
+				}
 			}
 			$taskGroup->addTask($description, $task);
 		}

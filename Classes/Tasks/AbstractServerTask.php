@@ -122,6 +122,13 @@ abstract class AbstractServerTask extends AbstractTask {
 	}
 
 	/**
+	 * @return boolean
+	 */
+	public function hasChangeToDirectorySet() {
+		return isset($this->changeToDirectory);
+	}
+
+	/**
 	 * @param boolean $runInBackground
 	 * @return $this
 	 */
