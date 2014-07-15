@@ -36,9 +36,11 @@ abstract class AbstractBaseApplicationConfiguration extends Workflows\AbstractWo
 
 	/**
 	 * @param string $setupCommand
+	 * @return $this
 	 */
 	public function setSetupCommand($setupCommand) {
 		$this->setupCommand = $setupCommand;
+		return $this;
 	}
 
 	/**

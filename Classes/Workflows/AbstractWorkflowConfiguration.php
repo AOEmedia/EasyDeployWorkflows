@@ -72,7 +72,7 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 
 	/**
 	 * @param \EasyDeployWorkflows\Source\SourceInterface $packageSource
-	 * @return self
+	 * @return $this
 	 */
 	public function setSource(\EasyDeployWorkflows\Source\SourceInterface $packageSource) {
 		$this->source = $packageSource;
