@@ -91,7 +91,7 @@ abstract class AbstractServerTask extends AbstractTask {
 	public function run(TaskRunInformation $taskRunInformation) {
 		$this->validate();
 		if (!$this->hasServers()) {
-			throw new InvalidConfigurationException('no server set for server based task: ' . get_class($this));
+			throw new InvalidConfigurationException('No server set for server based task: ' . get_class($this));
 		}
 		foreach ($this->getServers() as $server) {
 			$this->logger->log('Run on Server ' . $server->getInternalTitle());
@@ -201,8 +201,6 @@ abstract class AbstractServerTask extends AbstractTask {
 			}
 			$command = 'export '.$key.'="'.escapeshellarg($value).'" && '.$command;
 		}
-
-
 
 		return $command;
 	}

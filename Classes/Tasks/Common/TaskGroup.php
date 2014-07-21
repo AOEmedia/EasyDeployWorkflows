@@ -3,7 +3,12 @@
 namespace EasyDeployWorkflows\Tasks\Common;
 
 
-class TaskGroup extends \EasyDeployWorkflows\Tasks\AbstractTask  {
+use EasyDeployWorkflows\Logger\Logger;
+use EasyDeployWorkflows\Tasks\AbstractTask;
+use EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException;
+use EasyDeployWorkflows\Tasks\TaskRunInformation;
+
+class TaskGroup extends AbstractTask {
 
 	/**
 	 * @var AbstractTask[]
@@ -32,11 +37,11 @@ class TaskGroup extends \EasyDeployWorkflows\Tasks\AbstractTask  {
 	/**
 	 * @param string $name
 	 * @param AbstractTask $task
-	 * @throws \EasyDeployWorkflows\Tasks\DuplicateStepAssignmentException
+	 * @throws DuplicateStepAssignmentException
 	 */
-	public function addTask($name, \EasyDeployWorkflows\Tasks\AbstractTask $task) {
+	public function addTask($name, AbstractTask $task) {
 		if (isset($this->tasks[$name])) {
-			throw new \EasyDeployWorkflows\Tasks\DuplicateStepAssignmentException($name . ' already exists!');
+			throw new DuplicateStepAssignmentException($name . ' already exists!');
 		}
 		$task->validate();
 		$this->tasks[$name] = $task;
@@ -46,7 +51,7 @@ class TaskGroup extends \EasyDeployWorkflows\Tasks\AbstractTask  {
 	 * @param TaskRunInformation $taskRunInformation
 	 * @return mixed
 	 */
-	public function run(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation) {
+	public function run(TaskRunInformation $taskRunInformation) {
 		if (empty($this->tasks)) {
 			$this->logger->log('No Tasks');
 		}
@@ -54,12 +59,15 @@ class TaskGroup extends \EasyDeployWorkflows\Tasks\AbstractTask  {
 			$this->logger->log('[Task] ' . $taskName);
 			$this->logger->addLogIndentLevel();
 			$task->run($taskRunInformation);
-			$this->logger->log('[Task Successful]', \EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_SUCCESS);
+			$this->logger->log('[Task Successful]', Logger::MESSAGE_TYPE_SUCCESS);
 			$this->logger->removeLogIndentLevel();
 		}
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function validate() {
-
+		return true;
 	}
 }
