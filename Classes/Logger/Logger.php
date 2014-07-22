@@ -6,6 +6,7 @@ namespace EasyDeployWorkflows\Logger;
  * Simple Singleton that is used for Logging the deployment
  */
 class Logger {
+
 	/**
 	 * @var Logger
 	 */
@@ -79,10 +80,18 @@ class Logger {
 	 */
 	private function __clone() {}
 
+	/**
+	 * @param ScreenBackend $screenBackend
+	 * @return $this
+	 */
 	public function injectScreenBackend(ScreenBackend $screenBackend) {
 		$this->screenBackend = $screenBackend;
+		return $this;
 	}
 
+	/**
+	 * @return self
+	 */
 	public static function getInstance() {
 		if (!isset(self::$instance)) {
 			$className      = __CLASS__;
@@ -91,6 +100,10 @@ class Logger {
 		return self::$instance;
 	}
 
+	/**
+	 * @param string $message
+	 * @param string $type
+	 */
 	public function logToScreen($message, $type) {
 		$messageIndented = $this->indentMessage($message);
 		switch ($type) {
@@ -112,11 +125,18 @@ class Logger {
 		}
 	}
 
+	/**
+	 * @param string $message
+	 * @param string $type
+	 */
 	public function logToFile($message, $type) {
 		if (empty($this->logFile)) {
 			return;
 		}
-		$messageIndented = $this->indentMessage($type . ': ' . $message) . PHP_EOL;
+		if ($type != self::MESSAGE_TYPE_TASK_GROUP_HEADER) {
+			$message = $type . ': ' . $message;
+		}
+		$messageIndented = $this->indentMessage($message) . PHP_EOL;
 		file_put_contents($this->logFile, $messageIndented, FILE_APPEND);
 	}
 
