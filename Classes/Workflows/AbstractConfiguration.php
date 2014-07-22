@@ -132,7 +132,7 @@ abstract class AbstractConfiguration implements ValidateableInterface {
 			throw new \InvalidArgumentException('Could not set same hostname twice');
 		}
 
-		$this->servers[$scope][] = $hostName;
+		$this->servers[$scope][$hostName] = $hostName;
 
 		return $this;
 	}

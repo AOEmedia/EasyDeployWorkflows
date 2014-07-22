@@ -34,7 +34,7 @@ abstract class AbstractServerTask extends AbstractTask {
 	 * @return $this
 	 */
 	public function addServer(\EasyDeploy_AbstractServer $server) {
-		$this->servers[] = $server;
+		$this->servers[$server->getInternalTitle()] = $server;
 
 		return $this;
 	}
