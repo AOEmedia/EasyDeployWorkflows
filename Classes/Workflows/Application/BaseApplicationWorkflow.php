@@ -2,7 +2,9 @@
 
 namespace EasyDeployWorkflows\Workflows\Application;
 
+use EasyDeployWorkflows\Tasks\AbstractServerTask;
 use EasyDeployWorkflows\Tasks\Common\RunCommand;
+use EasyDeployWorkflows\Tasks\Common\TaskGroup;
 use EasyDeployWorkflows\Tasks\Common\WriteVersionFile;
 use EasyDeployWorkflows\Workflows as Workflows;
 
@@ -15,8 +17,6 @@ class BaseApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 
 	/**
 	 * Possibility to add some tasks
-	 *
-	 * @return void
 	 */
 	protected function addPreSetupTasks() {
 		foreach ($this->workflowConfiguration->getPreSetupTasks() as $name => $task) {
@@ -53,11 +53,11 @@ class BaseApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 
 	/**
 	 * Possibility to add some tasks
-	 *
-	 * @return void
 	 */
 	protected function addPostSetupTaskGroup() {
-		$this->addTask('Post Setup',$this->getTaskGroup('Post Setup', $this->workflowConfiguration->getPostSetupTasks() ));
+		$this->addTask('Post Setup', $this->getTaskGroup('Post Setup',
+			$this->workflowConfiguration->getPostSetupTasks())
+		);
 	}
 
 	/**
@@ -68,24 +68,31 @@ class BaseApplicationWorkflow extends Workflows\TaskBasedWorkflow {
 	}
 
 	/**
-	 * @return array
+	 * @param string $headline
+	 * @param array $tasks
+	 * @throws \EasyDeployWorkflows\Workflows\Exception\DuplicateStepAssignmentException
+	 * @return TaskGroup
 	 */
 	protected function getTaskGroup($headline, array $tasks) {
-		$taskGroup = new \EasyDeployWorkflows\Tasks\Common\TaskGroup();
+		$taskGroup = new TaskGroup();
 		$taskGroup->setHeadline($headline);
 		// add defined tasks
 		foreach ($tasks as $description => $task) {
-			/** @var $task \EasyDeployWorkflows\Tasks\AbstractTask */
-			if ($task instanceof \EasyDeployWorkflows\Tasks\AbstractServerTask) {
-				/** @var $task \EasyDeployWorkflows\Tasks\AbstractServerTask */
-				$task->addServersByName($this->workflowConfiguration->getInstallServers());
-				if (!$task->hasChangeToDirectorySet()) {
-					$task->setChangeToDirectory($this->getFinalReleaseBaseFolder() . 'next');
-				}
+			if ($task instanceof AbstractServerTask) {
+				$task = $this->prepareTask($task);
 			}
 			$taskGroup->addTask($description, $task);
 		}
 		return $taskGroup;
+	}
+
+	/**
+	 * @param AbstractServerTask $task
+	 * @return AbstractServerTask
+	 */
+	protected function prepareTask(AbstractServerTask $task) {
+		$task->addServersByName($this->workflowConfiguration->getInstallServers());
+		return $task;
 	}
 
 }

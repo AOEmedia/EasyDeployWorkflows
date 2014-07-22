@@ -1,14 +1,12 @@
 <?php
 
 namespace EasyDeployWorkflows\Source\File;
-
+use EasyDeployWorkflows\Source\SourceInterface;
 
 /**
  * Download Interface
  */
-interface FileSourceInterface extends \EasyDeployWorkflows\Source\SourceInterface {
-
-
+interface FileSourceInterface extends SourceInterface {
 
 	/**
 	 * @return string
@@ -19,6 +17,5 @@ interface FileSourceInterface extends \EasyDeployWorkflows\Source\SourceInterfac
 	 * @return string
 	 */
 	public function getFileNameWithOutExtension();
-
 
 }

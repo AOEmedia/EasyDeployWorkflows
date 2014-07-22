@@ -2,20 +2,20 @@
 
 namespace EasyDeployWorkflows\Source\File;
 
-
-
 /**
- *  Source that uses a local file
- *  (also used for acceptance tests with local fixtures)
- *
+ * Source that uses a local file
+ * (also used for acceptance tests with local fixtures)
  */
-class LocalFileSource implements FileSourceInterface  {
+class LocalFileSource implements FileSourceInterface {
 
 	/**
 	 * @var string
 	 */
 	protected $source;
 
+	/**
+	 * @param string $source
+	 */
 	public function __construct($source = '') {
 		$this->setSource($source);
 	}
@@ -23,13 +23,12 @@ class LocalFileSource implements FileSourceInterface  {
 	/**
 	 * Downloads the given source on the given server in the given parent path
 	 *
-	 * @return void
+	 * @param string $parentFolder
+	 * @return string
 	 */
 	public function getDownloadCommand($parentFolder) {
-		return 'cp  '.$this->source.' '.$parentFolder;
+		return 'cp  ' . $this->source . ' ' . $parentFolder;
 	}
-
-
 
 	/**
 	 * @param string $source
@@ -38,13 +37,11 @@ class LocalFileSource implements FileSourceInterface  {
 		$this->source = $source;
 	}
 
-
-
 	/**
 	 * @return string
 	 */
 	public function getShortExplain() {
-		return 'Copy from:'.$this->source;
+		return 'Copy from:' . $this->source;
 	}
 
 	/**
@@ -58,15 +55,15 @@ class LocalFileSource implements FileSourceInterface  {
 	 * @return string
 	 */
 	public function getFileNameWithOutExtension() {
-		return substr($this->getFileName(),0,strpos($this->getFileName(),'.'));
+		return substr($this->getFileName(), 0, strpos($this->getFileName(), '.'));
 	}
 
 	/**
-	 * @param $path
+	 * @param string $path
 	 * @return string
 	 */
 	protected function getFilenameFromPath($path) {
-		$dir = dirname($path).DIRECTORY_SEPARATOR;
-		return str_replace($dir,'',$path);
+		$dir = dirname($path) . DIRECTORY_SEPARATOR;
+		return str_replace($dir, '', $path);
 	}
 }

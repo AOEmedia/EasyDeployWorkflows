@@ -3,6 +3,8 @@
 namespace EasyDeployWorkflows\Workflows\Application;
 
 use EasyDeployWorkflows\Exception\InvalidConfigurationException;
+use EasyDeployWorkflows\Source\File\FileSourceInterface;
+use EasyDeployWorkflows\Source\Folder\FolderSourceInterface;
 use EasyDeployWorkflows\Workflows as Workflows;
 use EasyDeployWorkflows\Workflows\Exception as Exception;
 
@@ -10,6 +12,7 @@ use EasyDeployWorkflows\Workflows\Exception as Exception;
 /**
  * Configuration for the Basic Application Workflow
  *
+ * @method FileSourceInterface|FolderSourceInterface getSource()
  */
 class ReleaseFolderApplicationConfiguration extends AbstractBaseApplicationConfiguration {
 

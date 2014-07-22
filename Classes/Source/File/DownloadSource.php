@@ -2,13 +2,9 @@
 
 namespace EasyDeployWorkflows\Source\File;
 
-
-
 /**
- * Download Source that uses the standard Downloader
-
-Example Package Path: http://user:password@host.de/path/mypackage.tar.gz
- *
+ * Download Source that uses the standard Downloader.
+ * Example Package Path: http://user:password@host.de/path/mypackage.tar.gz
  */
 class DownloadSource implements FileSourceInterface  {
 
@@ -17,6 +13,9 @@ class DownloadSource implements FileSourceInterface  {
 	 */
 	protected $url;
 
+	/**
+	 * @param string $url
+	 */
 	public function __construct($url = '') {
 		$this->setUrl($url);
 	}
@@ -24,7 +23,9 @@ class DownloadSource implements FileSourceInterface  {
 	/**
 	 * Downloads the given source on the given server in the given parent path
 	 *
-	 * @return void
+	 * @param string $parentFolder
+	 * @throws \Exception
+	 * @return string
 	 */
 	public function getDownloadCommand($parentFolder) {
 		$url = $this->buildUrl();
@@ -50,8 +51,6 @@ class DownloadSource implements FileSourceInterface  {
 		return $command;
 	}
 
-
-
 	/**
 	 * @param string $source
 	 */
@@ -59,6 +58,9 @@ class DownloadSource implements FileSourceInterface  {
 		$this->url = $source;
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function buildUrl() {
 		return $this->url;
 	}
@@ -92,4 +94,5 @@ class DownloadSource implements FileSourceInterface  {
 		$dir = dirname($path).DIRECTORY_SEPARATOR;
 		return str_replace($dir,'',$path);
 	}
+
 }

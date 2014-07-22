@@ -2,14 +2,16 @@
 
 namespace EasyDeployWorkflows\Tasks;
 
+use EasyDeployWorkflows\AbstractPart;
+use EasyDeployWorkflows\Exception\InvalidConfigurationException;
+use EasyDeployWorkflows\ValidateableInterface;
 use EasyDeployWorkflows\Workflows;
 
 
 /**
  * A task is something that encapsulates a certain part of todo
  */
-abstract class AbstractTask extends \EasyDeployWorkflows\AbstractPart implements \EasyDeployWorkflows\ValidateableInterface {
-
+abstract class AbstractTask extends AbstractPart implements ValidateableInterface {
 
 	/**
 	 * @return boolean
@@ -17,28 +19,31 @@ abstract class AbstractTask extends \EasyDeployWorkflows\AbstractPart implements
 	public function isValid() {
 		try {
 			$this->validate();
-		}catch(\EasyDeployWorkflows\Exception\InvalidConfigurationException $e) {
-			return false;
+		} catch (InvalidConfigurationException $e) {
+			return FALSE;
 		}
-		return true;
+		return TRUE;
 	}
 
 	/**
-	 * @param $string
+	 * @param string $string
 	 * @param TaskRunInformation $taskRunInformation
 	 * @return string
 	 */
-	protected function replaceConfigurationMarkersWithTaskRunInformation($string,\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation) {
-		return $this->replaceConfigurationMarkers($string,$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
+	protected function replaceConfigurationMarkersWithTaskRunInformation($string,
+		TaskRunInformation $taskRunInformation
+	) {
+		return $this->replaceConfigurationMarkers($string, $taskRunInformation->getWorkflowConfiguration(),
+			$taskRunInformation->getInstanceConfiguration()
+		);
 	}
 
 	/**
 	 * @return boolean
-	 * throws Exception\InvalidConfigurationException
+	 * @throws InvalidConfigurationException
 	 */
 	public function validate() {
-		throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('IMPLEMENT YOUR OWN VALIDATION');
-		return false;
+		throw new InvalidConfigurationException('IMPLEMENT YOUR OWN VALIDATION');
 	}
 
 	/**

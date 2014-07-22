@@ -2,14 +2,10 @@
 
 namespace EasyDeployWorkflows\Source\Folder;
 
-
-
 /**
  * Git Checkout
  */
 class GitCloneSource implements FolderSourceInterface  {
-
-
 
 	/**
 	 * @var string
@@ -35,7 +31,10 @@ class GitCloneSource implements FolderSourceInterface  {
 		$this->individualTargetFolderName = $name;
 	}
 
-
+	/**
+	 * @param string $parentFolder
+	 * @return string
+	 */
 	public function getDownloadCommand($parentFolder) {
 		$command = 'cd '.$parentFolder.'; ';
 		$options = '--recursive ';
@@ -48,7 +47,7 @@ class GitCloneSource implements FolderSourceInterface  {
 
 	/**
 	 * @param string $repository
-	 * @return self
+	 * @return $this
 	 */
 	public function setRepository($repository) {
 		$this->repository = $repository;
@@ -76,7 +75,6 @@ class GitCloneSource implements FolderSourceInterface  {
 		return $this->tag;
 	}
 
-
 	/**
 	 * @return string
 	 */
@@ -95,6 +93,5 @@ class GitCloneSource implements FolderSourceInterface  {
 		$lastPath = substr($this->repository,strrpos($this->repository,'/')+1);
 		return substr($lastPath,0,strpos($lastPath,'.'));
 	}
-
 
 }

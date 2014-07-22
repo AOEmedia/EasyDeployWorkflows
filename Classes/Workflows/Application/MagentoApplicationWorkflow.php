@@ -14,7 +14,7 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 	protected $workflowConfiguration;
 
 	/**
-	 * add version file write
+	 * Add version file write
 	 */
 	protected function addWriteVersionFileTask() {
 		$task = new WriteVersionFile();
@@ -25,7 +25,7 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 	}
 
 	/**
-	 * Symlinks media folder
+	 * Symlink media folder
 	 */
 	protected function addSymlinkSharedFoldersTasks() {
 		if ($this->workflowConfiguration->hasSharedFolder()) {
@@ -42,6 +42,8 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 
 	/**
 	 * See if commandline indexer can return a status
+	 *
+	 * @param array $additionalTasks
 	 */
 	protected function addSmokeTestTaskGroup($additionalTasks = array()) {
 		// add default smoke test
@@ -56,12 +58,8 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 
 	/**
 	 * Possibility to add some tasks
-	 *
-	 * @return void
 	 */
 	protected function addPostSetupTasks() {
-		parent::addPostSetupTasks();
-
 		$task = new RunCommand();
 		$task->setChangeToDirectory($this->getFinalReleaseBaseFolder() . 'next');
 		$task->setCommand('php htdocs/shell/indexer.php --reindexall');
@@ -69,18 +67,13 @@ class MagentoApplicationWorkflow extends ReleaseFolderApplicationWorkflow {
 
 		switch ($this->workflowConfiguration->getReindexAllMode()) {
 			case MagentoApplicationConfiguration::REINDEX_MODE_NONE:
-				return;
 				break;
 			case MagentoApplicationConfiguration::REINDEX_MODE_FOREGROUND:
 				$this->addTask('Reindex all in foreground', $task);
-
-				return;
 				break;
 			case MagentoApplicationConfiguration::REINDEX_MODE_BACKGROUND:
 				$task->setRunInBackground(true);
 				$this->addTask('Reindex all in background', $task);
-
-				return;
 				break;
 		}
 	}

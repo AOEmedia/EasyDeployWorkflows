@@ -5,6 +5,7 @@ namespace EasyDeployWorkflows\Workflows;
 use EasyDeployWorkflows\Exception\HaltAndRollback;
 use EasyDeployWorkflows\Logger\Logger;
 use EasyDeployWorkflows\Tasks\AbstractTask;
+use EasyDeployWorkflows\Tasks\Common\TaskGroup;
 use EasyDeployWorkflows\Workflows;
 
 require_once dirname(__FILE__) . '/Exception/DuplicateStepAssignmentException.php';
@@ -34,10 +35,9 @@ class TaskBasedWorkflow extends AbstractWorkflow {
 		$this->logger->log('[Workflow] ' . $this->getWorkflowConfiguration()->getTitle() . ' (' . get_class($this) . ')');
 		$this->logger->addLogIndentLevel();
 		foreach ($this->tasks as $taskName => $task) {
-			if ($task instanceof \EasyDeployWorkflows\Tasks\Common\TaskGroup) {
+			if ($task instanceof TaskGroup) {
 				$this->logger->logDivider($task->getHeadline());
-			}
-			else {
+			} else {
 				$this->logger->log('[Task] ' . $taskName);
 			}
 			$this->logger->addLogIndentLevel();

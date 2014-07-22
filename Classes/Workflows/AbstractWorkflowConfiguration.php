@@ -2,19 +2,20 @@
 
 namespace EasyDeployWorkflows\Workflows;
 
+use EasyDeployWorkflows\Source\SourceInterface;
 use EasyDeployWorkflows\Workflows;
 
 abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 
 	/**
-	 * @var \EasyDeployWorkflows\Source\SourceInterface
+	 * @var SourceInterface
 	 */
 	protected $source;
 
 	/**
 	 * @var boolean
 	 */
-	protected $installSilent = false;
+	protected $installSilent = FALSE;
 
 	/**
 	 * @var string
@@ -28,11 +29,10 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 
 	/**
 	 * @param string $deliveryFolder
-	 * @return \EasyDeployWorkflows\Workflows\InstanceConfiguration
-	 * @return self
+	 * @return $this
 	 */
 	public function setDeliveryFolder($deliveryFolder) {
-		$this->deliveryFolder = rtrim($deliveryFolder,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		$this->deliveryFolder = rtrim($deliveryFolder, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 		return $this;
 	}
 
@@ -56,8 +56,7 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 	 * @param string $releaseVersion
 	 * @return self
 	 */
-	public function setReleaseVersion($releaseVersion)
-	{
+	public function setReleaseVersion($releaseVersion) {
 		$this->releaseVersion = $releaseVersion;
 		return $this;
 	}
@@ -65,16 +64,15 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 	/**
 	 * @return string
 	 */
-	public function getReleaseVersion()
-	{
+	public function getReleaseVersion() {
 		return $this->releaseVersion;
 	}
 
 	/**
-	 * @param \EasyDeployWorkflows\Source\SourceInterface $packageSource
+	 * @param SourceInterface $packageSource
 	 * @return $this
 	 */
-	public function setSource(\EasyDeployWorkflows\Source\SourceInterface $packageSource) {
+	public function setSource(SourceInterface $packageSource) {
 		$this->source = $packageSource;
 		return $this;
 	}
@@ -87,7 +85,7 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 	}
 
 	/**
-	 * @return \EasyDeployWorkflows\Source\SourceInterface
+	 * @return SourceInterface
 	 */
 	public function getSource() {
 		return $this->source;

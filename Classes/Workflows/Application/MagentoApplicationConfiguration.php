@@ -5,10 +5,8 @@ namespace EasyDeployWorkflows\Workflows\Application;
 use EasyDeployWorkflows\Workflows as Workflows;
 use EasyDeployWorkflows\Workflows\Exception as Exception;
 
-
 /**
  * Configuration for the Magento Application Workflow
- *
  */
 class MagentoApplicationConfiguration extends ReleaseFolderApplicationConfiguration {
 
@@ -17,6 +15,9 @@ class MagentoApplicationConfiguration extends ReleaseFolderApplicationConfigurat
 	 */
 	protected $setupCommand = './Setup/Setup.sh';
 
+	/**
+	 * @var int
+	 */
 	protected $reindexAllMode;
 
 	const REINDEX_MODE_NONE = 0;
@@ -24,20 +25,7 @@ class MagentoApplicationConfiguration extends ReleaseFolderApplicationConfigurat
 	const REINDEX_MODE_BACKGROUND = 2;
 
 	/**
-	 * @return bool
-	 */
-	public function validate() {
-		parent::validate();
-
-		/*if(!$this->hasSharedFolder()) {
-			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException("Please configure SharedFolder: ".get_class($this));
-		}
-		*/
-		return true;
-	}
-
-	/**
-	 * @param mixed $reindexAllMode
+	 * @param int $reindexAllMode
 	 * @return self
 	 */
 	public function setReindexAllMode($reindexAllMode) {
@@ -49,13 +37,11 @@ class MagentoApplicationConfiguration extends ReleaseFolderApplicationConfigurat
 	 * @return mixed
 	 */
 	public function getReindexAllMode() {
-		if (!isset($this->reindexAllMode) || !in_array($this->reindexAllMode,array(0,1,2))) {
+		if (!isset($this->reindexAllMode) || !in_array($this->reindexAllMode, array(0, 1, 2))) {
 			return self::REINDEX_MODE_NONE;
 		}
 		return $this->reindexAllMode;
 	}
-
-
 
 	/**
 	 * @return string
@@ -63,7 +49,5 @@ class MagentoApplicationConfiguration extends ReleaseFolderApplicationConfigurat
 	public function getWorkflowClassName() {
 		return 'EasyDeployWorkflows\Workflows\Application\MagentoApplicationWorkflow';
 	}
-
-
 
 }
