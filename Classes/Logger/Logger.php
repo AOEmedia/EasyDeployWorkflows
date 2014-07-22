@@ -62,22 +62,30 @@ class Logger {
 	const MESSAGE_TYPE_COMMAND = "COMMAND";
 
 	/**
-	 * creating new object is denied (singleton pattern)
-	 *  use \EasyDeployWorkflows\Logger\Logger::getInstance() instead
+	 * @var string
 	 */
-	private function __construct()	{
+	const MESSAGE_TYPE_TASK_GROUP_HEADER = "TASK_GROUP_HEADER";
+
+	/**
+	 * Creating new object is denied (singleton pattern),
+	 * use \EasyDeployWorkflows\Logger\Logger::getInstance() instead
+	 */
+	private function __construct() {
 		$this->injectScreenBackend(new ScreenBackend());
 	}
+
+	/**
+	 * Object cloning is denied (singleton pattern)
+	 */
+	private function __clone() {}
 
 	public function injectScreenBackend(ScreenBackend $screenBackend) {
 		$this->screenBackend = $screenBackend;
 	}
 
-
-	public static function getInstance()
-	{
+	public static function getInstance() {
 		if (!isset(self::$instance)) {
-			$className = __CLASS__;
+			$className      = __CLASS__;
 			self::$instance = new $className;
 		}
 		return self::$instance;
@@ -86,28 +94,29 @@ class Logger {
 	public function logToScreen($message, $type) {
 		$messageIndented = $this->indentMessage($message);
 		switch ($type) {
+			case self::MESSAGE_TYPE_TASK_GROUP_HEADER:
+				$this->screenBackend->output(PHP_EOL . $messageIndented, 'cyan');
+				break;
 			case self::MESSAGE_TYPE_ERROR:
-				$this->screenBackend->output(PHP_EOL.$messageIndented,'red');
-			break;
+				$this->screenBackend->output(PHP_EOL . $messageIndented, 'red');
+				break;
 			case self::MESSAGE_TYPE_SUCCESS:
-				$this->screenBackend->output(' '.$message,'green');
-			break;
+				$this->screenBackend->output(' ' . $message, 'green');
+				break;
 			case self::MESSAGE_TYPE_WARNING:
-				$this->screenBackend->output(PHP_EOL.$messageIndented,'blue');
-			break;
-
+				$this->screenBackend->output(PHP_EOL . $messageIndented, 'blue');
+				break;
 			default:
-				$this->screenBackend->output(PHP_EOL.$messageIndented,'gray');
-			break;
+				$this->screenBackend->output(PHP_EOL . $messageIndented, 'gray');
+				break;
 		}
 	}
-
 
 	public function logToFile($message, $type) {
 		if (empty($this->logFile)) {
 			return;
 		}
-		$messageIndented = $this->indentMessage($type.': '.$message).PHP_EOL;
+		$messageIndented = $this->indentMessage($type . ': ' . $message) . PHP_EOL;
 		file_put_contents($this->logFile, $messageIndented, FILE_APPEND);
 	}
 
@@ -115,48 +124,52 @@ class Logger {
 	 * @param string $message
 	 * @param string $type
 	 */
-	public function log($message, $type=self::MESSAGE_TYPE_INFO) {
+	public function log($message, $type = self::MESSAGE_TYPE_INFO) {
 		switch ($type) {
 			case self::MESSAGE_TYPE_INFO:
-				$this->logToScreen($message,$type);
-				$this->logToFile($message,$type);
+			case self::MESSAGE_TYPE_TASK_GROUP_HEADER:
+				$this->logToScreen($message, $type);
+				$this->logToFile($message, $type);
 				break;
 			case self::MESSAGE_TYPE_COMMANDOUTPUT:
 			case self::MESSAGE_TYPE_COMMAND:
 			case self::MESSAGE_TYPE_DEBUG:
-				$this->logToFile($message,$type);
+				$this->logToFile($message, $type);
 				break;
 			default:
-				$this->logToScreen($message,$type);
-				$this->logToFile($message,$type);
+				$this->logToScreen($message, $type);
+				$this->logToFile($message, $type);
 				break;
 		}
 	}
 
 	/**
-	 * @param $headline Logs a nice divider to the screen
+	 * Log a nice divider to the screen
+	 *
+	 * @param string $headline
 	 */
 	public function logDivider($headline) {
-		$messageIndented = $this->indentMessage('********* '.$headline.' *********');
-		$this->screenBackend->output(PHP_EOL.$messageIndented,'cyan');
+		$this->log('********* ' . $headline . ' *********', self::MESSAGE_TYPE_TASK_GROUP_HEADER);
 	}
 
 	public function printLogFileInfoMessage() {
 		if (!empty($this->logFile)) {
 			$this->logIndentLevel = 0;
-			$this->logToScreen('Check the Logfile for errors: "'.$this->logFile.'"'.PHP_EOL,self::MESSAGE_TYPE_ERROR);
+			$this->logToScreen('Check the Logfile for errors: "' . $this->logFile . '"' . PHP_EOL,
+				self::MESSAGE_TYPE_ERROR
+			);
 		}
 	}
 
 	/**
-	 * sets indent level up - so that messages are nicer formated
+	 * Increment indent level up - so that messages are nicer formatted
 	 */
 	public function addLogIndentLevel() {
 		$this->logIndentLevel++;
 	}
 
 	/**
-	 * sets indent level down - so that messages are nicer formated
+	 * Decrement indent level down - so that messages are nicer formatted
 	 */
 	public function removeLogIndentLevel() {
 		$this->logIndentLevel--;
@@ -169,33 +182,29 @@ class Logger {
 	 * Improve the string for visual output
 	 * Adds an extra line before first level messages and indents the message with tabs
 	 *
-	 * @param $message
+	 * @param string $message
 	 * @return string
 	 */
 	protected function indentMessage($message) {
-		$message = str_repeat("\t",$this->logIndentLevel).$message;
+		$message = str_repeat("\t", $this->logIndentLevel) . $message;
 		if ($this->logIndentLevel == 0) {
-			$message = PHP_EOL.$message;
+			$message = PHP_EOL . $message;
 		}
 		return $message;
 	}
 
-
 	/**
 	 * @param string $logFile
 	 */
-	public function setLogFile($logFile)
-	{
+	public function setLogFile($logFile) {
 		$this->logFile = $logFile;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getLogFile()
-	{
+	public function getLogFile() {
 		return $this->logFile;
 	}
-
 
 }
