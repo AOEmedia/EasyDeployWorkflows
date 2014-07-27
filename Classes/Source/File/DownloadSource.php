@@ -6,12 +6,13 @@ namespace EasyDeployWorkflows\Source\File;
  * Download Source that uses the standard Downloader.
  * Example Package Path: http://user:password@host.de/path/mypackage.tar.gz
  */
-class DownloadSource implements FileSourceInterface  {
+class DownloadSource extends AbstractFileSource implements FileSourceInterface  {
 
 	/**
 	 * @var string
 	 */
 	protected $url;
+
 
 	/**
 	 * @param string $url
@@ -79,12 +80,6 @@ class DownloadSource implements FileSourceInterface  {
 		return $this->getFilenameFromPath($this->buildUrl());
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getFileNameWithOutExtension() {
-		return substr($this->getFileName(),0,strpos($this->getFileName(),'.'));
-	}
 
 	/**
 	 * @param $path
@@ -94,5 +89,6 @@ class DownloadSource implements FileSourceInterface  {
 		$dir = dirname($path).DIRECTORY_SEPARATOR;
 		return str_replace($dir,'',$path);
 	}
+
 
 }

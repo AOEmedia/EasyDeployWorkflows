@@ -55,16 +55,7 @@ class ReleaseFolderApplicationWorkflow extends BaseApplicationWorkflow {
 			$task->addServersByName($this->workflowConfiguration->getInstallServers());
 			$this->addTask('Download Filesource to Deliveryfolder', $task);
 
-			$task = $this->getUnzipPackageTask();
-			$task->addServersByName($this->workflowConfiguration->getInstallServers());
-			$this->addTask('Untar Package', $task);
-
-			$task = new Rename();
-			$task->setMode(Rename::MODE_SKIP_IF_TARGET_EXISTS);
-			$task->addServersByName($this->workflowConfiguration->getInstallServers());
-			$task->setSource($this->workflowConfiguration->getReleaseBaseFolder() . $this->workflowConfiguration->getSource()->getFileNameWithOutExtension());
-			$task->setTarget($this->workflowConfiguration->getReleaseBaseFolder() . $this->workflowConfiguration->getReleaseVersion());
-			$this->addTask('Rename Unzipped Package to Release', $task);
+			$this->extractArchiveToReleaseFolder();
 
 			$task = new DeleteFile();
 			$task->setFile($this->getFinalDeliveryFolder() . $this->workflowConfiguration->getSource()->getFileName());
@@ -146,16 +137,6 @@ class ReleaseFolderApplicationWorkflow extends BaseApplicationWorkflow {
 		$this->addTask('Cleanup old Releases', $task);
 	}
 
-	protected function getUnzipPackageTask() {
-		$archivePath = $this->replaceMarkers(
-			$this->getFinalDeliveryFolder() . $this->workflowConfiguration->getSource()->getFileName()
-		);
-		$step        = new Untar();
-		$step->setPackagePath($archivePath);
-		$step->setFolder($this->workflowConfiguration->getReleaseBaseFolder());
-		$step->setMode(Untar::MODE_SKIP_IF_EXTRACTEDFOLDER_EXISTS);
-		return $step;
-	}
 
 	/**
 	 * @return string
@@ -176,4 +157,31 @@ class ReleaseFolderApplicationWorkflow extends BaseApplicationWorkflow {
 		return $task;
 	}
 
+	/**
+	 * @return void
+	 */
+	protected function extractArchiveToReleaseFolder() {
+		$archivePath = $this->replaceMarkers(
+				$this->getFinalDeliveryFolder() . $this->workflowConfiguration->getSource()->getFileName()
+		);
+		$unTarTask        = new Untar();
+		$unTarTask->setPackagePath($archivePath);
+		if ($this->workflowConfiguration->getSource()->getFolderNameInArchive() != '') {
+			$unTarTask->setFolder($this->workflowConfiguration->getReleaseBaseFolder());
+			$unTarTask->setMode(Untar::MODE_SKIP_IF_EXTRACTEDFOLDER_EXISTS);
+			$unTarTask->addServersByName($this->workflowConfiguration->getInstallServers());
+			$this->addTask('Untar Package to releasefolder', $unTarTask);
+
+			$task = new Rename();
+			$task->setMode(Rename::MODE_SKIP_IF_TARGET_EXISTS);
+			$task->addServersByName($this->workflowConfiguration->getInstallServers());
+			$task->setSource($this->workflowConfiguration->getReleaseBaseFolder() . $this->workflowConfiguration->getSource()->getFolderNameInArchive());
+			$task->setTarget($this->workflowConfiguration->getReleaseBaseFolder() . $this->workflowConfiguration->getReleaseVersion());
+			$this->addTask('Rename Unzipped Package to Release', $task);
+		} else {
+			$unTarTask->setFolder($this->workflowConfiguration->getReleaseBaseFolder().DIRECTORY_SEPARATOR.$this->workflowConfiguration->getReleaseVersion());
+			$unTarTask->addServersByName($this->workflowConfiguration->getInstallServers());
+			$this->addTask('Untar Package to Releasefolder', $unTarTask);
+		}
+	}
 }

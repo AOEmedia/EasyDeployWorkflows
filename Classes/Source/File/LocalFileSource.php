@@ -6,7 +6,7 @@ namespace EasyDeployWorkflows\Source\File;
  * Source that uses a local file
  * (also used for acceptance tests with local fixtures)
  */
-class LocalFileSource implements FileSourceInterface {
+class LocalFileSource  extends AbstractFileSource implements FileSourceInterface {
 
 	/**
 	 * @var string
@@ -51,12 +51,7 @@ class LocalFileSource implements FileSourceInterface {
 		return $this->getFilenameFromPath($this->source);
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getFileNameWithOutExtension() {
-		return substr($this->getFileName(), 0, strpos($this->getFileName(), '.'));
-	}
+
 
 	/**
 	 * @param string $path
@@ -66,4 +61,6 @@ class LocalFileSource implements FileSourceInterface {
 		$dir = dirname($path) . DIRECTORY_SEPARATOR;
 		return str_replace($dir, '', $path);
 	}
+
+
 }

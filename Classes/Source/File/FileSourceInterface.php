@@ -4,7 +4,8 @@ namespace EasyDeployWorkflows\Source\File;
 use EasyDeployWorkflows\Source\SourceInterface;
 
 /**
- * Download Interface
+ * FileSource Interface.
+ * A FileSource is normaly an archive
  */
 interface FileSourceInterface extends SourceInterface {
 
@@ -17,5 +18,10 @@ interface FileSourceInterface extends SourceInterface {
 	 * @return string
 	 */
 	public function getFileNameWithOutExtension();
+
+	/**
+	 * @return string
+	 */
+	public function getFolderNameInArchive();
 
 }
