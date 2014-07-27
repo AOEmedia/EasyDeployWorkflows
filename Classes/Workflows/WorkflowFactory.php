@@ -84,6 +84,7 @@ class WorkflowFactory {
 	}
 
 	/**
+	 * @DEPRICATED
 	 * @param string $projectName
 	 * @param string $environmentName
 	 * @param string $releaseVersion
@@ -95,22 +96,32 @@ class WorkflowFactory {
 	public function createByConfigurationVariable($projectName, $environmentName, $releaseVersion,
 		$workFlowConfigurationVariableName, $instanceConfigurationVariableName = 'instanceConfiguration'
 	) {
+		$request = new WorkflowRequest();
+		$request->setProjectName($projectName);
+		$request->setEnvironmentName($environmentName);
+		$request->setReleaseVersion($releaseVersion);
+		$request->setWorkFlowConfigurationVariableName($workFlowConfigurationVariableName);
+		$request->setInstanceConfigurationVariableName($instanceConfigurationVariableName);
+		return $this->createByRequest($request);
+	}
+
+	public function createByRequest(WorkflowRequest $request) {
 		if (!is_dir($this->configurationFolder)) {
 			throw new \Exception('Configuration folder "' . $this->configurationFolder . '" doesn\'t exist. Please check if you followed the convention - or set your configuration folder explicitly');
 		}
-		$configurationFile = $this->configurationFolder . $projectName . DIRECTORY_SEPARATOR . $environmentName . '.php';
+		$configurationFile = $this->configurationFolder . $request->getProjectName() . DIRECTORY_SEPARATOR . $request->getConfigurationKey() . '.php';
 		if (!is_file($configurationFile)) {
 			throw new \Exception('No configuration file found for project and environment. Looking in: ' . $configurationFile);
 		}
 		include($configurationFile);
-
+		$instanceConfigurationVariableName = $request->getInstanceConfigurationVariableName();
 		if (!isset($$instanceConfigurationVariableName)) {
 			Logger::getInstance()->log('No Instance Configuration found! Expect a variable $' . $instanceConfigurationVariableName . '. I am creating a default one now...');
 			$instanceConfiguration = new InstanceConfiguration();
 			$instanceConfiguration->addAllowedDeployServer('*')
-				->setEnvironmentName($environmentName)
-				->setProjectName($projectName)
-				->setTitle('Default Instance Configuration');
+					->setEnvironmentName($request->getEnvironmentName())
+					->setProjectName($request->getProjectName())
+					->setTitle('Default Instance Configuration');
 		}
 
 		if (!$$instanceConfigurationVariableName instanceof InstanceConfiguration) {
@@ -119,17 +130,17 @@ class WorkflowFactory {
 
 		/** @var InstanceConfiguration $instanceConfiguration */
 		$instanceConfiguration = $$instanceConfigurationVariableName;
-		if ($instanceConfiguration->getEnvironmentName() != $environmentName
-			|| $instanceConfiguration->getProjectName() != $projectName
+		if ($instanceConfiguration->getEnvironmentName() != $request->getEnvironmentName()
+				|| $instanceConfiguration->getProjectName() != $request->getProjectName()
 		) {
 			throw new \Exception('Instance Environment Data invalid! Check that project and environment is set and valid! Current:' . $instanceConfiguration->getProjectName() . ' / ' . $instanceConfiguration->getEnvironmentName());
 		}
-
+		$workFlowConfigurationVariableName = $request->getWorkFlowConfigurationVariableName();
 		if (!isset($$workFlowConfigurationVariableName) || !$$workFlowConfigurationVariableName instanceof AbstractWorkflowConfiguration
 		) {
 			throw new WorkflowConfigurationNotExistendException('No Workflow Configuration found or it is invalid! Expected a Variable with the name $' . $workFlowConfigurationVariableName);
 		}
-		$$workFlowConfigurationVariableName->setReleaseVersion($releaseVersion);
+		$$workFlowConfigurationVariableName->setReleaseVersion($request->getReleaseVersion());
 		return $this->create($instanceConfiguration, $$workFlowConfigurationVariableName);
 	}
 
