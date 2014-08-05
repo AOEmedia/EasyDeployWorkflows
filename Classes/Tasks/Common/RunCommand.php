@@ -26,12 +26,19 @@ class RunCommand extends AbstractServerTask {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getCommand() {
+		return $this->command;
+	}
+
+	/**
 	 * @param TaskRunInformation $taskRunInformation
 	 * @param \EasyDeploy_AbstractServer $server
 	 * @return mixed
 	 */
 	protected function runOnServer(TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server) {
-		$command = $this->command;
+		$command = $this->getCommand();
 		$command = $this->_appendRunInBackground($command);
 		//$command = $this->_prependWithEnvVarExport($command);
 
