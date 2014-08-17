@@ -2,11 +2,12 @@
 
 namespace EasyDeployWorkflows\Tasks\Common;
 
+use EasyDeploy_AbstractServer;
+use EasyDeployWorkflows\Exception\InvalidConfigurationException;
 use EasyDeployWorkflows\Tasks;
 
 
-
-class WriteVersionFile extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
+class WriteVersionFile extends Tasks\AbstractServerTask {
 
 	/**
 	 * @var string
@@ -20,9 +21,12 @@ class WriteVersionFile extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 	/**
 	 * @param string $version
+	 * @return $this
 	 */
 	public function setVersion($version) {
 		$this->version = $version;
+
+		return $this;
 	}
 
 	/**
@@ -34,9 +38,12 @@ class WriteVersionFile extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 
 	/**
 	 * @param string $targetPath
+	 * @return $this
 	 */
 	public function setTargetPath($targetPath) {
-		$this->targetPath = rtrim($targetPath,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		$this->targetPath = rtrim($targetPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+		return $this;
 	}
 
 	/**
@@ -47,24 +54,25 @@ class WriteVersionFile extends \EasyDeployWorkflows\Tasks\AbstractServerTask  {
 	}
 
 	/**
-	 * @param TaskRunInformation $taskRunInformation
+	 * @param Tasks\TaskRunInformation $taskRunInformation
+	 * @param EasyDeploy_AbstractServer $server
 	 * @return mixed
 	 */
-	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
-			$this->executeAndLog($server,'echo "'.$this->version.'" > '.$this->targetPath.'version.txt');
-		$this->executeAndLog($server,'echo "'.gmdate('r').'" > '.$this->targetPath.'deploytime.txt');
+	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation, EasyDeploy_AbstractServer $server) {
+		$this->executeAndLog($server, 'echo "' . $this->version . '" > ' . $this->targetPath . 'version.txt');
+		$this->executeAndLog($server, 'echo "' . gmdate('r') . '" > ' . $this->targetPath . 'deploytime.txt');
 	}
 
 	/**
 	 * @return boolean
-	 * throws Exception\InvalidConfigurationException
+	 * @throws InvalidConfigurationException
 	 */
 	public function validate() {
 		if (empty($this->targetPath)) {
-			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('targetPath not set');
+			throw new InvalidConfigurationException('targetPath not set');
 		}
 		if (empty($this->version)) {
-			throw new \EasyDeployWorkflows\Exception\InvalidConfigurationException('version not set');
+			throw new InvalidConfigurationException('version not set');
 		}
 	}
 }
