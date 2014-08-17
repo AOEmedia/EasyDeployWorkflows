@@ -4,10 +4,11 @@ namespace EasyDeployWorkflows\Tasks\Common;
 
 use EasyDeploy_AbstractServer;
 use EasyDeployWorkflows\Exception\InvalidConfigurationException;
+use EasyDeployWorkflows\Logger\Logger;
 use EasyDeployWorkflows\Tasks;
 
 
-class WriteToFile extends Tasks\AbstractServerTask {
+class WriteToFile extends Tasks\Common\RunCommand {
 
 	/**
 	 * @var string
@@ -54,14 +55,25 @@ class WriteToFile extends Tasks\AbstractServerTask {
 	}
 
 	/**
+	 * Run command on server
+	 *
 	 * @param Tasks\TaskRunInformation $taskRunInformation
-	 * @param EasyDeploy_AbstractServer $server
+	 * @param \EasyDeploy_AbstractServer $server
 	 * @return mixed
 	 */
-	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation, EasyDeploy_AbstractServer $server) {
-		$this->executeAndLog($server,
-			'echo "' . escapeshellarg($this->content) . '" > ' . escapeshellarg($this->fileName)
+	protected function runOnServer(Tasks\TaskRunInformation $taskRunInformation, \EasyDeploy_AbstractServer $server) {
+		$commandWorkingDirectory = $server->getCwd();
+		if ($this->getChangeToDirectory()) {
+			$commandWorkingDirectory = $this->getChangeToDirectory();
+		}
+
+		$message = sprintf('Writing content %s to file %s in directory %s',
+			$this->getContent(), $this->getFileName(), $commandWorkingDirectory
 		);
+		$this->logger->log($message, Logger::MESSAGE_TYPE_INFO);
+
+		$command = sprintf("echo %s> %s", escapeshellarg($this->content), $this->getFileName());
+		$this->executeAndLog($server, $this->_prependWithCd($command, $taskRunInformation));
 	}
 
 	/**

@@ -10,9 +10,9 @@ use EasyDeployWorkflows\Tasks;
 class SetAttributes extends Tasks\Common\RunCommand {
 
 	/**
-	 * @var array
+	 * @var string
 	 */
-	protected $target = array();
+	protected $target;
 
 	/**
 	 * @var array
