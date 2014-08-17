@@ -72,9 +72,10 @@ class WriteToFile extends Tasks\Common\RunCommand {
 		);
 		$this->logger->log($message, Logger::MESSAGE_TYPE_INFO);
 
-		$command = sprintf('touch %s', $this->getFileName());
+		$tempFileName = tempnam(sys_get_temp_dir(), 'deployment');
+		file_put_contents($tempFileName, $this->getContent());
+		$command = sprintf('mv %s %s', $tempFileName, $this->getFileName());
 		$this->executeAndLog($server, $this->_prependWithCd($command, $taskRunInformation));
-		file_put_contents($this->getFileName(), $this->getContent());
 	}
 
 	/**
