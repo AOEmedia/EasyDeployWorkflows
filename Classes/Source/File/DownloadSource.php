@@ -13,6 +13,12 @@ class DownloadSource extends AbstractFileSource implements FileSourceInterface  
 	 */
 	protected $url;
 
+	/**
+	 * Used to pass additional wget download parameters.
+	 *
+	 * @var string
+	 */
+	protected $additionalOptions;
 
 	/**
 	 * @param string $url
@@ -48,7 +54,9 @@ class DownloadSource extends AbstractFileSource implements FileSourceInterface  
 			$anchorFragment = '#'.$parsedUrlParts['fragment'];
 		}
 		$command = 'cd '.$parentFolder.';';
-		$command .= 'wget '.$options.$parsedUrlParts['scheme'].'://'.$parsedUrlParts['host'].$parsedUrlParts['path'].$anchorFragment;
+		$command .= 'wget ' . $options . $this->additionalOptions
+			. $parsedUrlParts['scheme'] . '://' . $parsedUrlParts['host']
+			. $parsedUrlParts['path'] . $anchorFragment;
 		return $command;
 	}
 
@@ -90,5 +98,13 @@ class DownloadSource extends AbstractFileSource implements FileSourceInterface  
 		return str_replace($dir,'',$path);
 	}
 
-
+	/**
+	 * Pass additional options to the download command.
+	 *
+	 * @param string $additionalOptions
+	 * @return void
+	 */
+	public function setAdditionalOptions($additionalOptions) {
+		$this->additionalOptions = ' ' . trim($additionalOptions) . ' ';
+	}
 }
