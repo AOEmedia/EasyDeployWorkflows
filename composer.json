@@ -1,22 +1,22 @@
 {
     "name": "aoepeople/easy-deploy-workflows",
     "description": "EasyDeployWorkflows offers a concept to develop Deployment Workflows on Top of EasyDeploy",
-	"license": "GPL v3",
-	"minimum-stability":"dev",
+    "license": "GPL v3",
+    "minimum-stability":"dev",
     "authors": [
         {
             "name": "Timo schmidt"
         },
-		{
-			"name": "Daniel Pötzinger"
-		}
+        {
+            "name": "Daniel Pötzinger"
+        }
     ],
-	"autoload": {
-		"psr-4": {
-			"EasyDeployWorkflows\\": "Classes/"
-		}
-	},
+    "autoload": {
+        "psr-4": {
+            "EasyDeployWorkflows\\": "Classes/"
+        }
+    },
     "require": {
-
+        "phpunit/phpunit": "4.8.*"
     }
 }

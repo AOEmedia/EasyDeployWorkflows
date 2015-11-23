@@ -13,7 +13,7 @@ abstract class AbstractServerTask extends AbstractTask {
 	/**
 	 * @var array
 	 */
-	protected $servers;
+	protected $servers = array();
 
 	/**
 	 * Adds a server on which this task should be executed
