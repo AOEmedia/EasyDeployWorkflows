@@ -61,6 +61,7 @@ class NFSWebWorkflow extends Workflows\TaskBasedWorkflow {
 		$step->setPackageFolder($this->getFinalDeliveryFolder() . $packageExtractedFolderName);
 		$step->setTargetSystemPath($this->replaceMarkers($this->workflowConfiguration->getWebRootFolder()));
 		$step->setSilentMode($this->workflowConfiguration->getInstallSilent());
+		$step->setVerboseMode($this->workflowConfiguration->getVerboseMode());
 		return $step;
 	}
 

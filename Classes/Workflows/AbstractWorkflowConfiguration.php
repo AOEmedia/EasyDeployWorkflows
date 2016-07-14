@@ -17,6 +17,13 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 	protected $installSilent = false;
 
 	/**
+	 * Flag to enable/disable verbose mode.
+	 *
+	 * @var boolean
+	 */
+	protected $verbose = FALSE;
+
+	/**
 	 * @param $packageSource
 	 */
 	public function setDeploymentSource($packageSource) {
@@ -46,6 +53,22 @@ abstract class AbstractWorkflowConfiguration extends AbstractConfiguration {
 	 */
 	public function getInstallSilent() {
 		return $this->installSilent;
+	}
+
+	/**
+	 * @param  boolean $verboseMode
+	 * @return $this
+	 */
+	public function setVerboseMode($verboseMode) {
+		$this->verbose = filter_var($verboseMode, FILTER_VALIDATE_BOOLEAN);
+		return $this;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getVerboseMode() {
+		return $this->verbose;
 	}
 
 	/**

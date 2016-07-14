@@ -35,7 +35,6 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 	 */
 	protected $needBackupToInstall = TRUE;
 
-
 	/**
 	 * @var string
 	 */
@@ -45,6 +44,13 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 	 * @var \EasyDeploy_Helper_Downloader
 	 */
 	protected $downloader;
+
+	/**
+	 * Flag to de/activate verbose mode.
+	 *
+	 * @var boolean
+	 */
+	private $verbose = FALSE;
 
 	public function __construct() {
 		parent::__construct();
@@ -105,17 +111,27 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 	}
 
 	/**
-	 * @param TaskRunInformation $taskRunInformation
-	 * @return mixed
+	 * @param boolean $verboseMode
+	 */
+	public function setVerboseMode($verboseMode) {
+		$this->verbose = filter_var($verboseMode, FILTER_VALIDATE_BOOLEAN);
+	}
+
+	/**
+	 * @param  Tasks\TaskRunInformation $taskRunInformation
+	 * @param  \EasyDeploy_AbstractServer $server
+	 * @return void
+	 * @throws \Exception
 	 */
 	protected function runOnServer(\EasyDeployWorkflows\Tasks\TaskRunInformation $taskRunInformation,\EasyDeploy_AbstractServer $server) {
 		$additionalParameters = '';
 		$installBinariesFolder = $this->replaceConfigurationMarkers($this->packageFolder.'/installbinaries',$taskRunInformation->getWorkflowConfiguration(),$taskRunInformation->getInstanceConfiguration());
+
 		if (!$server->isDir($installBinariesFolder)) {
 			throw new \Exception('No Installbinaries are available in '.$installBinariesFolder);
 		}
 
-		// fix permissions
+		// Fix permissions
 		$this->logger->log('chmod -R ug+x '.$installBinariesFolder,\EasyDeployWorkflows\Logger\Logger::MESSAGE_TYPE_INFO);
 		$server->run('chmod -R ug+x '.$installBinariesFolder, FALSE, FALSE, $this->logger->getLogFile());
 
@@ -124,23 +140,21 @@ class RunPackageInstallBinaries extends \EasyDeployWorkflows\Tasks\AbstractServe
 		}
 
 		if ($this->silentMode === TRUE) {
-			$additionalParameters .=' --silent';
-		}
-		if ($this->needBackupToInstall === TRUE) {
-			$additionalParameters .=' --backupstorageroot="' . $this->getBackupStorageRoot($taskRunInformation, $server) . '"';
+			$additionalParameters .= ' --silent';
 		}
 
+		if ($this->needBackupToInstall === TRUE) {
+			$additionalParameters .= ' --backupstorageroot="' . $this->getBackupStorageRoot($taskRunInformation, $server) . '"';
+		}
 
 		$command = $this->phpbinary . ' ' . $installBinariesFolder.'/install.php --systemPath="' . $this->targetSystemPath  . '" --environmentName="' . $taskRunInformation->getInstanceConfiguration()->getEnvironmentName() . '"'.$additionalParameters;
 
 		$this->logger->log('Run Installbinary: '.$command);
-		// install package
-		if ($this->silentMode === TRUE) {
-			$server->run($command, FALSE, FALSE, $this->logger->getLogFile());
-		}
-		else {
-			$server->run($command, TRUE);
-		}
+
+		// Install package
+		$interactionMode = !$this->silentMode;
+		$logFile = $this->verbose ? NULL : $this->logger->getLogFile();
+		$server->run($command, $interactionMode, FALSE, $logFile);
 	}
 
 	/**
